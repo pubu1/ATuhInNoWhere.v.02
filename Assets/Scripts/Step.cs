@@ -6,8 +6,8 @@ using UnityEngine;
 public class Step : MonoBehaviour
 {
     private GameObject gameManager;
-    [SerializeField] private float moveSteps = 4.0f;
-    [SerializeField] private float moveSpeed = 20.0f;
+    [SerializeField] private float moveSteps = 1.0f;
+    [SerializeField] private float moveSpeed = 5.0f;
     [SerializeField] private Sprite[] pipeSprites;
     private GameObject player;
     [SerializeField] private GameObject body;
@@ -38,6 +38,8 @@ public class Step : MonoBehaviour
     private float defaultZAxis = 6;
     private bool activatePipeEffect = false;
     private bool isStepOnPool = false;
+
+    private string previousMove;
     
     // Start is called before the first frame update
     void Start()
@@ -59,10 +61,11 @@ public class Step : MonoBehaviour
         doorButtonType = gameManager.GetComponent<GameManager>().GetDoorButtonType();
         doorType = gameManager.GetComponent<GameManager>().GetDoorType();
         poolType = gameManager.GetComponent<GameManager>().GetPoolType();
-        path = gameManager.GetComponent<GameManager>().GetPath();
+        //path = gameManager.GetComponent<GameManager>().GetPath();
         pipes = new List<GameObject>();
         
         handlePipeColor = "Default";
+        previousMove = "";
     }
 
     void Update()
@@ -457,13 +460,13 @@ public class Step : MonoBehaviour
                     StopStepOnPool();
                     return false;
                 }
-                defaultZAxis = 2;
+                bridge.transform.position = new Vector3(bridge.transform.position.x, bridge.transform.position.y, 7f);
             }else{
                 if(bridge.HasPipeUnderBridge && !isNotPickPipe){
                     StopStepOnPool();
                     return false;
                 }
-                defaultZAxis = 5;
+                bridge.transform.position = new Vector3(bridge.transform.position.x, bridge.transform.position.y, 5f);
             }           
         }  
         else if(obstaclePosition.ContainsKey(targetPosition) && obstaclePosition[targetPosition] == "Dimension"){
@@ -564,7 +567,6 @@ public class Step : MonoBehaviour
                 return false;
             }
 
-            defaultZAxis = 6;
             dimension.SetTargetBaseCamera();    
         }
         else if(obstaclePosition.ContainsKey(targetPosition) && obstaclePosition[targetPosition] == "DimensionTeleporter"){
@@ -586,7 +588,6 @@ public class Step : MonoBehaviour
             tempTargetPosition = previousBaseDimensionEntrance;
             entranceDimensionPosition = dimensionTeleporter.transform.position;
             player.transform.position = tempTargetPosition;
-            defaultZAxis = 6;
             dimension.SetPreviousBaseCamera();   
 
             
@@ -651,16 +652,16 @@ public class Step : MonoBehaviour
 
     private string GetPreviousMove()
     {
-        return path[path.Count - 1];
+        return previousMove;
     }
 
     private void SetPreviousMove(string move)
     {
-        path.Add(move);
+        previousMove = move;
     }
 
     private void StopStepOnPool(){
         isStepOnPool = false;
-        moveSpeed = 20f;
+        moveSpeed = 5f;
     }
 }
