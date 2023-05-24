@@ -100,8 +100,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 871e26fb37b32e143a7bf8e34afce65d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSteps: 4
-  moveSpeed: 20
+  moveSteps: 1
+  moveSpeed: 5
   pipeSprites:
   - {fileID: 21300000, guid: 320465867fe812349b72350d10b4937c, type: 3}
   - {fileID: 21300000, guid: 6eb5fde8cf2175c4dada1c4c1ccddacc, type: 3}
