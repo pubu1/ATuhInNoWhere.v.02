@@ -51,7 +51,7 @@ public class Step : MonoBehaviour
     private void PopulateGrid()
     {
         // Get the Game Manager's grid
-        GameObject[,] gameManagerGrid = gameManager.GetGrid();
+/*        GameObject[,] gameManagerGrid = gameManager.GetGrid();
         //Dictionary<Vector2, GameObject> c = gameManager.GetGrid();
 
         // Copy the objects from Game Manager's grid to Step's grid
@@ -65,7 +65,7 @@ public class Step : MonoBehaviour
                 if (item != null)
                     Debug.Log(x + " , " + y + ": " + item);
             }
-        }
+        }*/
     }
 
 

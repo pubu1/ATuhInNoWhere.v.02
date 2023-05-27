@@ -225,6 +225,11 @@ public class GameManager : MonoBehaviour
         }
         return null;
     }
+
+    public List<GameObject[,]> GetScenceGrid()
+    {
+        return gridList;
+    }
     public Dictionary<Vector2, PipePoint> GetPointType() { return pointType; }
     // public GameObject GetPlayer() { return player; }
 
