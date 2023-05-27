@@ -25,7 +25,7 @@ public class GameManager : MonoBehaviour
     private GameObject[] prefabList;
     private List<string> path;
     private List<GameObject[,]> gridList;
-    private Dictionary<Vector2, PipePoint> pointType;
+    // private Dictionary<Vector2, Socket> pointType;
 
     private bool openPauseUI = false;
     private bool openGuideUI = false;
@@ -36,7 +36,7 @@ public class GameManager : MonoBehaviour
     {
         //player.transform.position = new Vector3(player.transform.position.x, player.transform.position.y, 6);
         Score = 0;
-        gridList = new List<GameObject[,]>();  
+        gridList = new List<GameObject[,]>();
 
         prefabList = FindAllPrefabs();
         InitializeGrid1();
@@ -55,16 +55,16 @@ public class GameManager : MonoBehaviour
         }
 
 
-            // Populate the grid with objects
-            /*        PopulateGrid("Wall", GameObject.FindGameObjectsWithTag("Wall"));
-                    PopulateGrid("PipePoint", GameObject.FindGameObjectsWithTag("PipePoint"));
-                    PopulateGrid("Bridge", GameObject.FindGameObjectsWithTag("Bridge"));
-                    PopulateGrid("Dimension", GameObject.FindGameObjectsWithTag("Dimension"));
-                    PopulateGrid("DimensionTeleporter", GameObject.FindGameObjectsWithTag("DimensionTeleporter"));
-                    PopulateGrid("DoorButton", GameObject.FindGameObjectsWithTag("DoorButton"));
-                    PopulateGrid("Door", GameObject.FindGameObjectsWithTag("Door"));
-                    PopulateGrid("Pool", GameObject.FindGameObjectsWithTag("Pool"));*/
-        }
+        // Populate the grid with objects
+        /*        PopulateGrid("Wall", GameObject.FindGameObjectsWithTag("Wall"));
+                PopulateGrid("PipePoint", GameObject.FindGameObjectsWithTag("PipePoint"));
+                PopulateGrid("Bridge", GameObject.FindGameObjectsWithTag("Bridge"));
+                PopulateGrid("Dimension", GameObject.FindGameObjectsWithTag("Dimension"));
+                PopulateGrid("DimensionTeleporter", GameObject.FindGameObjectsWithTag("DimensionTeleporter"));
+                PopulateGrid("DoorButton", GameObject.FindGameObjectsWithTag("DoorButton"));
+                PopulateGrid("Door", GameObject.FindGameObjectsWithTag("Door"));
+                PopulateGrid("Pool", GameObject.FindGameObjectsWithTag("Pool"));*/
+    }
 
     private void InitializeGrid1()
     {
@@ -85,7 +85,7 @@ public class GameManager : MonoBehaviour
         {
             for (int j = 0; j < gridSizeX; ++j)
             {
-                randomMap[i, j] = inputMap[gridSizeX-j-1, i];
+                randomMap[i, j] = inputMap[gridSizeX - j - 1, i];
             }
         }
 
@@ -120,7 +120,7 @@ public class GameManager : MonoBehaviour
                     ChangeColor changeColor = new ChangeColor();
                     instantiatedPrefab.GetComponent<Socket>().Color = hexCode;
 
-                    changeColor.ChangeSpriteColor(instantiatedPrefab, hexCode);     
+                    changeColor.ChangeSpriteColor(instantiatedPrefab, hexCode);
                     grid[x, y] = instantiatedPrefab;
                 }
                 else
@@ -176,7 +176,7 @@ public class GameManager : MonoBehaviour
                     //find the prefab
                     prefab = prefabList.FirstOrDefault(o => o.name == item);
                     //render prefab
-                    GameObject instantiatedPrefab = Instantiate(prefab, new Vector3(10+x, 10+y, 0), Quaternion.identity) as GameObject;
+                    GameObject instantiatedPrefab = Instantiate(prefab, new Vector3(10 + x, 10 + y, 0), Quaternion.identity) as GameObject;
                     //change color
                     ChangeColor changeColor = new ChangeColor();
                     instantiatedPrefab.GetComponent<Socket>().Color = hexCode;
@@ -187,7 +187,7 @@ public class GameManager : MonoBehaviour
                 else
                 {
                     prefab = prefabList.FirstOrDefault(o => o.name == item);
-                    GameObject instantiatedPrefab = Instantiate(prefab, new Vector3(10+x, 10+y, 0), Quaternion.identity) as GameObject;
+                    GameObject instantiatedPrefab = Instantiate(prefab, new Vector3(10 + x, 10 + y, 0), Quaternion.identity) as GameObject;
                     grid[x, y] = instantiatedPrefab;
                 }
             }
@@ -209,10 +209,10 @@ public class GameManager : MonoBehaviour
             grid[x, y] = item;
 
             // Store additional information if needed
-/*            if (key == "PipePoint")
-            {
-                pointType[new Vector2(x, y)] = item.GetComponent<PipePoint>();
-            }*/
+            /*            if (key == "PipePoint")
+                        {
+                            pointType[new Vector2(x, y)] = item.GetComponent<PipePoint>();
+                        }*/
         }
     }
 
@@ -230,8 +230,18 @@ public class GameManager : MonoBehaviour
     {
         return gridList;
     }
-    public Dictionary<Vector2, PipePoint> GetPointType() { return pointType; }
-    // public GameObject GetPlayer() { return player; }
+    //public Dictionary<Vector2, Socket> GetPointType() { return pointType; }
+    public GameObject GetPlayer()
+    {
+        for (int i = 0; i < gridList.Count; ++i)
+        {
+            foreach (GameObject item in gridList[i])
+            {
+                if (item.name == "Player") return item;
+            }
+        }
+        return null;
+    }
 
     // Update is called once per frame
     void Update()

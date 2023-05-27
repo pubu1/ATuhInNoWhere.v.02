@@ -6,15 +6,116 @@ public class Bridge : MonoBehaviour
 {
     [SerializeField] private string bridgeType;
 
-    public bool HasPipeOnBridge{get;set;}
-    public bool HasPipeUnderBridge{get;set;}
+    public bool HasWireOnBridge { get; set; }
+    public bool HasWireUnderBridge { get; set; }
 
-    void Start(){
-        HasPipeOnBridge = false;
-        HasPipeUnderBridge = false;
+    void Start()
+    {
+        HasWireOnBridge = false;
+        HasWireUnderBridge = false;
     }
 
-    public string GetBridgeType(){
+    public string GetBridgeType()
+    {
         return bridgeType.Trim();
+    }
+
+    public bool IsVertical()
+    {
+        return bridgeType == "Vertical";
+    }
+    public bool IsHorizontal()
+    {
+        return bridgeType == "Horizontal";
+    }
+
+    public bool CheckNextStep(Bridge bridge, Player player)
+    {
+        bool isOnBridge = false;
+
+        if ((bridge.IsHorizontal() && (player.TempNextKey == "Left" || player.TempNextKey == "Right"))
+        || (bridge.IsVertical() && (player.TempNextKey == "Up" || player.TempNextKey == "Down")))
+            isOnBridge = true;
+
+        if (isOnBridge)
+        {
+            //bridge.transform.position = new Vector3(bridge.transform.position.x, bridge.transform.position.y, 8f);
+            player.DefaultZAxis = 2f;
+        }
+        else
+        {
+            //bridge.transform.position = new Vector3(bridge.transform.position.x, bridge.transform.position.y, 3f);
+            player.DefaultZAxis = 5f;
+        }
+
+        return true;
+    }
+
+    public bool CheckCurrentStep(Bridge bridge, Player player, string previousMove)
+    {
+        bool isOnBridge = false;
+
+        if ((bridge.IsHorizontal() && (previousMove == "Left" || previousMove == "Right"))
+        || (bridge.IsVertical() && (previousMove == "Up" || previousMove == "Down")))
+            isOnBridge = true;
+
+        if (isOnBridge)
+        {
+            if ((bridge.IsHorizontal() && (player.TempNextKey == "Up" || player.TempNextKey == "Down"))
+            || (bridge.IsVertical() && (player.TempNextKey == "Left" || player.TempNextKey == "Right")))
+                return false;
+
+            /*New*/
+            if (!player.IsNotPickWire)
+            {
+                bridge.HasWireOnBridge = true;
+            }
+        }
+        else
+        {
+            if ((bridge.IsHorizontal() && (player.TempNextKey == "Left" || player.TempNextKey == "Right"))
+            || (bridge.IsVertical() && (player.TempNextKey == "Up" || player.TempNextKey == "Down")))
+                return false;
+
+            if (!player.IsNotPickWire) bridge.HasWireUnderBridge = true;
+
+            /*New*/
+            if (!player.IsNotPickWire)
+            {
+                bridge.HasWireUnderBridge = true;
+            }
+        }
+        return true;
+    }
+
+    public float GetZAxisWire(string previousMove)
+    {
+        float wireZAxis = 0f;
+
+        if (this.IsVertical()
+        && (previousMove == "Left" || previousMove == "Right")
+        && this.HasWireUnderBridge)
+        {
+            wireZAxis = 6f;
+        }
+        else if (this.IsHorizontal()
+        && (previousMove == "Up" || previousMove == "Down"
+        && this.HasWireUnderBridge))
+        {
+            wireZAxis = 6f;
+        }
+        else if (this.IsVertical()
+        && (previousMove == "Up" || previousMove == "Down"
+        && this.HasWireOnBridge))
+        {
+            wireZAxis = 3f;
+        }
+        else if (this.IsHorizontal()
+        && (previousMove == "Left" || previousMove == "Right"
+        && this.HasWireOnBridge))
+        {
+            wireZAxis = 3f;
+        }
+        return wireZAxis;
     }
 }

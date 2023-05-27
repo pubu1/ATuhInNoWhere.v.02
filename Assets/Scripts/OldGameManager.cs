@@ -19,7 +19,7 @@ public class OldGameManager : MonoBehaviour
 
     private List<string> path;
     private Dictionary<Vector2, string> obstaclePosition;
-    private Dictionary<Vector2, PipePoint> pointType;
+    private Dictionary<Vector2, Socket> pointType;
     private Dictionary<Vector2, Bridge> bridgeType;
     private Dictionary<Vector2, Dimension> dimensionType;
     private Dictionary<Vector2, DimensionTeleporter> dimensionTeleporterType;
@@ -48,7 +48,7 @@ public class OldGameManager : MonoBehaviour
         Score = 0;
 
         obstaclePosition = new Dictionary<Vector2, string>();
-        pointType = new Dictionary<Vector2, PipePoint>();
+        pointType = new Dictionary<Vector2, Socket>();
         bridgeType = new Dictionary<Vector2, Bridge>();
         dimensionType = new Dictionary<Vector2, Dimension>();
         dimensionTeleporterType = new Dictionary<Vector2, DimensionTeleporter>();
@@ -70,7 +70,7 @@ public class OldGameManager : MonoBehaviour
         {
             Vector2 blockPosition = new Vector2(item.GetComponent<Transform>().position.x, item.GetComponent<Transform>().position.y);
             obstaclePosition[blockPosition] = "PipePoint";
-            pointType[blockPosition] = item.GetComponent<PipePoint>();
+            pointType[blockPosition] = item.GetComponent<Socket>();
         }
 
         bridges = GameObject.FindGameObjectsWithTag("Bridge");
@@ -134,7 +134,7 @@ public class OldGameManager : MonoBehaviour
 
     public List<string> GetPath() { return path; }
     public Dictionary<Vector2, string> GetObstaclePosition() { return obstaclePosition; }
-    public Dictionary<Vector2, PipePoint> GetPointType() { return pointType; }
+    public Dictionary<Vector2, Socket> GetPointType() { return pointType; }
     public Dictionary<Vector2, Bridge> GetBridgeType() { return bridgeType; }
     public Dictionary<Vector2, Dimension> GetDimensionType() { return dimensionType; }
     public Dictionary<Vector2, DimensionTeleporter> GetDimensionTeleporterType() { return dimensionTeleporterType; }
