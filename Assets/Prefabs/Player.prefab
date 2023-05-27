@@ -65,6 +65,8 @@ GameObject:
   m_Component:
   - component: {fileID: 8180728363008695863}
   - component: {fileID: 8180728363008695861}
+  - component: {fileID: 1320716014698003660}
+  - component: {fileID: -4792367042460177336}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -102,11 +104,34 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSteps: 1
   moveSpeed: 5
-  pipeSprites:
+--- !u!114 &1320716014698003660
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8180728363008695862}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3a2fc776e764344bb89c70c2d52ccb1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  wireSprites:
   - {fileID: 21300000, guid: 320465867fe812349b72350d10b4937c, type: 3}
   - {fileID: 21300000, guid: 6eb5fde8cf2175c4dada1c4c1ccddacc, type: 3}
   - {fileID: 21300000, guid: 30ce0355d25a6aa4290f0f3adb18a161, type: 3}
-  body: {fileID: 8180728363375223457}
+--- !u!114 &-4792367042460177336
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8180728363008695862}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d539c0a362dc049439df046b9598bc9b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8180728363277563048
 GameObject:
   m_ObjectHideFlags: 0
