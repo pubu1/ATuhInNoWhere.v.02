@@ -69,12 +69,14 @@ public class GameManager : MonoBehaviour
     private void InitializeGrid1()
     {
         // Determine the size of the grid based on the level or desired dimensions
-        int gridSizeX = 2; // set the appropriate size
-        int gridSizeY = 3; // set the appropriate size
+        int gridSizeX = 4; // set the appropriate size
+        int gridSizeY = 4; // set the appropriate size
 
         string[,] inputMap = new string[,] {
-            {"Wall", "Dimension", "Button"},
-            {"Pool", "Player", "BluePipePoint"},
+            {"Wall", "Wall", "Wall", "Wall"},
+            {"Wall", "Player", "Socket_Yellow", "Socket_Green"},
+            {"Button", "Socket_Yellow", "Button", "Button"},
+            {"Button", "Socket_Green", "Button", "Button"}
         };
 
         Debug.Log("Input map: " + inputMap.GetLength(0) + " / " + inputMap.GetLength(1));
@@ -98,8 +100,8 @@ public class GameManager : MonoBehaviour
                 };*/
 
         // Initialize the grid
-        gridSizeX = 3; // set the appropriate size
-        gridSizeY = 2;
+        gridSizeX = 4; // set the appropriate size
+        gridSizeY = 4;
         grid = new GameObject[gridSizeX, gridSizeY];
         for (int x = 0; x < gridSizeX; ++x)
         {
@@ -114,8 +116,10 @@ public class GameManager : MonoBehaviour
                     item = "Socket";
                     //find the prefab
                     prefab = prefabList.FirstOrDefault(o => o.name == item);
+                    Quaternion rotation = prefab.transform.rotation;
+                    float z = prefab.transform.position.z;
                     //render prefab
-                    GameObject instantiatedPrefab = Instantiate(prefab, new Vector3(x, y, 0), Quaternion.identity) as GameObject;
+                    GameObject instantiatedPrefab = Instantiate(prefab, new Vector3(x, y, z), rotation) as GameObject;
                     //change color
                     ChangeColor changeColor = new ChangeColor();
                     instantiatedPrefab.GetComponent<Socket>().Color = hexCode;
@@ -125,8 +129,11 @@ public class GameManager : MonoBehaviour
                 }
                 else
                 {
+                    
                     prefab = prefabList.FirstOrDefault(o => o.name == item);
-                    GameObject instantiatedPrefab = Instantiate(prefab, new Vector3(x, y, 0), Quaternion.identity) as GameObject;
+                    Quaternion rotation = prefab.transform.rotation;
+                    float z = prefab.transform.position.z;
+                    GameObject instantiatedPrefab = Instantiate(prefab, new Vector3(x, y, z), rotation) as GameObject;
                     grid[x, y] = instantiatedPrefab;
                 }
             }
@@ -160,7 +167,7 @@ public class GameManager : MonoBehaviour
 
         // Initialize the grid
         gridSizeX = 3; // set the appropriate size
-        gridSizeY = 2;
+        gridSizeY = 3;
         grid = new GameObject[gridSizeX, gridSizeY];
         for (int x = 0; x < gridSizeX; ++x)
         {
@@ -226,7 +233,7 @@ public class GameManager : MonoBehaviour
         return null;
     }
 
-    public List<GameObject[,]> GetScenceGrid()
+    public List<GameObject[,]> GetScenceGridList()
     {
         return gridList;
     }
@@ -237,7 +244,7 @@ public class GameManager : MonoBehaviour
         {
             foreach (GameObject item in gridList[i])
             {
-                if (item.name == "Player") return item;
+                if (item.tag == "Player") return item;
             }
         }
         return null;

@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using TMPro;
 using UnityEngine;
 
 public class Step : MonoBehaviour
@@ -19,6 +21,8 @@ public class Step : MonoBehaviour
     private static float gridCellSize = 1.0f;
     int gridWidth = 5; // specify the grid width based on your game's requirements */;
     int gridHeight = 6; //specify the grid height based on your game's requirements */;
+    List<GameObject[,]> mapGridList;
+    List<GameObject[,]> playGridList;
 
     private string previousMove;
     // private void Start()
@@ -33,7 +37,7 @@ public class Step : MonoBehaviour
 
     //     //private List<string> path;
     // }
-//private List<GameObject> pipes;
+    //private List<GameObject> pipes;
     private Dictionary<Vector2, string> obstaclePosition;
     private Dictionary<Vector2, Socket> pointType;
     private Dictionary<Vector2, Bridge> bridgeType;
@@ -50,13 +54,26 @@ public class Step : MonoBehaviour
     void Start()
     {
         gameManager = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameManager>();
-        gameManager.GetComponent<GameManager>().Start();
+        //gameManager.GetComponent<GameManager>().Start();
+        mapGridList = gameManager.GetScenceGridList();
+        playGridList = mapGridList;
 
-        player = gameManager.GetComponent<GameManager>().GetPlayer();
+        for (int i = 0; i < mapGridList.Count; ++i)
+        {
+            foreach (GameObject item in mapGridList[i])
+            {
+                if (item.tag == "Player")
+                {
+                    player = item;
+                    break;
+                }
+            }
+        }
+
+        //player = gameManager.GetComponent<GameManager>().GetPlayer();
         playerScript = player.GetComponent<Player>();
 
-        entranceDimensionPosition = player.transform.position;
-        pipes = new List<GameObject>();
+//        entranceDimensionPosition = player.transform.position;
         // handlePipeColor = "Default";
 
         playerScript.HandleWireColor = "Default";
@@ -90,26 +107,6 @@ public class Step : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            isPauseGame = !isPauseGame;
-        }
-        if (Input.GetKeyDown(KeyCode.UpArrow))
-        {
-            // Handle the Up arrow key press
-        }
-        else if (Input.GetKeyDown(KeyCode.DownArrow))
-        {
-            // Handle the Down arrow key press
-        }
-        else if (Input.GetKeyDown(KeyCode.LeftArrow))
-        {
-            // Handle the Left arrow key press
-        }
-        else if (Input.GetKeyDown(KeyCode.RightArrow))
-        {
-            // Handle the Right arrow key press
-        }
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             isPauseGame = !isPauseGame;
@@ -178,14 +175,14 @@ public class Step : MonoBehaviour
             }else if(GetPreviousMove() == "Down"){
                 playerScript.TempTargetPosition = new Vector2(transform.position.x, transform.position.y - moveSteps);
             }
-                
+
             if (CanStepToPosition(playerScript.TempCurrentPosition, playerScript.TempTargetPosition, GetPreviousMove()))
             {
                 playerScript.CurrentPosition = this.transform.position;
                 if((obstaclePosition.ContainsKey(entranceDimensionPosition) && obstaclePosition[entranceDimensionPosition] == "Dimension")
                 || (obstaclePosition.ContainsKey(entranceDimensionPosition) && obstaclePosition[entranceDimensionPosition] == "DimensionTeleporter"))
                     playerScript.CurrentPosition = playerScript.TempCurrentPosition;
-                
+
                 playerScript.TargetPosition = playerScript.TempTargetPosition;
                 if (!playerScript.IsNotPickWire) GeneratePipe(GetPreviousMove(), playerScript.CurrentPosition, playerScript.TargetPosition);
                 CheckSocketEndPoint(playerScript.TargetPosition);
@@ -207,7 +204,10 @@ public class Step : MonoBehaviour
 
     private void GenerateWire()
     {
-        if (bridgeType.ContainsKey(playerScript.CurrentPosition) && !playerScript.IsNotPickWire)
+        int xCurrent = (int)playerScript.CurrentPosition.x;
+        int yCurrent = (int)(playerScript.CurrentPosition.y);
+        int currentMap = xCurrent / 100;
+        if (playGridList[currentMap][xCurrent, yCurrent].tag == "Bridge" && !playerScript.IsNotPickWire)
         {
             Wire w = new Wire();
             w.Start();
@@ -219,6 +219,11 @@ public class Step : MonoBehaviour
             Wire w = new Wire();
             w.Start();
             w.GenerateWire(playerScript, previousMove);
+
+            GameObject newW = new GameObject();
+            newW.AddComponent<Wire>();
+            newW.tag = "Wire";
+            playGridList[currentMap][xCurrent, yCurrent] = newW;
         }
     }
 
@@ -237,12 +242,67 @@ public class Step : MonoBehaviour
     private bool CanStepToPosition(Vector2 currentPosition, Vector2 targetPosition, string tempNextKey)
     {
         bool totalCheck = true;
-        if (obstaclePosition.ContainsKey(currentPosition) && obstaclePosition[currentPosition] == "Bridge")
+        int xCurrent = (int) currentPosition.x;
+        int yCurrent = (int) (currentPosition.y);
+        int xTarget = (int) targetPosition.x;
+        int yTarget = (int) targetPosition.y;
+        int currentMap = xCurrent / 100;  
+
+        //check current position
+        if (playGridList[currentMap][xCurrent, yCurrent].tag == "Bridge")
         {
-            Bridge bridge = bridgeType[currentPosition];
+            //Bridge bridge = bridgeType[currentPosition];
+            Bridge bridge = mapGridList[currentMap][xCurrent, yCurrent].GetComponent<Bridge>();
             totalCheck = bridge.CheckCurrentStep(bridge, playerScript, GetPreviousMove());
             if (!totalCheck) return false;
         }
+
+        //check target posotion
+        if (playGridList[currentMap][xTarget, yTarget].tag == "Bridge")
+        {
+            Bridge bridge = mapGridList[currentMap][xTarget, yTarget].GetComponent<Bridge>();
+            totalCheck = bridge.CheckNextStep(bridge, playerScript);
+            if (totalCheck)
+            {
+                UpdateLocation();
+                this.transform.position = new Vector3(this.transform.position.x, this.transform.position.y, playerScript.DefaultZAxis);
+                GenerateWire();
+            }
+        }
+        else if (playGridList[currentMap][xTarget, yTarget].tag == "Socket")
+        {
+            totalCheck = false;
+            Socket socket = playGridList[currentMap][xTarget, yTarget].GetComponent<Socket>();
+
+            if (playerScript.IsNotPickWire && socket.IsConnect)
+            {
+                totalCheck = true;
+                UpdateLocation();
+            }
+            else if (socket.CheckSocketEndPoint(playerScript))
+            {
+                totalCheck = true;
+                UpdateLocation();
+                GenerateWire();
+                socket.ChangePlayerAttrEndPoint(playerScript);
+                GenerateWire();
+            }
+            else if (socket.CheckSocketStartPoint(playerScript))
+            {
+                totalCheck = true;
+                socket.ChangePlayerAttrStartPoint(playerScript);
+                UpdateLocation();
+            }
+        }
+        else if (playGridList[currentMap][xTarget, yTarget].tag == "Wall")
+        {
+            totalCheck = false;
+        }
+        else if (playGridList[currentMap][xTarget, yTarget].tag == "Wire")
+        {
+            if (!playerScript.IsNotPickWire) totalCheck = false;
+        }
+        /*
         else if (obstaclePosition.ContainsKey(currentPosition) && obstaclePosition[currentPosition] == "DoorButton")
         {
             DoorButton button = doorButtonType[currentPosition];
@@ -261,20 +321,7 @@ public class Step : MonoBehaviour
                 button.HasPipeOn = true;
             }
         }
-
-        if (obstaclePosition.ContainsKey(targetPosition) && obstaclePosition[targetPosition] == "Bridge")
-        {
-            Bridge bridge = bridgeType[targetPosition];
-            totalCheck = bridge.CheckNextStep(bridge, playerScript);
-            if (totalCheck)
-            {
-                UpdateLocation();
-                this.transform.position = new Vector3(this.transform.position.x, this.transform.position.y, playerScript.DefaultZAxis);
-                GenerateWire();
-            }
-
-        }
-        /*else if(obstaclePosition.ContainsKey(targetPosition) && obstaclePosition[targetPosition] == "Dimension"){
+        else if(obstaclePosition.ContainsKey(targetPosition) && obstaclePosition[targetPosition] == "Dimension"){
             Dimension dimension = dimensionType[targetPosition];
 
             if(tempNextKey == "Right" && dimension.GetTargetTeleporterList().ContainsKey("Left")){
@@ -294,7 +341,7 @@ public class Step : MonoBehaviour
                 playerScript.TempTargetPosition = entranceTeleporterPosition;
                 entranceDimensionPosition = dimension.transform.position;
                 player.transform.position = playerScript.TempTargetPosition;
-                
+
                 if(!playerScript.IsNotPickWire) {
                     Vector2 ladder = new Vector2(entranceTeleporterPosition.x-4,entranceTeleporterPosition.y);
                     RenderPipe(ladder, 0, 0);
@@ -317,7 +364,7 @@ public class Step : MonoBehaviour
                 playerScript.TempTargetPosition = dimension.GetTargetTeleporterList()["Right"];
                 entranceDimensionPosition = dimension.transform.position;
                 player.transform.position = playerScript.TempTargetPosition; 
-                
+
                 if(!playerScript.IsNotPickWire) {
                     Vector2 ladder = new Vector2(entranceTeleporterPosition.x+4,entranceTeleporterPosition.y);
                     RenderPipe(ladder, 0, 0);
@@ -340,7 +387,7 @@ public class Step : MonoBehaviour
                 playerScript.TempTargetPosition = dimension.GetTargetTeleporterList()["Bottom"];
                 entranceDimensionPosition = dimension.transform.position;
                 player.transform.position = playerScript.TempTargetPosition;
-                
+
                 if(!playerScript.IsNotPickWire) {
                     Vector2 ladder = new Vector2(entranceTeleporterPosition.x,entranceTeleporterPosition.y-4);
                     RenderPipe(ladder, 0, 1);
@@ -363,7 +410,7 @@ public class Step : MonoBehaviour
                 playerScript.TempTargetPosition = dimension.GetTargetTeleporterList()["Top"];  
                 entranceDimensionPosition = dimension.transform.position;              
                 player.transform.position = playerScript.TempTargetPosition; 
-                
+
                 if(!playerScript.IsNotPickWire) {
                     Vector2 ladder = new Vector2(entranceTeleporterPosition.x,entranceTeleporterPosition.y+4);
                     RenderPipe(ladder, 0, 1);
@@ -395,7 +442,7 @@ public class Step : MonoBehaviour
             player.transform.position = playerScript.TempTargetPosition;
             dimension.SetPreviousBaseCamera();   
 
-            
+
             if(!playerScript.IsNotPickWire && (tempNextKey == "Right" || tempNextKey == "Left")) {
                 Vector2 ladder = new Vector2(dimensionTeleporter.transform.position.x,dimensionTeleporter.transform.position.y);
                 RenderPipe(ladder, 0, 0);
@@ -404,7 +451,7 @@ public class Step : MonoBehaviour
                 RenderPipe(ladder, 0, 1);
             }    
         }*/
-        else if (obstaclePosition.ContainsKey(targetPosition) && obstaclePosition[targetPosition] == "DoorButton")
+        /*else if (obstaclePosition.ContainsKey(targetPosition) && obstaclePosition[targetPosition] == "DoorButton")
         {
             DoorButton button = doorButtonType[targetPosition];
             button.IsActive = true;
@@ -416,39 +463,7 @@ public class Step : MonoBehaviour
             isStepOnPool = true;
             return true;
         }
-        else if (obstaclePosition.ContainsKey(targetPosition) && obstaclePosition[targetPosition] == "PipePoint")
-        {
-            totalCheck = false;
-            Socket socket = pointType[targetPosition];
-
-            if (playerScript.IsNotPickWire && socket.IsConnect)
-            {
-                totalCheck = true;
-                UpdateLocation();
-            }
-            else if (socket.CheckSocketEndPoint(playerScript))
-            {
-                totalCheck = true;
-                UpdateLocation();
-                GenerateWire();
-                socket.ChangePlayerAttrEndPoint(playerScript);
-                GenerateWire();
-            }
-            else if (socket.CheckSocketStartPoint(playerScript))
-            {
-                totalCheck = true;
-                socket.ChangePlayerAttrStartPoint(playerScript);
-                UpdateLocation();
-            }
-        }
-        else if (obstaclePosition.ContainsKey(targetPosition) && obstaclePosition[targetPosition] == "Pipe")
-        {
-            if (!playerScript.IsNotPickWire) totalCheck = false;
-        }
-        else if (obstaclePosition.ContainsKey(targetPosition) && obstaclePosition[targetPosition] == "Wall")
-        {
-            totalCheck = false;
-        }
+   
         else if (obstaclePosition.ContainsKey(targetPosition) && obstaclePosition[targetPosition] == "Door")
         {
             Door door = doorType[targetPosition];
@@ -473,13 +488,22 @@ public class Step : MonoBehaviour
 
 
         if (!totalCheck) StopStepOnPool();
+        */
+        else
+        {
+            if (totalCheck)
+            {
+                UpdateLocation();
+                GenerateWire();
+            }
+        }
         return totalCheck;
     }
 
     void StepMove()
     {
-        this.transform.position = Vector3.MoveTowards(transform.position, new Vector3(playerScript.TargetPosition.x, playerScript.TargetPosition.y, playerScript.DefaultZAxis), moveSpeed * Time.deltaTime);
-        if (new Vector2(this.transform.position.x, this.transform.position.y) != playerScript.TargetPosition)
+        player.transform.position = Vector3.MoveTowards(transform.position, new Vector3(playerScript.TargetPosition.x, playerScript.TargetPosition.y, playerScript.DefaultZAxis), moveSpeed * Time.deltaTime);
+        if (new Vector2(player.transform.position.x, player.transform.position.y) != playerScript.TargetPosition)
         {
             enableMove = false;
         }
