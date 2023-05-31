@@ -39,15 +39,15 @@ public class Step : MonoBehaviour
     // }
     //private List<GameObject> pipes;
     private Dictionary<Vector2, string> obstaclePosition;
-    private Dictionary<Vector2, Socket> pointType;
-    private Dictionary<Vector2, Bridge> bridgeType;
-    private Dictionary<Vector2, Dimension> dimensionType;
-    private Dictionary<Vector2, DimensionTeleporter> dimensionTeleporterType;
+    private Dictionary<Vector2, DimensionIn> dimensionType;
+    private Dictionary<Vector2, DimensionOut> dimensionTeleporterType;
     private Dictionary<Vector2, DoorButton> doorButtonType;
     private Dictionary<Vector2, Door> doorType;
     private Dictionary<Vector2, WaterPool> poolType;
     private bool activatePipeEffect = false;
     private bool isStepOnPool = false;
+
+    public List<GameObject> wireList{get; set;}
     // private string previousMove;
 
     // Start is called before the first frame update
@@ -204,14 +204,14 @@ public class Step : MonoBehaviour
 
     private void GenerateWire()
     {
-        int xCurrent = (int)playerScript.CurrentPosition.x;
-        int yCurrent = (int)(playerScript.CurrentPosition.y);
+        int xCurrent = (int) (playerScript.CurrentPosition.x % 100);
+        int yCurrent = (int) (playerScript.CurrentPosition.y % 100);
         int currentMap = xCurrent / 100;
         if (playGridList[currentMap][xCurrent, yCurrent].tag == "Bridge" && !playerScript.IsNotPickWire)
         {
             Wire w = new Wire();
             w.Start();
-            w.wireZAxis = bridgeType[playerScript.CurrentPosition].GetZAxisWire(previousMove);
+            w.wireZAxis = playGridList[currentMap][xCurrent, yCurrent].GetComponent<Bridge>().GetZAxisWire(previousMove);
             w.GenerateWire(playerScript, previousMove);
         }
         else if (!playerScript.IsNotPickWire || playerScript.IsAtSocket)
@@ -220,10 +220,9 @@ public class Step : MonoBehaviour
             w.Start();
             w.GenerateWire(playerScript, previousMove);
 
-            GameObject newW = new GameObject();
-            newW.AddComponent<Wire>();
-            newW.tag = "Wire";
-            playGridList[currentMap][xCurrent, yCurrent] = newW;
+            GameObject wire = w.GetWire();
+
+            playGridList[currentMap][xCurrent, yCurrent] = wire;
         }
     }
 
@@ -242,10 +241,10 @@ public class Step : MonoBehaviour
     private bool CanStepToPosition(Vector2 currentPosition, Vector2 targetPosition, string tempNextKey)
     {
         bool totalCheck = true;
-        int xCurrent = (int) currentPosition.x;
-        int yCurrent = (int) (currentPosition.y);
-        int xTarget = (int) targetPosition.x;
-        int yTarget = (int) targetPosition.y;
+        int xCurrent = (int) (currentPosition.x % 100);
+        int yCurrent = (int) (currentPosition.y % 100);
+        int xTarget = (int) (targetPosition.x % 100);
+        int yTarget = (int) (targetPosition.y % 100);
         int currentMap = xCurrent / 100;  
 
         //check current position
@@ -298,9 +297,14 @@ public class Step : MonoBehaviour
         {
             totalCheck = false;
         }
-        else if (playGridList[currentMap][xTarget, yTarget].tag == "Wire")
+        else if (playGridList[currentMap][xTarget, yTarget].tag == "Wire" && !playerScript.IsNotPickWire)
         {
             if (!playerScript.IsNotPickWire) totalCheck = false;
+        }
+        else if (playGridList[currentMap][xTarget, yTarget].tag == "DimensionIn")
+        {
+            DimensionIn dIn = mapGridList[currentMap][xTarget, yTarget].GetComponent<DimensionIn>();
+            totalCheck = dIn.CheckNextStep(playerScript);
         }
         /*
         else if (obstaclePosition.ContainsKey(currentPosition) && obstaclePosition[currentPosition] == "DoorButton")

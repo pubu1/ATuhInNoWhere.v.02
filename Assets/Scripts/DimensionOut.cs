@@ -2,10 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DimensionTeleporter : MonoBehaviour
+public class DimensionOut : MonoBehaviour
 {
     [SerializeField]
-    private Dimension baseDimension;
+    private DimensionIn baseDimension;
     
     public Vector2 getBaseDimension(){
         return baseDimension.transform.position;

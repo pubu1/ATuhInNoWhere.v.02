@@ -32,8 +32,10 @@ public class GameManager : MonoBehaviour
 
     public int Score { get; set; }
 
+    private GameObject check;
     public void Start()
     {
+        check = new GameObject();
         //player.transform.position = new Vector3(player.transform.position.x, player.transform.position.y, 6);
         Score = 0;
         gridList = new List<GameObject[,]>();
@@ -74,9 +76,9 @@ public class GameManager : MonoBehaviour
 
         string[,] inputMap = new string[,] {
             {"Wall", "Wall", "Wall", "Wall"},
-            {"Wall", "Player", "Socket_Yellow", "Socket_Green"},
-            {"Button", "Socket_Yellow", "Button", "Button"},
-            {"Button", "Socket_Green", "Button", "Button"}
+            {"Wall", "Player", "Ground", "Socket_Green"},
+            {"DimensionOut", "Ground", "Ground", "DimensionIn"},
+            {"Ground", "Socket_Green", "Ground", "Ground"}
         };
 
         Debug.Log("Input map: " + inputMap.GetLength(0) + " / " + inputMap.GetLength(1));
@@ -127,9 +129,28 @@ public class GameManager : MonoBehaviour
                     changeColor.ChangeSpriteColor(instantiatedPrefab, hexCode);
                     grid[x, y] = instantiatedPrefab;
                 }
-                else
+                else if(item.Contains("DimensionOut"))
                 {
-                    
+                    item = "DimensionOut";
+                    prefab = prefabList.FirstOrDefault(o => o.name == item);
+                    Quaternion rotation = prefab.transform.rotation;
+                    float z = prefab.transform.position.z;
+                    GameObject instantiatedPrefab = Instantiate(prefab, new Vector3(x, y, z), rotation) as GameObject;
+                    check = instantiatedPrefab;
+                    grid[x, y] = instantiatedPrefab;
+                }
+                else if(item.Contains("DimensionIn"))
+                {
+                    item = "DimensionIn";
+                    prefab = prefabList.FirstOrDefault(o => o.name == item);
+                    Quaternion rotation = prefab.transform.rotation;
+                    float z = prefab.transform.position.z;
+                    GameObject instantiatedPrefab = Instantiate(prefab, new Vector3(x, y, z), rotation) as GameObject;
+                    instantiatedPrefab.GetComponent<DimensionIn>().exitLeft = check.GetComponent<DimensionOut>();
+                    grid[x, y] = instantiatedPrefab;
+                }
+                else
+                {        
                     prefab = prefabList.FirstOrDefault(o => o.name == item);
                     Quaternion rotation = prefab.transform.rotation;
                     float z = prefab.transform.position.z;
@@ -149,7 +170,7 @@ public class GameManager : MonoBehaviour
 
         string[,] inputMap = new string[,] {
             {"Wall", "Wall", "Wall"},
-            {"Button", "Button", "V_Bridge"},
+            {"DimensionOut", "Button", "V_Bridge"},
             {"Button", "H_Bridge", "Button"}
         };
 
@@ -307,4 +328,13 @@ public class GameManager : MonoBehaviour
         return prefabList;
     }
 
+    public GameObject GetPrefabByName(string prefabName){
+        GameObject[] prefabList = FindAllPrefabs();
+
+        foreach (GameObject prefab in prefabList)
+        {
+            if(prefab.name == prefabName) return prefab;
+        }
+        return null;
+    }
 }

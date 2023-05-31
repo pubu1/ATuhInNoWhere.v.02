@@ -21,8 +21,8 @@ public class OldGameManager : MonoBehaviour
     private Dictionary<Vector2, string> obstaclePosition;
     private Dictionary<Vector2, Socket> pointType;
     private Dictionary<Vector2, Bridge> bridgeType;
-    private Dictionary<Vector2, Dimension> dimensionType;
-    private Dictionary<Vector2, DimensionTeleporter> dimensionTeleporterType;
+    private Dictionary<Vector2, DimensionIn> dimensionType;
+    private Dictionary<Vector2, DimensionOut> dimensionTeleporterType;
     private Dictionary<Vector2, DoorButton> doorButtonType;
     private Dictionary<Vector2, Door> doorType;
     private Dictionary<Vector2, WaterPool> poolType;
@@ -50,8 +50,8 @@ public class OldGameManager : MonoBehaviour
         obstaclePosition = new Dictionary<Vector2, string>();
         pointType = new Dictionary<Vector2, Socket>();
         bridgeType = new Dictionary<Vector2, Bridge>();
-        dimensionType = new Dictionary<Vector2, Dimension>();
-        dimensionTeleporterType = new Dictionary<Vector2, DimensionTeleporter>();
+        dimensionType = new Dictionary<Vector2, DimensionIn>();
+        dimensionTeleporterType = new Dictionary<Vector2, DimensionOut>();
         doorButtonType = new Dictionary<Vector2, DoorButton>();
         doorType = new Dictionary<Vector2, Door>();
         poolType = new Dictionary<Vector2, WaterPool>();
@@ -86,7 +86,7 @@ public class OldGameManager : MonoBehaviour
         {
             Vector2 blockPosition = new Vector2(item.GetComponent<Transform>().position.x, item.GetComponent<Transform>().position.y);
             obstaclePosition[blockPosition] = "Dimension";
-            dimensionType[blockPosition] = item.GetComponent<Dimension>();
+            dimensionType[blockPosition] = item.GetComponent<DimensionIn>();
         }
 
         dimensionTeleporters = GameObject.FindGameObjectsWithTag("DimensionTeleporter");
@@ -94,7 +94,7 @@ public class OldGameManager : MonoBehaviour
         {
             Vector2 blockPosition = new Vector2(item.GetComponent<Transform>().position.x, item.GetComponent<Transform>().position.y);
             obstaclePosition[blockPosition] = "DimensionTeleporter";
-            dimensionTeleporterType[blockPosition] = item.GetComponent<DimensionTeleporter>();
+            dimensionTeleporterType[blockPosition] = item.GetComponent<DimensionOut>();
         }
 
         doorButtons = GameObject.FindGameObjectsWithTag("DoorButton");
@@ -136,8 +136,8 @@ public class OldGameManager : MonoBehaviour
     public Dictionary<Vector2, string> GetObstaclePosition() { return obstaclePosition; }
     public Dictionary<Vector2, Socket> GetPointType() { return pointType; }
     public Dictionary<Vector2, Bridge> GetBridgeType() { return bridgeType; }
-    public Dictionary<Vector2, Dimension> GetDimensionType() { return dimensionType; }
-    public Dictionary<Vector2, DimensionTeleporter> GetDimensionTeleporterType() { return dimensionTeleporterType; }
+    public Dictionary<Vector2, DimensionIn> GetDimensionType() { return dimensionType; }
+    public Dictionary<Vector2, DimensionOut> GetDimensionTeleporterType() { return dimensionTeleporterType; }
     public Dictionary<Vector2, DoorButton> GetDoorButtonType() { return doorButtonType; }
     public Dictionary<Vector2, Door> GetDoorType() { return doorType; }
     public Dictionary<Vector2, WaterPool> GetPoolType() { return poolType; }

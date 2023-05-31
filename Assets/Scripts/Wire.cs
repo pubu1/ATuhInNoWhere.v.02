@@ -9,7 +9,8 @@ public class Wire : MonoBehaviour
 
     [SerializeField]
     private Sprite[] wireSprites;
-
+    private GameObject wireInstance;
+    private GameObject wireClone;
 
     // Start is called before the first frame update
     public void Start()
@@ -18,7 +19,9 @@ public class Wire : MonoBehaviour
         wireSprites = new Sprite[3];       
         wireSprites[0] = Resources.Load<Sprite>("straight");
         wireSprites[1] = Resources.Load<Sprite>("curve");
-        wireSprites[2] = Resources.Load<Sprite>("cap");      
+        wireSprites[2] = Resources.Load<Sprite>("cap");   
+        GameManager gameManager = new GameManager();   
+        wireInstance = gameManager.GetPrefabByName("Wire");
     }
 
     public void GenerateWire(Player player, string previousMove)
@@ -145,22 +148,24 @@ public class Wire : MonoBehaviour
 
     public void RenderWire(Vector2 renderPosition, int pipeTypeIndex, int wireRotationIndex, string handleWireColor)
     {
-        GameObject pipeClone = new GameObject();
-        pipeClone.AddComponent<SpriteRenderer>();
-        pipeClone.AddComponent<ChangeColor>();
-        pipeClone.name = "Pipe" + handleWireColor;
-        //pipes.Add(pipeClone);
+        // Optionally, you can specify a position and rotation for the instance
+        wireClone = Instantiate(wireInstance, renderPosition, Quaternion.identity);
+        wireClone.name = "Wire" + handleWireColor;
 
-        SpriteRenderer spriteRenderer = pipeClone.GetComponent<SpriteRenderer>();
-        Transform transform = pipeClone.GetComponent<Transform>();
-        ChangeColor changeColor = pipeClone.GetComponent<ChangeColor>();
+        SpriteRenderer spriteRenderer = wireClone.GetComponent<SpriteRenderer>();
+        Transform transform = wireClone.GetComponent<Transform>();
+        ChangeColor changeColor = wireClone.GetComponent<ChangeColor>();
 
         changeColor.Start();
-        changeColor.ChangeSpriteColor(pipeClone, handleWireColor);
+        changeColor.ChangeSpriteColor(wireClone, handleWireColor);
 
         spriteRenderer.sprite = wireSprites[pipeTypeIndex];
         transform.Rotate(0f, 0f, wireRotation[wireRotationIndex]);
 
         transform.position = new Vector3(renderPosition.x, renderPosition.y, wireZAxis);
+    }
+
+    public GameObject GetWire(){
+        return wireClone;
     }
 }
