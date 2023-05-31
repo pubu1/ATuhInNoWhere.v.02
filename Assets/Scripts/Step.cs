@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Step : MonoBehaviour
@@ -25,29 +26,17 @@ public class Step : MonoBehaviour
     List<GameObject[,]> playGridList;
 
     private string previousMove;
-    // private void Start()
-    // {
-    //     gameManager = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameManager>();
-    //     //gameManager.Start();
-    //     //player = gameManager.GetPlayer();
-    //     // currentPosition = player.transform.position;
-    //     // targetPosition = player.transform.position;
-    //     // tempCurrentPosition = player.transform.position;
-    //     // tempTargetPosition = player.transform.position;
 
-    //     //private List<string> path;
-    // }
-    //private List<GameObject> pipes;
     private Dictionary<Vector2, string> obstaclePosition;
-    private Dictionary<Vector2, Socket> pointType;
-    private Dictionary<Vector2, Bridge> bridgeType;
-    private Dictionary<Vector2, Dimension> dimensionType;
-    private Dictionary<Vector2, DimensionTeleporter> dimensionTeleporterType;
+    private Dictionary<Vector2, DimensionIn> dimensionType;
+    private Dictionary<Vector2, DimensionOut> dimensionTeleporterType;
     private Dictionary<Vector2, DoorButton> doorButtonType;
     private Dictionary<Vector2, Door> doorType;
     private Dictionary<Vector2, WaterPool> poolType;
     private bool activatePipeEffect = false;
     private bool isStepOnPool = false;
+
+    public List<GameObject> wireList{get; set;}
     // private string previousMove;
 
     // Start is called before the first frame update
@@ -55,8 +44,8 @@ public class Step : MonoBehaviour
     {
         gameManager = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameManager>();
         //gameManager.GetComponent<GameManager>().Start();
-        mapGridList = gameManager.GetScenceGridList();
-        playGridList = mapGridList;
+        mapGridList = gameManager.MapGridList;
+        playGridList = gameManager.PlayGridList;
 
         for (int i = 0; i < mapGridList.Count; ++i)
         {
@@ -64,13 +53,16 @@ public class Step : MonoBehaviour
             {
                 if (item.tag == "Player")
                 {
-                    player = item;
-                    break;
+                    if (this.gameObject.transform.position == item.transform.position)
+                    {
+                        player = item;
+                        break;
+                    }
                 }
             }
         }
 
-        //player = gameManager.GetComponent<GameManager>().GetPlayer();
+        //player = gameManager.GetPlayer();
         playerScript = player.GetComponent<Player>();
 
 //        entranceDimensionPosition = player.transform.position;
@@ -80,28 +72,7 @@ public class Step : MonoBehaviour
         previousMove = "";
 
         // Create the 2D grid
-        grid = new GameObject[gridWidth, gridHeight];
-        PopulateGrid();
-    }
-
-    private void PopulateGrid()
-    {
-        // Get the Game Manager's grid
-        /*        GameObject[,] gameManagerGrid = gameManager.GetGrid();
-                //Dictionary<Vector2, GameObject> c = gameManager.GetGrid();
-
-                // Copy the objects from Game Manager's grid to Step's grid
-                Debug.Log("Step grid size: " + gameManagerGrid.Length);
-
-                for (int x = 0; x < gameManagerGrid.GetLength(0); ++x)
-                {
-                    for (int y = 0; y < gameManagerGrid.GetLength(1); ++y)
-                    {
-                        GameObject item = gameManagerGrid[x, y];
-                        if (item != null)
-                            Debug.Log(x + " , " + y + ": " + item);
-                    }
-                }*/
+        //grid = new GameObject[gridWidth, gridHeight];
     }
 
 
@@ -204,14 +175,14 @@ public class Step : MonoBehaviour
 
     private void GenerateWire()
     {
-        int xCurrent = (int)playerScript.CurrentPosition.x % 100;
-        int yCurrent = (int)(playerScript.CurrentPosition.y) % 100;
+        int xCurrent = (int) (playerScript.CurrentPosition.x % 100);
+        int yCurrent = (int) (playerScript.CurrentPosition.y % 100);
         int currentMap = xCurrent / 100;
         if (playGridList[currentMap][xCurrent, yCurrent].tag == "Bridge" && !playerScript.IsNotPickWire)
         {
             Wire w = new Wire();
             w.Start();
-            w.wireZAxis = bridgeType[playerScript.CurrentPosition].GetZAxisWire(previousMove);
+            w.wireZAxis = playGridList[currentMap][xCurrent, yCurrent].GetComponent<Bridge>().GetZAxisWire(previousMove);
             w.GenerateWire(playerScript, previousMove);
         }
         else if (!playerScript.IsNotPickWire || playerScript.IsAtSocket)
@@ -220,10 +191,9 @@ public class Step : MonoBehaviour
             w.Start();
             w.GenerateWire(playerScript, previousMove);
 
-            GameObject newW = new GameObject();
-            newW.AddComponent<Wire>();
-            newW.tag = "Wire";
-            playGridList[currentMap][xCurrent, yCurrent] = newW;
+            GameObject wire = w.GetWire();
+
+            playGridList[currentMap][xCurrent, yCurrent] = wire;
         }
     }
 
@@ -242,10 +212,10 @@ public class Step : MonoBehaviour
     private bool CanStepToPosition(Vector2 currentPosition, Vector2 targetPosition, string tempNextKey)
     {
         bool totalCheck = true;
-        int xCurrent = (int) currentPosition.x % 100;
-        int yCurrent = (int)(currentPosition.y) % 100;
-        int xTarget = (int)targetPosition.x % 100;
-        int yTarget = (int)targetPosition.y % 100;
+        int xCurrent = (int) (currentPosition.x % 100);
+        int yCurrent = (int) (currentPosition.y % 100);
+        int xTarget = (int) (targetPosition.x % 100);
+        int yTarget = (int) (targetPosition.y % 100);
         int currentMap = xCurrent / 100;  
 
         //check current position
@@ -298,9 +268,14 @@ public class Step : MonoBehaviour
         {
             totalCheck = false;
         }
-        else if (playGridList[currentMap][xTarget, yTarget].tag == "Wire")
+        else if (playGridList[currentMap][xTarget, yTarget].tag == "Wire" && !playerScript.IsNotPickWire)
         {
             if (!playerScript.IsNotPickWire) totalCheck = false;
+        }
+        else if (playGridList[currentMap][xTarget, yTarget].tag == "DimensionIn")
+        {
+            DimensionIn dIn = mapGridList[currentMap][xTarget, yTarget].GetComponent<DimensionIn>();
+            totalCheck = dIn.CheckNextStep(playerScript);
         }
         /*
         else if (obstaclePosition.ContainsKey(currentPosition) && obstaclePosition[currentPosition] == "DoorButton")

@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    public int ID { get; set; }
     public string HandleWireColor{get; set;}
     public bool IsNotPickWire{get; set;}
     public Vector2 CurrentPosition{get; set;}

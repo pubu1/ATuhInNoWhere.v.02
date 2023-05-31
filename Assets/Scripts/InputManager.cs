@@ -10,6 +10,8 @@ public class InputManager
     public string[,] inputMap;
     private List<string[,]> listMap;
 
+    public List<string>[] listDimensionIn { get; set; }
+
     public List<string[,]> LoadGridFromFile()
     {
         listMap = new List<string[,]>();
@@ -21,12 +23,17 @@ public class InputManager
         int currentLineIndex = 0;
         int mapCnt = int.Parse(lines[currentLineIndex++]);
 
+        //number of dimension IN
+        listDimensionIn = new List<string>[mapCnt];
+        for (int _ = 0; _ < listDimensionIn.Length; _++)
+            listDimensionIn[_] = new List<string>();
+
 /*        foreach (string line in lines)
         {
             Debug.Log(line);
         }*/
         //read all Maps
-        while(mapCnt -- > 0)
+        while(mapCnt-- > 0)
         {
             // Read the dimensions of the current map
             string[] dimensions = lines[currentLineIndex].Split(' ');
@@ -54,10 +61,29 @@ public class InputManager
             currentLineIndex += 1 + rows;
         }
         //Check other component
-/*        while (currentLineIndex < lines.Length)
+        while (currentLineIndex < lines.Length)
         {
+            //Debug.Log(lines[currentLineIndex]);
+            string attribute = lines[currentLineIndex].Split("---")[1];
+            //number of attribute
             ++currentLineIndex;
-        }*/
+            int cnt = int.Parse(lines[currentLineIndex]);
+            while (cnt-- > 0)
+            {
+                ++currentLineIndex;
+                if (attribute == "DimensionIn")
+                {
+                    string[] description = lines[currentLineIndex].Split(' ');
+                    int dimensionIn = int.Parse(description[0]);
+                    string direction = description[1];
+/*                    int x = int.Parse(description[2]);
+                    int y = int.Parse(description[3]);
+                    direction += " " + x + " " + y;*/
+                    listDimensionIn[dimensionIn].Add(direction);
+                }
+            }
+            ++currentLineIndex;
+        }
 
         return listMap;
         //return inputMap;

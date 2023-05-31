@@ -3,18 +3,7 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags:
-  - Wall
-  - PipePoint
-  - Bridge
-  - Dimension
-  - DimensionTeleporter
-  - Door
-  - Button
-  - DoorButton
-  - Pool
-  - Socket
-  - Wire
+  tags: []
   layers:
   - Default
   - TransparentFX
