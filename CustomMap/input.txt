@@ -1,0 +1,10 @@
+2
+4 4
+Wall Wall Wall Wall
+Wall Player Socket_Yellow Socket_Green
+Button Socket_Yellow Button Button
+Button Socket_Green Button Button
+3 3
+Wall Wall Wall
+Button Button V_Bridge
+Button H_Bridge Button

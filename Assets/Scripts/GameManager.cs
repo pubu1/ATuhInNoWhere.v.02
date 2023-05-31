@@ -25,6 +25,7 @@ public class GameManager : MonoBehaviour
     private GameObject[] prefabList;
     private List<string> path;
     private List<GameObject[,]> gridList;
+    private List<string[,]> inputList;
     // private Dictionary<Vector2, Socket> pointType;
 
     private bool openPauseUI = false;
@@ -34,11 +35,14 @@ public class GameManager : MonoBehaviour
 
     public void Start()
     {
+        InputManager inputManager = new InputManager();
         //player.transform.position = new Vector3(player.transform.position.x, player.transform.position.y, 6);
         Score = 0;
-        gridList = new List<GameObject[,]>();
-
+        inputList = inputManager.LoadGridFromFile();
         prefabList = FindAllPrefabs();
+        InitializeMap();
+
+/*        prefabList = FindAllPrefabs();
         InitializeGrid1();
         InitializeGrid2();
 
@@ -52,7 +56,7 @@ public class GameManager : MonoBehaviour
 
                 Debug.Log(x + " - " + y + ": " + item);
             }
-        }
+        }*/
 
 
         // Populate the grid with objects
@@ -66,160 +70,64 @@ public class GameManager : MonoBehaviour
                 PopulateGrid("Pool", GameObject.FindGameObjectsWithTag("Pool"));*/
     }
 
-    private void InitializeGrid1()
+    private void InitializeMap()
     {
-        // Determine the size of the grid based on the level or desired dimensions
-        int gridSizeX = 4; // set the appropriate size
-        int gridSizeY = 4; // set the appropriate size
-
-        string[,] inputMap = new string[,] {
-            {"Wall", "Wall", "Wall", "Wall"},
-            {"Wall", "Player", "Socket_Yellow", "Socket_Green"},
-            {"Button", "Socket_Yellow", "Button", "Button"},
-            {"Button", "Socket_Green", "Button", "Button"}
-        };
-
-        Debug.Log("Input map: " + inputMap.GetLength(0) + " / " + inputMap.GetLength(1));
-
-        string[,] randomMap = new string[gridSizeY, gridSizeX];
-
-        for (int i = 0; i < gridSizeY; ++i)
+        gridList = new List<GameObject[,]>();
+        int offset = 0;
+        foreach (string[,] inputMap in inputList)
         {
-            for (int j = 0; j < gridSizeX; ++j)
+            int n = inputMap.GetLength(0);
+            int m = inputMap.GetLength(1);
+            Debug.Log(n + " x " + m);
+            string[,] randomMap = new string[m, n];
+
+            for (int i = 0; i < m; ++i)
             {
-                randomMap[i, j] = inputMap[gridSizeX - j - 1, i];
-            }
-        }
-
-        /*        randomMap = new string[,] {
-                    {"Wall", "Wall", "Wall", "Wall"},
-                    {"Wall", "Player", "BluePipePoint", "Wall"},
-                    {"Wall", "BluePipePoint", "Socket_Yellow", "Wall"},
-                    {"Wall", "Button", "Dimension", "Pool"},
-                    {"Wall", "Wall", "Wall", "Wall"}
-                };*/
-
-        // Initialize the grid
-        gridSizeX = 4; // set the appropriate size
-        gridSizeY = 4;
-        grid = new GameObject[gridSizeX, gridSizeY];
-        for (int x = 0; x < gridSizeX; ++x)
-        {
-            for (int y = 0; y < gridSizeY; ++y)
-            {
-                string item = randomMap[x, y];
-                GameObject prefab;
-                if (item.Contains("Socket"))
+                for (int j = 0; j < n; ++j)
                 {
-                    string hexCode = item.Split("_")[1];
-                    Debug.Log(hexCode);
-                    item = "Socket";
-                    //find the prefab
-                    prefab = prefabList.FirstOrDefault(o => o.name == item);
-                    Quaternion rotation = prefab.transform.rotation;
-                    float z = prefab.transform.position.z;
-                    //render prefab
-                    GameObject instantiatedPrefab = Instantiate(prefab, new Vector3(x, y, z), rotation) as GameObject;
-                    //change color
-                    ChangeColor changeColor = new ChangeColor();
-                    instantiatedPrefab.GetComponent<Socket>().Color = hexCode;
-
-                    changeColor.ChangeSpriteColor(instantiatedPrefab, hexCode);
-                    grid[x, y] = instantiatedPrefab;
-                }
-                else
-                {
-                    
-                    prefab = prefabList.FirstOrDefault(o => o.name == item);
-                    Quaternion rotation = prefab.transform.rotation;
-                    float z = prefab.transform.position.z;
-                    GameObject instantiatedPrefab = Instantiate(prefab, new Vector3(x, y, z), rotation) as GameObject;
-                    grid[x, y] = instantiatedPrefab;
+                    randomMap[i, j] = inputMap[n - j - 1, i];
                 }
             }
-        }
-        gridList.Add(grid);
-    }
-
-    private void InitializeGrid2()
-    {
-        // Determine the size of the grid based on the level or desired dimensions
-        int gridSizeX = 3; // set the appropriate size
-        int gridSizeY = 3; // set the appropriate size
-
-        string[,] inputMap = new string[,] {
-            {"Wall", "Wall", "Wall"},
-            {"Button", "Button", "V_Bridge"},
-            {"Button", "H_Bridge", "Button"}
-        };
-
-        Debug.Log("Input map: " + inputMap.GetLength(0) + " / " + inputMap.GetLength(1));
-
-        string[,] randomMap = new string[gridSizeY, gridSizeX];
-
-        for (int i = 0; i < gridSizeY; ++i)
-        {
-            for (int j = 0; j < gridSizeX; ++j)
+            grid = new GameObject[m, n];
+            for (int x = 0; x < m; ++x)
             {
-                randomMap[i, j] = inputMap[gridSizeX - j - 1, i];
-            }
-        }
-
-        // Initialize the grid
-        gridSizeX = 3; // set the appropriate size
-        gridSizeY = 3;
-        grid = new GameObject[gridSizeX, gridSizeY];
-        for (int x = 0; x < gridSizeX; ++x)
-        {
-            for (int y = 0; y < gridSizeY; ++y)
-            {
-                string item = randomMap[x, y];
-                GameObject prefab;
-                if (item.Contains("Socket"))
+                for (int y = 0; y < n; ++y)
                 {
-                    string hexCode = item.Split("_")[1];
-                    Debug.Log(hexCode);
-                    item = "Socket";
-                    //find the prefab
-                    prefab = prefabList.FirstOrDefault(o => o.name == item);
-                    //render prefab
-                    GameObject instantiatedPrefab = Instantiate(prefab, new Vector3(10 + x, 10 + y, 0), Quaternion.identity) as GameObject;
-                    //change color
-                    ChangeColor changeColor = new ChangeColor();
-                    instantiatedPrefab.GetComponent<Socket>().Color = hexCode;
+                    Debug.Log(x + " - " + y);
+                    string item = randomMap[x, y];
+                    Debug.Log(" : " + item);
+                    GameObject prefab;
+                    if (item.Contains("Socket"))
+                    {
+                        string hexCode = item.Split("_")[1];
+                        Debug.Log(hexCode);
+                        item = "Socket";
+                        //find the prefab
+                        prefab = prefabList.FirstOrDefault(o => o.name == item);
+                        Quaternion rotation = prefab.transform.rotation;
+                        float z = prefab.transform.position.z;
+                        //render prefab
+                        GameObject instantiatedPrefab = Instantiate(prefab, new Vector3(x+offset, y, z), rotation) as GameObject;
+                        //change color
+                        ChangeColor changeColor = new ChangeColor();
+                        instantiatedPrefab.GetComponent<Socket>().Color = hexCode;
 
-                    changeColor.ChangeSpriteColor(instantiatedPrefab, hexCode);
-                    grid[x, y] = instantiatedPrefab;
-                }
-                else
-                {
-                    prefab = prefabList.FirstOrDefault(o => o.name == item);
-                    GameObject instantiatedPrefab = Instantiate(prefab, new Vector3(10 + x, 10 + y, 0), Quaternion.identity) as GameObject;
-                    grid[x, y] = instantiatedPrefab;
+                        changeColor.ChangeSpriteColor(instantiatedPrefab, hexCode);
+                        grid[x, y] = instantiatedPrefab;
+                    }
+                    else
+                    {
+                        prefab = prefabList.FirstOrDefault(o => o.name == item);
+                        //Debug.Log("I found this: " + prefab);
+                        Quaternion rotation = prefab.transform.rotation;
+                        float z = prefab.transform.position.z;
+                        GameObject instantiatedPrefab = Instantiate(prefab, new Vector3(x+offset, y, z), rotation) as GameObject;
+                        grid[x, y] = instantiatedPrefab;
+                    }
                 }
             }
-        }
-        gridList.Add(grid);
-    }
-
-    private void PopulateGrid(string key, GameObject[] objects)
-    {
-        foreach (GameObject item in objects)
-        {
-            Vector3 position = item.transform.position;
-            int x = Mathf.RoundToInt(position.x);
-            int y = Mathf.RoundToInt(position.y);
-
-            Debug.Log(x + " - " + y + ": " + item);
-
-            // Store the object in the grid at the corresponding position
-            grid[x, y] = item;
-
-            // Store additional information if needed
-            /*            if (key == "PipePoint")
-                        {
-                            pointType[new Vector2(x, y)] = item.GetComponent<PipePoint>();
-                        }*/
+            gridList.Add(grid);
+            offset += 100;
         }
     }
 
@@ -288,22 +196,8 @@ public class GameManager : MonoBehaviour
     private static GameObject[] FindAllPrefabs()
     {
         Debug.Log("Finding all prefabs....");
-        string[] guids = AssetDatabase.FindAssets("t:Prefab");
-        GameObject[] prefabList = new GameObject[guids.Length];
-
-        int i = 0;
-        foreach (string guid in guids)
-        {
-            string path = AssetDatabase.GUIDToAssetPath(guid);
-            GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
-            prefabList[i++] = prefab;
-
-            //Debug.Log("Prefab name: " + prefab.name);
-            // if (prefab.name == "Wall")
-            // {
-            //     Instantiate(prefab, new Vector3(0, 0, 0), Quaternion.identity);
-            // }
-        }
+        string prefabFolder = "Prefabs";
+        GameObject[] prefabList = Resources.LoadAll<GameObject>(prefabFolder);
         return prefabList;
     }
 

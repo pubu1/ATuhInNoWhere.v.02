@@ -204,8 +204,8 @@ public class Step : MonoBehaviour
 
     private void GenerateWire()
     {
-        int xCurrent = (int)playerScript.CurrentPosition.x;
-        int yCurrent = (int)(playerScript.CurrentPosition.y);
+        int xCurrent = (int)playerScript.CurrentPosition.x % 100;
+        int yCurrent = (int)(playerScript.CurrentPosition.y) % 100;
         int currentMap = xCurrent / 100;
         if (playGridList[currentMap][xCurrent, yCurrent].tag == "Bridge" && !playerScript.IsNotPickWire)
         {
@@ -242,10 +242,10 @@ public class Step : MonoBehaviour
     private bool CanStepToPosition(Vector2 currentPosition, Vector2 targetPosition, string tempNextKey)
     {
         bool totalCheck = true;
-        int xCurrent = (int) currentPosition.x;
-        int yCurrent = (int) (currentPosition.y);
-        int xTarget = (int) targetPosition.x;
-        int yTarget = (int) targetPosition.y;
+        int xCurrent = (int) currentPosition.x % 100;
+        int yCurrent = (int)(currentPosition.y) % 100;
+        int xTarget = (int)targetPosition.x % 100;
+        int yTarget = (int)targetPosition.y % 100;
         int currentMap = xCurrent / 100;  
 
         //check current position
