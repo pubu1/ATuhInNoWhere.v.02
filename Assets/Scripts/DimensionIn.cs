@@ -5,19 +5,9 @@ using UnityEngine;
 public class DimensionIn : MonoBehaviour
 {
     public int ID { get; set; }
-    public bool HasEntranceTop { get; set; }
     public GameObject exitTop { get; set; }
-
-
-    public bool HasEntranceRight { get; set; }
     public GameObject exitRight { get; set; }
-
-
-    public bool HasEntranceBottom { get; set; }
     public GameObject exitBottom { get; set; }
-
-
-    public bool HasEntranceLeft { get; set; }
     public GameObject exitLeft {get;set;}
 
     // [SerializeField]
@@ -27,127 +17,47 @@ public class DimensionIn : MonoBehaviour
 
     void Start()
     {
-        //HasEntranceLeft = true;
+
     }
 
-    public bool CheckNextStep(Player player)
+    public Vector3 GetNextPosition(Player player)
     {
+        Vector3 entrancePosition = new Vector3();
         if (player.TempNextKey == "Right" && exitLeft != null)
         {          
-            /*if (obstaclePosition.ContainsKey(entranceTeleporterPosition) && obstaclePosition[entranceTeleporterPosition] == "Pipe" && !playerScript.IsNotPickWire)
-            {
-                StopStepOnPool();
-                return false;
-            }
-            else if (obstaclePosition.ContainsKey(entranceTeleporterPosition) && obstaclePosition[entranceTeleporterPosition] == "PipePoint")
-            {
-                if (pointType.ContainsKey(entranceTeleporterPosition) && playerScript.HandleWireColor != pointType[entranceTeleporterPosition].GetColorType() && !playerScript.IsNotPickWire)
-                {
-                    StopStepOnPool();
-                    return false;
-                }
-            }*/
-
-            Vector3 entrancePosition = new Vector3(exitLeft.transform.position.x+1, exitLeft.transform.position.y, player.transform.position.z);
-
-            player.CurrentPosition = player.transform.position;
-            player.TargetPosition = entrancePosition;
-            player.transform.position = entrancePosition;
-
-            /*if (!playerScript.IsNotPickWire)
-            {
-                Vector2 ladder = new Vector2(entranceTeleporterPosition.x-1, entranceTeleporterPosition.y);
-                RenderPipe(ladder, 0, 0);
-            }*/
+            entrancePosition = new Vector3(exitLeft.transform.position.x+1, exitLeft.transform.position.y, player.transform.position.z);
         }
-        /*else if (player.TempNextKey == "Left" && dimension.GetTargetTeleporterList().ContainsKey("Right"))
-        {
-            Vector2 entranceTeleporterPosition = dimension.GetTargetTeleporterList()["Right"];
-            if (obstaclePosition.ContainsKey(entranceTeleporterPosition) && obstaclePosition[entranceTeleporterPosition] == "Pipe" && !playerScript.IsNotPickWire)
-            {
-                StopStepOnPool();
-                return false;
-            }
-            else if (obstaclePosition.ContainsKey(entranceTeleporterPosition) && obstaclePosition[entranceTeleporterPosition] == "PipePoint")
-            {
-                if (pointType.ContainsKey(entranceTeleporterPosition) && playerScript.HandleWireColor != pointType[entranceTeleporterPosition].GetColorType() && !playerScript.IsNotPickWire)
-                {
-                    StopStepOnPool();
-                    return false;
-                }
-            }
-
-            playerScript.TempCurrentPosition = player.transform.position;
-            playerScript.TempTargetPosition = dimension.GetTargetTeleporterList()["Right"];
-            entranceDimensionPosition = dimension.transform.position;
-            player.transform.position = playerScript.TempTargetPosition;
-
-            if (!playerScript.IsNotPickWire)
-            {
-                Vector2 ladder = new Vector2(entranceTeleporterPosition.x + 4, entranceTeleporterPosition.y);
-                RenderPipe(ladder, 0, 0);
-            }
+        else if (player.TempNextKey == "Down" && exitTop != null)
+        {          
+            entrancePosition = new Vector3(exitTop.transform.position.x, exitTop.transform.position.y-1, player.transform.position.z);
         }
-        else if (player.TempNextKey == "Up" && dimension.GetTargetTeleporterList().ContainsKey("Bottom"))
-        {
-            Vector2 entranceTeleporterPosition = dimension.GetTargetTeleporterList()["Bottom"];
-            if (obstaclePosition.ContainsKey(entranceTeleporterPosition) && obstaclePosition[entranceTeleporterPosition] == "Pipe" && !playerScript.IsNotPickWire)
-            {
-                StopStepOnPool();
-                return false;
-            }
-            else if (obstaclePosition.ContainsKey(entranceTeleporterPosition) && obstaclePosition[entranceTeleporterPosition] == "PipePoint")
-            {
-                if (pointType.ContainsKey(entranceTeleporterPosition) && playerScript.HandleWireColor != pointType[entranceTeleporterPosition].GetColorType() && !playerScript.IsNotPickWire)
-                {
-                    StopStepOnPool();
-                    return false;
-                }
-            }
-
-            playerScript.TempCurrentPosition = player.transform.position;
-            playerScript.TempTargetPosition = dimension.GetTargetTeleporterList()["Bottom"];
-            entranceDimensionPosition = dimension.transform.position;
-            player.transform.position = playerScript.TempTargetPosition;
-
-            if (!playerScript.IsNotPickWire)
-            {
-                Vector2 ladder = new Vector2(entranceTeleporterPosition.x, entranceTeleporterPosition.y - 4);
-                RenderPipe(ladder, 0, 1);
-            }
+        else if (player.TempNextKey == "Left" && exitRight != null)
+        {          
+            entrancePosition = new Vector3(exitRight.transform.position.x-1, exitRight.transform.position.y, player.transform.position.z);
         }
-        else if (player.TempNextKey == "Down" && dimension.GetTargetTeleporterList().ContainsKey("Top"))
-        {
-            Vector2 entranceTeleporterPosition = dimension.GetTargetTeleporterList()["Top"];
-            if (obstaclePosition.ContainsKey(entranceTeleporterPosition) && obstaclePosition[entranceTeleporterPosition] == "Pipe" && !playerScript.IsNotPickWire)
-            {
-                StopStepOnPool();
-                return false;
-            }
-            else if (obstaclePosition.ContainsKey(entranceTeleporterPosition) && obstaclePosition[entranceTeleporterPosition] == "PipePoint")
-            {
-                if (pointType.ContainsKey(entranceTeleporterPosition) && playerScript.HandleWireColor != pointType[entranceTeleporterPosition].GetColorType() && !playerScript.IsNotPickWire)
-                {
-                    StopStepOnPool();
-                    return false;
-                }
-            }
+        else if (player.TempNextKey == "Up" && exitBottom != null)
+        {          
+            entrancePosition = new Vector3(exitBottom.transform.position.x, exitBottom.transform.position.y+1, player.transform.position.z);
+        }
 
-            playerScript.TempCurrentPosition = player.transform.position;
-            playerScript.TempTargetPosition = dimension.GetTargetTeleporterList()["Top"];
-            entranceDimensionPosition = dimension.transform.position;
-            player.transform.position = playerScript.TempTargetPosition;
+        return entrancePosition;
+    }
 
-            if (!playerScript.IsNotPickWire)
-            {
-                Vector2 ladder = new Vector2(entranceTeleporterPosition.x, entranceTeleporterPosition.y + 4);
-                RenderPipe(ladder, 0, 1);
-            }
-        }*/
-        return true;
+    public bool CheckNextStep(Player player, GameObject nextStepObject){
+        bool totalCheck = true;
+        if(nextStepObject.tag == "Wire" && !player.IsNotPickWire){
+            totalCheck = false;
+        }
+        else if(nextStepObject.tag == "Socket" && !player.IsNotPickWire 
+        && nextStepObject.GetComponent<Socket>().Color != player.HandleWireColor
+        && nextStepObject.GetComponent<Socket>().IsConnect == false){
+            totalCheck = false;
+        }
+        else if(nextStepObject.tag == "Wall"){
+            totalCheck = false;
+        }
 
-        //dimension.SetTargetBaseCamera();
-
+        return totalCheck;
     }
 
     // public void SetTargetBaseCamera(){

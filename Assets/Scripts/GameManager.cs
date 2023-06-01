@@ -36,6 +36,9 @@ public class GameManager : MonoBehaviour
     public List<GameObject[,]> PlayGridList { get; set; }
 
     private Dictionary<int, GameObject> doorButtonList;
+    public Dictionary<Vector2, Wire> WireMap {get; set;}
+
+    // private Dictionary<Vector2, Socket> pointType;
 
     private bool openPauseUI = false;
     private bool openGuideUI = false;
@@ -67,6 +70,7 @@ public class GameManager : MonoBehaviour
 
     private void InitializeMap()
     {
+        WireMap = new Dictionary<Vector2, Wire>();
         MapGridList = new List<GameObject[,]>();
         int offset = 0;
         int currentMap = 0;
@@ -96,12 +100,11 @@ public class GameManager : MonoBehaviour
                     Instantiate(ground, new Vector3(x + offset, y, groundZ), groundRotate);
                     //Debug.Log(x + " - " + y);
                     string item = randomMap[x, y];
-                    //Debug.Log(" : " + item);
                     GameObject prefab;
+                    
                     if (item.Contains("Socket"))
                     {
                         string hexCode = item.Split("_")[1];
-                        //Debug.Log(hexCode);
                         item = "Socket";
                         /*                        //find the prefab
                                                 prefab = prefabList.FirstOrDefault(o => o.name == item);
@@ -214,7 +217,7 @@ public class GameManager : MonoBehaviour
                             }
                             insideItem.GetComponent<DimensionOut>().BaseDimension = item.GetComponent<DimensionIn>();
                         }
-                        if (ok == 0) Debug.Log("Not found any!");
+                        //if (ok == 0) Debug.Log("Not found any!");
                     }
                 }
 
@@ -297,7 +300,6 @@ public class GameManager : MonoBehaviour
 
     private static GameObject[] FindAllPrefabs()
     {
-        Debug.Log("Finding all prefabs....");
         string prefabFolder = "Prefabs";
         GameObject[] prefabList = Resources.LoadAll<GameObject>(prefabFolder);
         return prefabList;

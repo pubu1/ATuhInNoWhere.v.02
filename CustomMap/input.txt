@@ -1,15 +1,12 @@
 2
-5 5
-Wall Wall Wall Wall Wall
-Wall Player:0 Ground Ground Wall
-Wall Ground Ground H_Door:0 Wall
-Wall DoorButton:1 Ground DoorButton:0 Wall
-Wall Wall Wall Wall Wall
+6 6
+Wall Wall Wall Wall Wall Wall
+Wall Ground Socket_Red Ground Ground Wall
+Wall Player:1 V_Bridge Socket_Yellow Ground Wall
+Wall Ground H_Bridge DimensionIn:1 Ground Wall
+Wall Ground Socket_Red Ground Ground Wall
+Wall Wall Wall Wall Wall Wall
 3 3
-Wall Wall Wall
-Wall Wall Wall
-Wall Wall Wall
----DoorButton---
-2
-0 0
-1 0
+Wall DimensionOut:Top Wall
+DimensionOut:Left Socket_Yellow DimensionOut:Right
+Wall DimensionOut:Bottom Wall

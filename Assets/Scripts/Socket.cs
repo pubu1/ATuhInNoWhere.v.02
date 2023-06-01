@@ -62,14 +62,4 @@ public class Socket : MonoBehaviour
         //activatePipeEffect = true;
         //gameManager.GetComponent<GameManager>().Score++;
     }
-
-    /*public bool CheckNextStep(Player player){
-        //true: handle pipe yellow
-        Debug.Log((!player.IsNotPickWire && player.HandleWireColor != this.color) +" "+ (!player.IsNotPickWire && this.IsConnect));
-
-        if ((!player.IsNotPickWire && player.HandleWireColor != this.color) || (!player.IsNotPickWire && this.IsConnect)) 
-            return false;
-        else
-            return true;
-    }*/
 }

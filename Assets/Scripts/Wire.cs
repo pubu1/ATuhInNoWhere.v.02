@@ -62,6 +62,7 @@ public class Wire : MonoBehaviour
         }
         if (player.TempNextKey == "Left")
         {
+            Debug.Log(player.TargetPosition);
             if (player.IsAtSocket && !player.IsNotPickWire)
             {
                 RenderWire(player.CurrentPosition, 2, 2, player.HandleWireColor);
