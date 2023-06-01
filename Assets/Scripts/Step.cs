@@ -443,7 +443,11 @@ public class Step : MonoBehaviour
             if (totalCheck)
             {
                 UpdateLocation();
-                GenerateWire(currentMap, xCurrent, yCurrent, "Wire");
+                if(playGridList[currentMap][xCurrent, yCurrent].tag == "Bridge") {
+                    GenerateWire(currentMap, xCurrent, yCurrent, "Bridge");
+                } else{
+                    GenerateWire(currentMap, xCurrent, yCurrent, "Wire");
+                }
             }
         }
         return totalCheck;
