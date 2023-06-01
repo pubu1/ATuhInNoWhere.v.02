@@ -11,6 +11,7 @@ public class InputManager
     private List<string[,]> listMap;
 
     public List<string>[] listDimensionIn { get; set; }
+    public List<int>[] ListDoor { get; set; }
 
     public List<string[,]> LoadGridFromFile()
     {
@@ -19,21 +20,17 @@ public class InputManager
         string filePath = Path.Combine(folderPath, fileName);
         string[] lines = File.ReadAllLines(filePath);
 
-        //count number of Map
+        //Count number of connections
         int currentLineIndex = 0;
         int mapCnt = int.Parse(lines[currentLineIndex++]);
-
-        //number of dimension IN
-        listDimensionIn = new List<string>[mapCnt];
-        for (int _ = 0; _ < listDimensionIn.Length; _++)
-            listDimensionIn[_] = new List<string>();
+        int btnCnt = 0;
 
 /*        foreach (string line in lines)
         {
             Debug.Log(line);
         }*/
         //read all Maps
-        while(mapCnt-- > 0)
+        for (int _ = 0; _ < mapCnt; ++_)
         {
             // Read the dimensions of the current map
             string[] dimensions = lines[currentLineIndex].Split(' ');
@@ -52,6 +49,7 @@ public class InputManager
                 for (int j = 0; j < columns; j++)
                 {
                     grid[i, j] = values[j];
+                    btnCnt += values[j].Contains("Button") ? 1 : 0;
                 }
             }
 
@@ -60,7 +58,19 @@ public class InputManager
             // Move to the next map's data
             currentLineIndex += 1 + rows;
         }
-        //Check other component
+
+
+        //Create Array of Connections
+        //Button and Door
+        ListDoor = new List<int>[btnCnt];
+        for (int _ = 0; _ < btnCnt; _++)
+            ListDoor[_] = new List<int>();
+        //Dimension In
+        listDimensionIn = new List<string>[mapCnt];
+        for (int _ = 0; _ < listDimensionIn.Length; _++)
+            listDimensionIn[_] = new List<string>();
+
+        //Check connections attributes
         while (currentLineIndex < lines.Length)
         {
             //Debug.Log(lines[currentLineIndex]);
@@ -71,15 +81,20 @@ public class InputManager
             while (cnt-- > 0)
             {
                 ++currentLineIndex;
+                string[] description = lines[currentLineIndex].Split(' ');
                 if (attribute == "DimensionIn")
                 {
-                    string[] description = lines[currentLineIndex].Split(' ');
                     int dimensionIn = int.Parse(description[0]);
                     string direction = description[1];
 /*                    int x = int.Parse(description[2]);
                     int y = int.Parse(description[3]);
                     direction += " " + x + " " + y;*/
                     listDimensionIn[dimensionIn].Add(direction);
+                } else if (attribute == "DoorButton")
+                {
+                    int btn = int.Parse(description[0]);
+                    int door = int.Parse(description[1]);
+                    ListDoor[door].Add(btn);
                 }
             }
             ++currentLineIndex;

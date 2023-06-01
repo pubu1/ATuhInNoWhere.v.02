@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class DoorButton : MonoBehaviour
 {
+    public int ID { get; set; }
+
     [SerializeField]
     private Sprite unableButton;
 
@@ -12,7 +14,7 @@ public class DoorButton : MonoBehaviour
     public bool IsActive{get; set;}
     public bool HasPipeOn{get; set;}
     // Start is called before the first frame update
-    void Start()
+    public void Start()
     {
         IsActive = false;
         HasPipeOn = false;

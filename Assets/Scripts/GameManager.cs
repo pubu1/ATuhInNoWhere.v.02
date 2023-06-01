@@ -1,10 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 using UnityEngine.UIElements;
+using static UnityEditor.Progress;
 
 public class GameManager : MonoBehaviour
 {
@@ -32,7 +35,7 @@ public class GameManager : MonoBehaviour
     public List<GameObject[,]> MapGridList { get; set; }
     public List<GameObject[,]> PlayGridList { get; set; }
 
-    // private Dictionary<Vector2, Socket> pointType;
+    private Dictionary<int, GameObject> doorButtonList;
 
     private bool openPauseUI = false;
     private bool openGuideUI = false;
@@ -43,6 +46,7 @@ public class GameManager : MonoBehaviour
     public void Start()
     {
         inputManager = new InputManager();
+        doorButtonList = new Dictionary<int, GameObject>();
         //player.transform.position = new Vector3(player.transform.position.x, player.transform.position.y, 6);
         Score = 0;
         inputList = inputManager.LoadGridFromFile();
@@ -50,6 +54,15 @@ public class GameManager : MonoBehaviour
         InitializeMap();
         ConnectMap();
         PlayGridList = MapGridList;
+    }
+
+    private GameObject InstantiatePrefab(string prefabName, int x, int y)
+    {
+        GameObject prefab = prefabList.FirstOrDefault(o => o.name == prefabName);
+        Quaternion rotation = prefab.transform.rotation;
+        float z = prefab.transform.position.z;
+        GameObject instantiatedPrefab = Instantiate(prefab, new Vector3(x, y, z), rotation) as GameObject;
+        return instantiatedPrefab;
     }
 
     private void InitializeMap()
@@ -72,10 +85,15 @@ public class GameManager : MonoBehaviour
                 }
             }
             grid = new GameObject[m, n];
+            GameObject ground = prefabList.FirstOrDefault(o => o.name == "Ground");
+            float groundZ = ground.transform.position.z;
+            Quaternion groundRotate = ground.transform.rotation;
             for (int x = 0; x < m; ++x)
             {
                 for (int y = 0; y < n; ++y)
                 {
+                    //Init ground
+                    Instantiate(ground, new Vector3(x + offset, y, groundZ), groundRotate);
                     //Debug.Log(x + " - " + y);
                     string item = randomMap[x, y];
                     //Debug.Log(" : " + item);
@@ -85,13 +103,14 @@ public class GameManager : MonoBehaviour
                         string hexCode = item.Split("_")[1];
                         //Debug.Log(hexCode);
                         item = "Socket";
-                        //find the prefab
-                        prefab = prefabList.FirstOrDefault(o => o.name == item);
-                        Quaternion rotation = prefab.transform.rotation;
-                        float z = prefab.transform.position.z;
-                        //render prefab
-                        GameObject instantiatedPrefab = Instantiate(prefab, new Vector3(x + offset, y, z), rotation) as GameObject;
+                        /*                        //find the prefab
+                                                prefab = prefabList.FirstOrDefault(o => o.name == item);
+                                                Quaternion rotation = prefab.transform.rotation;
+                                                float z = prefab.transform.position.z;
+                                                //render prefab
+                                                GameObject instantiatedPrefab = Instantiate(prefab, new Vector3(x + offset, y, z), rotation) as GameObject;*/
                         //change color
+                        GameObject instantiatedPrefab = InstantiatePrefab(item, x + offset, y);
                         ChangeColor changeColor = new ChangeColor();
                         instantiatedPrefab.GetComponent<Socket>().Color = hexCode;
 
@@ -102,10 +121,11 @@ public class GameManager : MonoBehaviour
                     {
                         int id = int.Parse(item.Split(':')[1]);
                         item = "Player";
-                        prefab = prefabList.FirstOrDefault(o => o.name == item);
+/*                        prefab = prefabList.FirstOrDefault(o => o.name == item);
                         Quaternion rotation = prefab.transform.rotation;
                         float z = prefab.transform.position.z;
-                        GameObject instantiatedPrefab = Instantiate(prefab, new Vector3(x + offset, y, z), rotation) as GameObject;
+                        GameObject instantiatedPrefab = Instantiate(prefab, new Vector3(x + offset, y, z), rotation) as GameObject;*/
+                        GameObject instantiatedPrefab = InstantiatePrefab(item, x + offset, y);
                         instantiatedPrefab.GetComponent<Player>().ID = id;
                         grid[x, y] = instantiatedPrefab;
                     }
@@ -113,10 +133,11 @@ public class GameManager : MonoBehaviour
                     {
                         string[] dimension = item.Split(':');
                         string dimensionWay = dimension[0];
-                        prefab = prefabList.FirstOrDefault(o => o.name == dimensionWay);
+/*                        prefab = prefabList.FirstOrDefault(o => o.name == dimensionWay);
                         Quaternion rotation = prefab.transform.rotation;
                         float z = prefab.transform.position.z;
-                        GameObject instantiatedPrefab = Instantiate(prefab, new Vector3(x + offset, y, z), rotation) as GameObject;
+                        GameObject instantiatedPrefab = Instantiate(prefab, new Vector3(x + offset, y, z), rotation) as GameObject;*/
+                        GameObject instantiatedPrefab = InstantiatePrefab(dimensionWay, x + offset, y);
                         if (dimensionWay == "DimensionIn")
                         {
                             instantiatedPrefab.GetComponent<DimensionIn>().ID = int.Parse(dimension[1]);
@@ -126,13 +147,31 @@ public class GameManager : MonoBehaviour
                         }
                         grid[x, y] = instantiatedPrefab;
                     }
+                    else if (item.Contains("DoorButton"))
+                    {
+                        int buttonID = int.Parse(item.Split(':')[1]);
+                        item = "DoorButton";
+                        GameObject instantiatedPrefab = InstantiatePrefab(item, x + offset, y);
+                        instantiatedPrefab.GetComponent<DoorButton>().Start();
+                        instantiatedPrefab.GetComponent<DoorButton>().ID = buttonID;
+                        grid[x, y] = instantiatedPrefab;
+                        doorButtonList[buttonID] = instantiatedPrefab;
+                    } 
+                    else if (item.Contains("Door"))
+                    {
+                        int doorID = int.Parse(item.Split(':')[1]);
+                        GameObject instantiatedPrefab = InstantiatePrefab(item.Split(':')[0], x + offset, y);
+                        instantiatedPrefab.GetComponent<Door>().ID = doorID;
+                        grid[x, y] = instantiatedPrefab;
+                    }
                     else
                     {
-                        prefab = prefabList.FirstOrDefault(o => o.name == item);
-                        //Debug.Log("I found this: " + prefab);
-                        Quaternion rotation = prefab.transform.rotation;
-                        float z = prefab.transform.position.z;
-                        GameObject instantiatedPrefab = Instantiate(prefab, new Vector3(x + offset, y, z), rotation) as GameObject;
+                        /*                        prefab = prefabList.FirstOrDefault(o => o.name == item);
+                                                Quaternion rotation = prefab.transform.rotation;
+                                                float z = prefab.transform.position.z;
+                                                GameObject instantiatedPrefab = Instantiate(prefab, new Vector3(x + offset, y, z), rotation) as GameObject;*/
+                        Debug.Log("I found this: " + item);
+                        GameObject instantiatedPrefab = InstantiatePrefab(item, x + offset, y);
                         grid[x, y] = instantiatedPrefab;
                     }
                 }
@@ -145,11 +184,11 @@ public class GameManager : MonoBehaviour
 
     private void ConnectMap()
     {
-        //Connect Dimension In and Out
         for (int i = 0; i < MapGridList.Count; ++i)
         {
             foreach (GameObject item in MapGridList[i])
             {
+                //Connect Dimension In and Out
                 if (item.tag == "DimensionIn") {
                     int dimension = item.GetComponent<DimensionIn>().ID;
                     foreach (GameObject insideItem in MapGridList[dimension])
@@ -157,7 +196,7 @@ public class GameManager : MonoBehaviour
                         int ok = 0;
                         if (insideItem.tag == "DimensionOut")
                         {
-                            Debug.Log("insideItem!");
+                            //Debug.Log("insideItem!");
                             ok = 1;
                             string dir = insideItem.GetComponent<DimensionOut>().OutDirection;
                             if (dir == "Left")
@@ -178,8 +217,20 @@ public class GameManager : MonoBehaviour
                         if (ok == 0) Debug.Log("Not found any!");
                     }
                 }
+
+
+                //Connect Button & Door
+                else if (item.tag == "Door")
+                {
+                    int doorID = item.GetComponent<Door>().ID;
+                    foreach (int btnID in inputManager.ListDoor[doorID])
+                    {
+                        item.GetComponent<Door>().Button = doorButtonList[btnID].GetComponent<DoorButton>();
+                    }
+                }
             }
         }
+
     }
 
     public List<string> GetPath() { return path; }

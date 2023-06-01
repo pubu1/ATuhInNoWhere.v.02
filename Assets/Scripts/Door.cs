@@ -4,8 +4,9 @@ using UnityEngine;
 
 public class Door : MonoBehaviour
 {
-    [SerializeField]
-    private DoorButton button;
+    public int ID { get; set; }
+
+    public DoorButton Button { get; set; }
 
     [SerializeField]
     private string doorOpenDirection;
@@ -34,16 +35,16 @@ public class Door : MonoBehaviour
 
         previousPosition = this.transform.position;
 
-        if(doorOpenDirection == "Up") targetPosition = new Vector2(previousPosition.x, previousPosition.y+4);
-        else if(doorOpenDirection == "Down") targetPosition = new Vector2(previousPosition.x, previousPosition.y-4);  
-        else if(doorOpenDirection == "Left") targetPosition = new Vector2(previousPosition.x-4, previousPosition.y);
-        else if(doorOpenDirection == "Right") targetPosition = new Vector2(previousPosition.x+4, previousPosition.y);
+        if(doorOpenDirection == "Up") targetPosition = new Vector2(previousPosition.x, previousPosition.y+1);
+        else if(doorOpenDirection == "Down") targetPosition = new Vector2(previousPosition.x, previousPosition.y-1);  
+        else if(doorOpenDirection == "Left") targetPosition = new Vector2(previousPosition.x-1, previousPosition.y);
+        else if(doorOpenDirection == "Right") targetPosition = new Vector2(previousPosition.x+1, previousPosition.y);
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(button.IsActive){
+        if(Button.IsActive){
             openAxis = targetPosition;
             if(isReverseDoor){
                 IsActive = false;

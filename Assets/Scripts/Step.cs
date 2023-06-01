@@ -277,25 +277,14 @@ public class Step : MonoBehaviour
             DimensionIn dIn = mapGridList[currentMap][xTarget, yTarget].GetComponent<DimensionIn>();
             totalCheck = dIn.CheckNextStep(playerScript);
         }
-        /*
-        else if (obstaclePosition.ContainsKey(currentPosition) && obstaclePosition[currentPosition] == "DoorButton")
+        else if (playGridList[currentMap][xTarget, yTarget].tag == "DoorButton")
         {
-            DoorButton button = doorButtonType[currentPosition];
-            button.IsActive = false;
-            if (obstaclePosition.ContainsKey(targetPosition) && obstaclePosition[targetPosition] == "Wall")
-                button.IsActive = true;
-            else if (obstaclePosition.ContainsKey(targetPosition) && obstaclePosition[targetPosition] == "Pipe" && !playerScript.IsNotPickWire)
-                button.IsActive = true;
-            else if (obstaclePosition.ContainsKey(targetPosition) && obstaclePosition[targetPosition] == "PipePoint" && pointType[targetPosition].IsConnect == true && !playerScript.IsNotPickWire)
-                button.IsActive = true;
-            else if (obstaclePosition.ContainsKey(targetPosition) && obstaclePosition[targetPosition] == "Door" && doorType[targetPosition].IsActive == false)
-                button.IsActive = true;
-
-            if (!playerScript.IsNotPickWire)
-            {
-                button.HasPipeOn = true;
-            }
+            DoorButton button = mapGridList[currentMap][xTarget, yTarget].GetComponent<DoorButton>();
+            button.IsActive = true;
+            totalCheck = true;
+            UpdateLocation();
         }
+        /*
         else if(obstaclePosition.ContainsKey(targetPosition) && obstaclePosition[targetPosition] == "Dimension"){
             Dimension dimension = dimensionType[targetPosition];
 
@@ -426,11 +415,7 @@ public class Step : MonoBehaviour
                 RenderPipe(ladder, 0, 1);
             }    
         }*/
-        /*else if (obstaclePosition.ContainsKey(targetPosition) && obstaclePosition[targetPosition] == "DoorButton")
-        {
-            DoorButton button = doorButtonType[targetPosition];
-            button.IsActive = true;
-        }
+        /*
         else if (obstaclePosition.ContainsKey(targetPosition) && obstaclePosition[targetPosition] == "Pool"
         || (poolType.ContainsKey(targetPosition) && playerScript.IsNotPickWire)
         )

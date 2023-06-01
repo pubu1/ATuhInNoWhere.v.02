@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5872487537103496724}
   - component: {fileID: 196720922789370262}
   m_Layer: 0
-  m_Name: Button
+  m_Name: DoorButton
   m_TagString: DoorButton
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
