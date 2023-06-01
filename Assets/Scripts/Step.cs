@@ -35,9 +35,12 @@ public class Step : MonoBehaviour
     private Dictionary<Vector2, WaterPool> poolType;
     private bool activatePipeEffect = false;
     private bool isStepOnPool = false;
-
-    public List<GameObject> wireList{get; set;}
-    // private string previousMove;
+    
+    int currentMap;
+    int xCurrent;
+    int yCurrent;
+    int xTarget;
+    int yTarget;       
 
     // Start is called before the first frame update
     void Start()
@@ -71,6 +74,12 @@ public class Step : MonoBehaviour
         playerScript.HandleWireColor = "Default";
         previousMove = "";
 
+        currentMap = (int) playerScript.CurrentPosition.x / 100;
+        xCurrent = (int) (playerScript.CurrentPosition.x % 100);
+        yCurrent = (int) (playerScript.CurrentPosition.y);
+        xTarget = (int) (playerScript.TargetPosition.x % 100);
+        yTarget = (int) (playerScript.TargetPosition.y);       
+
         // Create the 2D grid
         //grid = new GameObject[gridWidth, gridHeight];
     }
@@ -90,10 +99,6 @@ public class Step : MonoBehaviour
             playerScript.TempNextKey = "Up";
             if (CanStepToPosition(playerScript.TempCurrentPosition, playerScript.TempTargetPosition, playerScript.TempNextKey))
             {
-                // if ((obstaclePosition.ContainsKey(entranceDimensionPosition) && obstaclePosition[entranceDimensionPosition] == "Dimension")
-                // || (obstaclePosition.ContainsKey(entranceDimensionPosition) && obstaclePosition[entranceDimensionPosition] == "DimensionTeleporter"))
-                //     playerScript.CurrentPosition = playerScript.TempCurrentPosition;
-
                 SetPreviousMove("Up");
             }
         }
@@ -104,7 +109,6 @@ public class Step : MonoBehaviour
             playerScript.TempNextKey = "Down";
             if (CanStepToPosition(playerScript.TempCurrentPosition, playerScript.TempTargetPosition, playerScript.TempNextKey))
             {
-
                 //CheckPipeEffect();
                 SetPreviousMove("Down");
             }
@@ -171,29 +175,34 @@ public class Step : MonoBehaviour
     {
         playerScript.CurrentPosition = this.transform.position;
         playerScript.TargetPosition = playerScript.TempTargetPosition;
+
+        currentMap = (int) playerScript.CurrentPosition.x / 100;
+        xCurrent = (int) (playerScript.CurrentPosition.x % 100);
+        yCurrent = (int) (playerScript.CurrentPosition.y);
+        xTarget = (int) (playerScript.TargetPosition.x % 100);
+        yTarget = (int) (playerScript.TargetPosition.y); 
     }
 
-    private void GenerateWire()
-    {
-        int xCurrent = (int) (playerScript.CurrentPosition.x % 100);
-        int yCurrent = (int) (playerScript.CurrentPosition.y % 100);
-        int currentMap = xCurrent / 100;
-        if (playGridList[currentMap][xCurrent, yCurrent].tag == "Bridge" && !playerScript.IsNotPickWire)
+    private void GenerateWire(int mapIndex, int xAxis, int yAxis, string type)
+    {        
+        if (type == "Bridge" && !playerScript.IsNotPickWire)
         {
             Wire w = new Wire();
             w.Start();
-            w.wireZAxis = playGridList[currentMap][xCurrent, yCurrent].GetComponent<Bridge>().GetZAxisWire(previousMove);
+            w.wireZAxis = playGridList[mapIndex][xAxis, yAxis].GetComponent<Bridge>().GetZAxisWire(previousMove);
             w.GenerateWire(playerScript, previousMove);
         }
-        else if (!playerScript.IsNotPickWire || playerScript.IsAtSocket)
+        else if (type == "Wire" && !playerScript.IsNotPickWire || playerScript.IsAtSocket)
         {
             Wire w = new Wire();
             w.Start();
             w.GenerateWire(playerScript, previousMove);
 
             GameObject wire = w.GetWire();
+            Vector2 wirePosition = new Vector2(wire.transform.position.x, wire.transform.position.y);
+            gameManager.WireMap[wirePosition] = wire.GetComponent<Wire>();
 
-            playGridList[currentMap][xCurrent, yCurrent] = wire;
+            //playGridList[mapIndex][xAxis, yAxis] = wire;
         }
     }
 
@@ -212,11 +221,13 @@ public class Step : MonoBehaviour
     private bool CanStepToPosition(Vector2 currentPosition, Vector2 targetPosition, string tempNextKey)
     {
         bool totalCheck = true;
-        int xCurrent = (int) (currentPosition.x % 100);
-        int yCurrent = (int) (currentPosition.y % 100);
-        int xTarget = (int) (targetPosition.x % 100);
-        int yTarget = (int) (targetPosition.y % 100);
-        int currentMap = xCurrent / 100;  
+        currentMap = (int) currentPosition.x / 100;
+        xCurrent = (int) (currentPosition.x % 100);
+        yCurrent = (int) (currentPosition.y);
+        xTarget = (int) (targetPosition.x % 100);
+        yTarget = (int) (targetPosition.y);  
+
+        //Debug.Log(xTarget + " ---- " + yTarget + playGridList[currentMap][xTarget, yTarget].tag);     
 
         //check current position
         if (playGridList[currentMap][xCurrent, yCurrent].tag == "Bridge")
@@ -224,7 +235,9 @@ public class Step : MonoBehaviour
             //Bridge bridge = bridgeType[currentPosition];
             Bridge bridge = mapGridList[currentMap][xCurrent, yCurrent].GetComponent<Bridge>();
             totalCheck = bridge.CheckCurrentStep(bridge, playerScript, GetPreviousMove());
-            if (!totalCheck) return false;
+            if(!totalCheck){
+                return false;
+            }
         }
 
         //check target posotion
@@ -233,10 +246,16 @@ public class Step : MonoBehaviour
             Bridge bridge = mapGridList[currentMap][xTarget, yTarget].GetComponent<Bridge>();
             totalCheck = bridge.CheckNextStep(bridge, playerScript);
             if (totalCheck)
-            {
+            {       
                 UpdateLocation();
+                if(playGridList[currentMap][xCurrent, yCurrent].tag == "Bridge") {
+                    GenerateWire(currentMap, xCurrent, yCurrent, "Bridge");
+                } else{
+                    GenerateWire(currentMap, xCurrent, yCurrent, "Wire");
+                }
+                    
                 this.transform.position = new Vector3(this.transform.position.x, this.transform.position.y, playerScript.DefaultZAxis);
-                GenerateWire();
+                
             }
         }
         else if (playGridList[currentMap][xTarget, yTarget].tag == "Socket")
@@ -253,9 +272,9 @@ public class Step : MonoBehaviour
             {
                 totalCheck = true;
                 UpdateLocation();
-                GenerateWire();
+                GenerateWire(currentMap, xCurrent, yCurrent, "Wire");
                 socket.ChangePlayerAttrEndPoint(playerScript);
-                GenerateWire();
+                GenerateWire(currentMap, xTarget, yTarget, "Wire");
             }
             else if (socket.CheckSocketStartPoint(playerScript))
             {
@@ -268,14 +287,99 @@ public class Step : MonoBehaviour
         {
             totalCheck = false;
         }
-        else if (playGridList[currentMap][xTarget, yTarget].tag == "Wire" && !playerScript.IsNotPickWire)
+        else if (gameManager.WireMap.ContainsKey(targetPosition) && !playerScript.IsNotPickWire)
         {
             if (!playerScript.IsNotPickWire) totalCheck = false;
         }
         else if (playGridList[currentMap][xTarget, yTarget].tag == "DimensionIn")
         {
             DimensionIn dIn = mapGridList[currentMap][xTarget, yTarget].GetComponent<DimensionIn>();
-            totalCheck = dIn.CheckNextStep(playerScript);
+
+            Vector3 tempTargetPosition = dIn.GetNextPosition(playerScript);
+            int tempCurrentMap = (int) tempTargetPosition.x / 100;
+            int tempXTarget = (int) (tempTargetPosition.x % 100);
+            int tempYTarget = (int) (tempTargetPosition.y);  
+            
+            totalCheck = dIn.CheckNextStep(playerScript, playGridList[tempCurrentMap][tempXTarget, tempYTarget]);
+            
+            if(totalCheck) {              
+                playerScript.CurrentPosition = playerScript.transform.position;
+                playerScript.TargetPosition = tempTargetPosition;
+                playerScript.transform.position = tempTargetPosition;
+
+                tempCurrentMap = (int) playerScript.TargetPosition.x / 100;
+                xCurrent = (int) (playerScript.CurrentPosition.x % 100);
+                yCurrent = (int) (playerScript.CurrentPosition.y);
+                xTarget = (int) (playerScript.TargetPosition.x % 100);
+                yTarget = (int) (playerScript.TargetPosition.y);
+
+                if(playGridList[currentMap][xCurrent, yCurrent].tag == "Bridge"){                 
+                    GenerateWire(currentMap, xCurrent, yCurrent, "Bridge");             
+                } else{
+                    GenerateWire(currentMap, xCurrent, yCurrent, "Wire");    
+                }
+
+                if(playGridList[tempCurrentMap][xTarget, yTarget].tag == "Socket"){                 
+                    Socket socket = playGridList[tempCurrentMap][xTarget, yTarget].GetComponent<Socket>();
+                    if (socket.CheckSocketEndPoint(playerScript))
+                    {
+                        socket.ChangePlayerAttrEndPoint(playerScript);
+                        GenerateWire(tempCurrentMap, xCurrent, yCurrent, "Wire");
+                    }
+                    else if (socket.CheckSocketStartPoint(playerScript))
+                    {
+                        socket.ChangePlayerAttrStartPoint(playerScript);
+                    }                              
+                }                    
+            }            
+        }
+        else if (playGridList[currentMap][xTarget, yTarget].tag == "DimensionOut")
+        {            
+            DimensionOut dOut = mapGridList[currentMap][xTarget, yTarget].GetComponent<DimensionOut>();
+
+            Vector3 tempTargetPosition = dOut.GetNextPosition(playerScript);
+            int tempCurrentMap = (int) tempTargetPosition.x / 100;
+            int tempXTarget = (int) (tempTargetPosition.x % 100);
+            int tempYTarget = (int) (tempTargetPosition.y);  
+            
+            totalCheck = dOut.CheckNextStep(playerScript, playGridList[tempCurrentMap][tempXTarget, tempYTarget]);
+            
+            if(totalCheck) {              
+                playerScript.CurrentPosition = playerScript.transform.position;
+                playerScript.TargetPosition = tempTargetPosition;
+                playerScript.transform.position = tempTargetPosition;
+             
+                tempCurrentMap = (int) playerScript.TargetPosition.x / 100;
+                xCurrent = (int) (playerScript.CurrentPosition.x % 100);
+                yCurrent = (int) (playerScript.CurrentPosition.y);
+                xTarget = (int) (playerScript.TargetPosition.x % 100);
+                yTarget = (int) (playerScript.TargetPosition.y);
+
+                
+                if(playGridList[currentMap][xCurrent, yCurrent].tag == "Bridge"){                 
+                    GenerateWire(currentMap, xCurrent, yCurrent, "Bridge");             
+                } else{
+                    GenerateWire(currentMap, xCurrent, yCurrent, "Wire");    
+                }
+
+                if(playGridList[tempCurrentMap][xTarget, yTarget].tag == "Socket"){                 
+                    Socket socket = playGridList[tempCurrentMap][xTarget, yTarget].GetComponent<Socket>();
+                    if (socket.CheckSocketEndPoint(playerScript))
+                    {
+                        socket.ChangePlayerAttrEndPoint(playerScript);
+                        GenerateWire(tempCurrentMap, xCurrent, yCurrent, "Wire");
+                    }
+                    else if (socket.CheckSocketStartPoint(playerScript))
+                    {
+                        socket.ChangePlayerAttrStartPoint(playerScript);                     
+                    }                  
+                } 
+                else if(playGridList[tempCurrentMap][xTarget, yTarget].tag == "Bridge"){
+                    Bridge bridge = playGridList[tempCurrentMap][xTarget, yTarget].GetComponent<Bridge>();
+                    bool changePlayerDefaultZAxis = bridge.CheckNextStep(bridge, playerScript);
+                    this.transform.position = new Vector3(this.transform.position.x, this.transform.position.y, playerScript.DefaultZAxis);
+                }                  
+            }
         }
         /*
         else if (obstaclePosition.ContainsKey(currentPosition) && obstaclePosition[currentPosition] == "DoorButton")
@@ -296,137 +400,7 @@ public class Step : MonoBehaviour
                 button.HasPipeOn = true;
             }
         }
-        else if(obstaclePosition.ContainsKey(targetPosition) && obstaclePosition[targetPosition] == "Dimension"){
-            Dimension dimension = dimensionType[targetPosition];
-
-            if(tempNextKey == "Right" && dimension.GetTargetTeleporterList().ContainsKey("Left")){
-                Vector2 entranceTeleporterPosition = dimension.GetTargetTeleporterList()["Left"];
-                if(obstaclePosition.ContainsKey(entranceTeleporterPosition) && obstaclePosition[entranceTeleporterPosition] == "Pipe" && !playerScript.IsNotPickWire){
-                    StopStepOnPool();
-                    return false;
-                }                 
-                else if(obstaclePosition.ContainsKey(entranceTeleporterPosition) && obstaclePosition[entranceTeleporterPosition] == "PipePoint"){
-                    if (pointType.ContainsKey(entranceTeleporterPosition) && playerScript.HandleWireColor != pointType[entranceTeleporterPosition].GetColorType() && !playerScript.IsNotPickWire){
-                        StopStepOnPool();
-                        return false;
-                    }
-                }
-
-                playerScript.TempCurrentPosition = player.transform.position;                
-                playerScript.TempTargetPosition = entranceTeleporterPosition;
-                entranceDimensionPosition = dimension.transform.position;
-                player.transform.position = playerScript.TempTargetPosition;
-
-                if(!playerScript.IsNotPickWire) {
-                    Vector2 ladder = new Vector2(entranceTeleporterPosition.x-4,entranceTeleporterPosition.y);
-                    RenderPipe(ladder, 0, 0);
-                }                
-            }
-            else if(tempNextKey == "Left" && dimension.GetTargetTeleporterList().ContainsKey("Right")){
-                Vector2 entranceTeleporterPosition = dimension.GetTargetTeleporterList()["Right"];
-                if(obstaclePosition.ContainsKey(entranceTeleporterPosition) && obstaclePosition[entranceTeleporterPosition] == "Pipe" && !playerScript.IsNotPickWire){
-                    StopStepOnPool();
-                    return false;
-                }
-                else if(obstaclePosition.ContainsKey(entranceTeleporterPosition) && obstaclePosition[entranceTeleporterPosition] == "PipePoint"){
-                    if (pointType.ContainsKey(entranceTeleporterPosition) && playerScript.HandleWireColor != pointType[entranceTeleporterPosition].GetColorType() && !playerScript.IsNotPickWire){
-                        StopStepOnPool();
-                        return false;
-                    }
-                }
-
-                playerScript.TempCurrentPosition = player.transform.position;
-                playerScript.TempTargetPosition = dimension.GetTargetTeleporterList()["Right"];
-                entranceDimensionPosition = dimension.transform.position;
-                player.transform.position = playerScript.TempTargetPosition; 
-
-                if(!playerScript.IsNotPickWire) {
-                    Vector2 ladder = new Vector2(entranceTeleporterPosition.x+4,entranceTeleporterPosition.y);
-                    RenderPipe(ladder, 0, 0);
-                }   
-            }
-            else if(tempNextKey == "Up" && dimension.GetTargetTeleporterList().ContainsKey("Bottom")){
-                Vector2 entranceTeleporterPosition = dimension.GetTargetTeleporterList()["Bottom"];
-                if(obstaclePosition.ContainsKey(entranceTeleporterPosition) && obstaclePosition[entranceTeleporterPosition] == "Pipe" && !playerScript.IsNotPickWire){
-                        StopStepOnPool();
-                        return false;
-                }
-                else if(obstaclePosition.ContainsKey(entranceTeleporterPosition) && obstaclePosition[entranceTeleporterPosition] == "PipePoint"){
-                    if (pointType.ContainsKey(entranceTeleporterPosition) && playerScript.HandleWireColor != pointType[entranceTeleporterPosition].GetColorType() && !playerScript.IsNotPickWire){
-                        StopStepOnPool();
-                        return false;
-                    }
-                }
-
-                playerScript.TempCurrentPosition = player.transform.position;
-                playerScript.TempTargetPosition = dimension.GetTargetTeleporterList()["Bottom"];
-                entranceDimensionPosition = dimension.transform.position;
-                player.transform.position = playerScript.TempTargetPosition;
-
-                if(!playerScript.IsNotPickWire) {
-                    Vector2 ladder = new Vector2(entranceTeleporterPosition.x,entranceTeleporterPosition.y-4);
-                    RenderPipe(ladder, 0, 1);
-                }  
-            }
-            else if(tempNextKey == "Down" && dimension.GetTargetTeleporterList().ContainsKey("Top")){
-                Vector2 entranceTeleporterPosition = dimension.GetTargetTeleporterList()["Top"];
-                if(obstaclePosition.ContainsKey(entranceTeleporterPosition) && obstaclePosition[entranceTeleporterPosition] == "Pipe" && !playerScript.IsNotPickWire){
-                        StopStepOnPool();
-                        return false;
-                }
-                else if(obstaclePosition.ContainsKey(entranceTeleporterPosition) && obstaclePosition[entranceTeleporterPosition] == "PipePoint"){
-                    if (pointType.ContainsKey(entranceTeleporterPosition) && playerScript.HandleWireColor != pointType[entranceTeleporterPosition].GetColorType() && !playerScript.IsNotPickWire){
-                        StopStepOnPool();
-                        return false;
-                    }
-                }
-
-                playerScript.TempCurrentPosition = player.transform.position;               
-                playerScript.TempTargetPosition = dimension.GetTargetTeleporterList()["Top"];  
-                entranceDimensionPosition = dimension.transform.position;              
-                player.transform.position = playerScript.TempTargetPosition; 
-
-                if(!playerScript.IsNotPickWire) {
-                    Vector2 ladder = new Vector2(entranceTeleporterPosition.x,entranceTeleporterPosition.y+4);
-                    RenderPipe(ladder, 0, 1);
-                } 
-            }else{
-                return false;
-            }
-
-            dimension.SetTargetBaseCamera();    
-        }*/
-        /*else if(obstaclePosition.ContainsKey(targetPosition) && obstaclePosition[targetPosition] == "DimensionTeleporter"){
-            DimensionTeleporter dimensionTeleporter = dimensionTeleporterType[targetPosition];
-            Dimension dimension = dimensionType[dimensionTeleporter.getBaseDimension()];
-            Vector2 previousBaseDimensionEntrance = dimension.GetPreviousTeleporterList()[targetPosition];
-
-            if(obstaclePosition.ContainsKey(previousBaseDimensionEntrance) && obstaclePosition[previousBaseDimensionEntrance] == "Pipe" && !playerScript.IsNotPickWire){
-                StopStepOnPool();
-                return false;
-            }
-            else if(obstaclePosition.ContainsKey(previousBaseDimensionEntrance) && obstaclePosition[previousBaseDimensionEntrance] == "PipePoint"){
-                if (pointType.ContainsKey(previousBaseDimensionEntrance) && playerScript.HandleWireColor != pointType[previousBaseDimensionEntrance].GetColorType() && !playerScript.IsNotPickWire){
-                    StopStepOnPool();
-                    return false;
-                }
-            }
-
-            playerScript.TempTargetPosition = previousBaseDimensionEntrance;
-            entranceDimensionPosition = dimensionTeleporter.transform.position;
-            player.transform.position = playerScript.TempTargetPosition;
-            dimension.SetPreviousBaseCamera();   
-
-
-            if(!playerScript.IsNotPickWire && (tempNextKey == "Right" || tempNextKey == "Left")) {
-                Vector2 ladder = new Vector2(dimensionTeleporter.transform.position.x,dimensionTeleporter.transform.position.y);
-                RenderPipe(ladder, 0, 0);
-            } else if(!playerScript.IsNotPickWire && (tempNextKey == "Up" || tempNextKey == "Down")) {
-                Vector2 ladder = new Vector2(dimensionTeleporter.transform.position.x,dimensionTeleporter.transform.position.y);
-                RenderPipe(ladder, 0, 1);
-            }    
-        }*/
-        /*else if (obstaclePosition.ContainsKey(targetPosition) && obstaclePosition[targetPosition] == "DoorButton")
+        else if (obstaclePosition.ContainsKey(targetPosition) && obstaclePosition[targetPosition] == "DoorButton")
         {
             DoorButton button = doorButtonType[targetPosition];
             button.IsActive = true;
@@ -469,7 +443,7 @@ public class Step : MonoBehaviour
             if (totalCheck)
             {
                 UpdateLocation();
-                GenerateWire();
+                GenerateWire(currentMap, xCurrent, yCurrent, "Wire");
             }
         }
         return totalCheck;

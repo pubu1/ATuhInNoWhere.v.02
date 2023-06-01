@@ -1,14 +1,18 @@
 2
-4 4
-Wall Wall Wall Wall
-Wall Player:1 Socket_Yellow Socket_Green
-Button Socket_Yellow DimensionIn:1 Button
-Button Socket_Green Ground Wall
+6 6
+Wall Wall Wall Wall Wall Wall
+Wall Ground Socket_Red Ground Ground Wall
+Wall Player:1 V_Bridge Socket_Yellow Ground Wall
+Wall Ground H_Bridge DimensionIn:1 Ground Wall
+Wall Ground Socket_Red Ground Ground Wall
+Wall Wall Wall Wall Wall Wall
 3 3
 Wall DimensionOut:Top Wall
-DimensionOut:Left Button V_Bridge
-Button H_Bridge Button
+DimensionOut:Left Socket_Yellow DimensionOut:Right
+Wall DimensionOut:Bottom Wall
 ---DimensionIn---
-2
+4
 1 Left
 1 Top
+1 Right
+1 Bottom

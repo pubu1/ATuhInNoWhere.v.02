@@ -32,6 +32,8 @@ public class GameManager : MonoBehaviour
     public List<GameObject[,]> MapGridList { get; set; }
     public List<GameObject[,]> PlayGridList { get; set; }
 
+    public Dictionary<Vector2, Wire> WireMap {get; set;}
+
     // private Dictionary<Vector2, Socket> pointType;
 
     private bool openPauseUI = false;
@@ -54,6 +56,7 @@ public class GameManager : MonoBehaviour
 
     private void InitializeMap()
     {
+        WireMap = new Dictionary<Vector2, Wire>();
         MapGridList = new List<GameObject[,]>();
         int offset = 0;
         int currentMap = 0;
@@ -72,25 +75,32 @@ public class GameManager : MonoBehaviour
                 }
             }
             grid = new GameObject[m, n];
+
+            GameObject ground = prefabList.FirstOrDefault(o => o.name == "Ground");
+            float groundZ = ground.transform.position.z;
+            Quaternion groundRotate = ground.transform.rotation;
             for (int x = 0; x < m; ++x)
             {
                 for (int y = 0; y < n; ++y)
                 {
-                    //Debug.Log(x + " - " + y);
+                     //Init ground
+                    Instantiate(ground, new Vector3(x + offset, y, groundZ), groundRotate);
                     string item = randomMap[x, y];
-                    //Debug.Log(" : " + item);
                     GameObject prefab;
+                    
                     if (item.Contains("Socket"))
                     {
                         string hexCode = item.Split("_")[1];
-                        //Debug.Log(hexCode);
                         item = "Socket";
+
                         //find the prefab
                         prefab = prefabList.FirstOrDefault(o => o.name == item);
                         Quaternion rotation = prefab.transform.rotation;
                         float z = prefab.transform.position.z;
+
                         //render prefab
                         GameObject instantiatedPrefab = Instantiate(prefab, new Vector3(x + offset, y, z), rotation) as GameObject;
+
                         //change color
                         ChangeColor changeColor = new ChangeColor();
                         instantiatedPrefab.GetComponent<Socket>().Color = hexCode;
@@ -129,7 +139,6 @@ public class GameManager : MonoBehaviour
                     else
                     {
                         prefab = prefabList.FirstOrDefault(o => o.name == item);
-                        //Debug.Log("I found this: " + prefab);
                         Quaternion rotation = prefab.transform.rotation;
                         float z = prefab.transform.position.z;
                         GameObject instantiatedPrefab = Instantiate(prefab, new Vector3(x + offset, y, z), rotation) as GameObject;
@@ -157,7 +166,6 @@ public class GameManager : MonoBehaviour
                         int ok = 0;
                         if (insideItem.tag == "DimensionOut")
                         {
-                            Debug.Log("insideItem!");
                             ok = 1;
                             string dir = insideItem.GetComponent<DimensionOut>().OutDirection;
                             if (dir == "Left")
@@ -175,7 +183,7 @@ public class GameManager : MonoBehaviour
                             }
                             insideItem.GetComponent<DimensionOut>().BaseDimension = item.GetComponent<DimensionIn>();
                         }
-                        if (ok == 0) Debug.Log("Not found any!");
+                        //if (ok == 0) Debug.Log("Not found any!");
                     }
                 }
             }
@@ -246,7 +254,6 @@ public class GameManager : MonoBehaviour
 
     private static GameObject[] FindAllPrefabs()
     {
-        Debug.Log("Finding all prefabs....");
         string prefabFolder = "Prefabs";
         GameObject[] prefabList = Resources.LoadAll<GameObject>(prefabFolder);
         return prefabList;
