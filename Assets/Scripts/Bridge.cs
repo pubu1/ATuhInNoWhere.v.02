@@ -4,8 +4,7 @@ using UnityEngine;
 
 public class Bridge : MonoBehaviour
 {
-    [SerializeField] private string bridgeType;
-
+    private string bridgeType;
     public bool HasWireOnBridge { get; set; }
     public bool HasWireUnderBridge { get; set; }
 
@@ -13,6 +12,7 @@ public class Bridge : MonoBehaviour
     {
         HasWireOnBridge = false;
         HasWireUnderBridge = false;
+        bridgeType = "Horizontal";
     }
 
     public string GetBridgeType()

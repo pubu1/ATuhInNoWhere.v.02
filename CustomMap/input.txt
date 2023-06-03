@@ -4,9 +4,12 @@ Wall Wall Wall Wall Wall Wall Wall Wall Wall
 Wall Socket_Steal Socket_Azure Socket_Pink Socket_Purple Socket_Indigo Socket_Aqua Socket_Blue Wall
 Wall Player:1 Ice Ground Teleporter Ground Ground Ground Wall
 Wall Ground Ground Ground Teleporter Ground Ground Ground Wall
-Wall Socket_Blue Ground Ground Ground Ground Ground Socket_Yellow Wall
+Wall Socket_Blue Ground Door:0 Ground DoorButton:0 Ground Socket_Yellow Wall
 Wall Wall Wall Wall Wall Wall Wall Wall Wall
 3 3
 Wall DimensionOut:Top Wall
 DimensionOut:Left Ground DimensionOut:Right
 Wall DimensionOut:Bottom Wall
+---DoorButton---
+1
+0 0
