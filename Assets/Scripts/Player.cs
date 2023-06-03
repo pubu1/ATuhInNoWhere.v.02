@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -24,7 +25,9 @@ public class Player : MonoBehaviour
         IsAtSocket = false;
         IsNotPickWire = true;
         CurrentPosition = this.transform.position;
-        TargetPosition = this.transform.position;
+        //TargetPosition = this.transform.position;
+        Vector2 check = new Vector2((float)Math.Ceiling(this.transform.position.x), (float)Math.Ceiling(this.transform.position.y));
+        TargetPosition = check;
         TempCurrentPosition = this.transform.position;
         TempTargetPosition = this.transform.position;
         DefaultZAxis = 6f;

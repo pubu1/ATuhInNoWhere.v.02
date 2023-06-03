@@ -59,6 +59,7 @@ public class Step : MonoBehaviour
                         if (this.gameObject.transform.position == item.transform.position)
                         {
                             player = item;
+                            Debug.Log("HASSSSSSSSSSSSSS--------------------" + item.transform.position);
                             break;
                         }
                     }
@@ -167,7 +168,6 @@ public class Step : MonoBehaviour
                     StopStepOnIce();
                 }
             }
-
             StepMove();
         }
     }
@@ -545,6 +545,7 @@ public class Step : MonoBehaviour
     void StepMove()
     {
         player.transform.position = Vector3.MoveTowards(transform.position, new Vector3(playerScript.TargetPosition.x, playerScript.TargetPosition.y, playerScript.DefaultZAxis), moveSpeed * Time.deltaTime);
+        //player.transform.position = playerScript.TargetPosition;
         if (new Vector2(player.transform.position.x, player.transform.position.y) != playerScript.TargetPosition)
         {
             enableMove = false;
