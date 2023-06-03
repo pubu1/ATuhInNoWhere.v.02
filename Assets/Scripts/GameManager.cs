@@ -9,7 +9,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using UnityEngine.UIElements;
 
-public class GameManager : MonoBehaviour
+public class GameManager : MonoBehaviourPunCallbacks
 {
     // [SerializeField]
     // private GameObject player;
@@ -59,8 +59,11 @@ public class GameManager : MonoBehaviour
         Score = 0;
         inputList = inputManager.LoadGridFromFile();
         prefabList = FindAllPrefabs();
-        InitializeMap();
-
+        if (PhotonNetwork.IsConnected)
+        {
+            InitializeMap();
+            ConnectMap();
+        }
 /*        for (int i = 0; i < MapGridList.Count; ++i)
         {
             foreach (GameObject item in MapGridList[i])
@@ -69,7 +72,6 @@ public class GameManager : MonoBehaviour
             }
         }*/
 
-                ConnectMap();
         PlayGridList = MapGridList;
     }
 
@@ -78,7 +80,7 @@ public class GameManager : MonoBehaviour
         GameObject prefab = prefabList.FirstOrDefault(o => o.name == prefabName);
         Quaternion rotation = prefab.transform.rotation;
         float z = prefab.transform.position.z;
-        GameObject instantiatedPrefab = Instantiate(prefab, new Vector3(x, y, z), rotation) as GameObject;
+        GameObject instantiatedPrefab = PhotonNetwork.Instantiate(prefabName, new Vector3(x, y, z), rotation) as GameObject;
         return instantiatedPrefab;
     }
 
