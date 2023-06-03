@@ -1,3 +1,4 @@
+using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,6 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using UnityEngine.UIElements;
-using static UnityEditor.Progress;
 
 public class GameManager : MonoBehaviour
 {
@@ -68,6 +68,15 @@ public class GameManager : MonoBehaviour
         return instantiatedPrefab;
     }
 
+    private GameObject InstantiatePlayer(int id, int x, int y)
+    {
+        GameObject prefab = prefabList.FirstOrDefault(o => o.name == "Player");
+        Quaternion rotation = prefab.transform.rotation;
+        float z = prefab.transform.position.z;
+        GameObject instantiatedPrefab = PhotonNetwork.Instantiate(prefab.name, new Vector3(x, y, z), rotation) as GameObject;
+        return instantiatedPrefab;
+    }
+
     private void InitializeMap()
     {
         WireMap = new Dictionary<Vector2, Wire>();
@@ -124,13 +133,14 @@ public class GameManager : MonoBehaviour
                     {
                         int id = int.Parse(item.Split(':')[1]);
                         item = "Player";
-/*                        prefab = prefabList.FirstOrDefault(o => o.name == item);
-                        Quaternion rotation = prefab.transform.rotation;
-                        float z = prefab.transform.position.z;
-                        GameObject instantiatedPrefab = Instantiate(prefab, new Vector3(x + offset, y, z), rotation) as GameObject;*/
-                        GameObject instantiatedPrefab = InstantiatePrefab(item, x + offset, y);
+                        /*                        prefab = prefabList.FirstOrDefault(o => o.name == item);
+                                                Quaternion rotation = prefab.transform.rotation;
+                                                float z = prefab.transform.position.z;
+                                                GameObject instantiatedPrefab = Instantiate(prefab, new Vector3(x + offset, y, z), rotation) as GameObject;*/
+                        //GameObject instantiatedPrefab = InstantiatePrefab(item, x + offset, y);
+                        GameObject instantiatedPrefab = InstantiatePlayer(id, x + offset, y);
                         instantiatedPrefab.GetComponent<Player>().ID = id;
-                        grid[x, y] = instantiatedPrefab;
+                        //grid[x, y] = instantiatedPrefab;
                     }
                     else if (item.Contains("Dimension"))
                     {
