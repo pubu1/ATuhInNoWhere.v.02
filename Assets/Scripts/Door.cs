@@ -8,11 +8,9 @@ public class Door : MonoBehaviour
 
     public DoorButton Button { get; set; }
 
-    [SerializeField]
     private string doorOpenDirection;
 
-    [SerializeField]
-    private bool isReverseDoor = true;
+    private bool isReverseDoor;
 
     public bool IsActive{get; set;}  
 
@@ -26,6 +24,9 @@ public class Door : MonoBehaviour
     // Start is called before the first frame update
     public void Start()
     {
+        doorOpenDirection = "Down";
+        isReverseDoor = false;
+
         if(isReverseDoor)           
             IsActive = true;
         else{
