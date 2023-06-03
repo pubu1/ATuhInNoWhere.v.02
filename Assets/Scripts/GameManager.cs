@@ -45,7 +45,11 @@ public class GameManager : MonoBehaviour
 
     public int Score { get; set; }
 
-    private GameObject check;
+/*Daviz*/
+    private Teleporter tele01;
+    private Teleporter tele02;
+    int indd=0;
+    int indd1=0, indd2=0, indd3=0, indd4=0;
     public void Start()
     {
         inputManager = new InputManager();
@@ -55,7 +59,16 @@ public class GameManager : MonoBehaviour
         inputList = inputManager.LoadGridFromFile();
         prefabList = FindAllPrefabs();
         InitializeMap();
-        ConnectMap();
+
+/*        for (int i = 0; i < MapGridList.Count; ++i)
+        {
+            foreach (GameObject item in MapGridList[i])
+            {
+                Debug.Log(item);
+            }
+        }*/
+
+                ConnectMap();
         PlayGridList = MapGridList;
     }
 
@@ -140,7 +153,7 @@ public class GameManager : MonoBehaviour
                         //GameObject instantiatedPrefab = InstantiatePrefab(item, x + offset, y);
                         GameObject instantiatedPrefab = InstantiatePlayer(id, x + offset, y);
                         instantiatedPrefab.GetComponent<Player>().ID = id;
-                        //grid[x, y] = instantiatedPrefab;
+                        grid[x, y] = instantiatedPrefab;
                     }
                     else if (item.Contains("Dimension"))
                     {
@@ -177,13 +190,28 @@ public class GameManager : MonoBehaviour
                         instantiatedPrefab.GetComponent<Door>().ID = doorID;
                         grid[x, y] = instantiatedPrefab;
                     }
+                    /*Daviz*/
+                    /*else if(item.Contains("Teleporter")){
+                        GameObject instantiatedPrefab = InstantiatePrefab(item, x + offset, y);
+                        if(indd == 0){
+                            indd++;
+                            indd1=x;
+                            indd2=y;
+                            tele01 = instantiatedPrefab.GetComponent<Teleporter>();
+                        } else{
+                            tele02 = instantiatedPrefab.GetComponent<Teleporter>();
+                            indd3=x;
+                            indd4=y;
+                        }
+                        grid[x, y] = instantiatedPrefab;
+                    }*/
                     else
                     {
                         /*                        prefab = prefabList.FirstOrDefault(o => o.name == item);
                                                 Quaternion rotation = prefab.transform.rotation;
                                                 float z = prefab.transform.position.z;
                                                 GameObject instantiatedPrefab = Instantiate(prefab, new Vector3(x + offset, y, z), rotation) as GameObject;*/
-                        Debug.Log("I found this: " + item);
+                        //Debug.Log("I found this: " + item);
                         GameObject instantiatedPrefab = InstantiatePrefab(item, x + offset, y);
                         grid[x, y] = instantiatedPrefab;
                     }
@@ -193,6 +221,10 @@ public class GameManager : MonoBehaviour
             offset += 100;
             ++currentMap;
         }
+
+        /*Daviz*/
+/*        MapGridList[0][indd1,indd2].GetComponent<Teleporter>().TargetTeleporter = tele02;
+        MapGridList[0][indd3, indd4].GetComponent<Teleporter>().TargetTeleporter  = tele01;*/
     }
 
     private void ConnectMap()
@@ -202,6 +234,7 @@ public class GameManager : MonoBehaviour
             foreach (GameObject item in MapGridList[i])
             {
                 //Connect Dimension In and Out
+                //if (item == null) continue;
                 if (item.tag == "DimensionIn") {
                     int dimension = item.GetComponent<DimensionIn>().ID;
                     foreach (GameObject insideItem in MapGridList[dimension])

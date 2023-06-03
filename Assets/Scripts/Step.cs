@@ -1,3 +1,4 @@
+using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,20 +28,16 @@ public class Step : MonoBehaviour
 
     private string previousMove;
 
-    private Dictionary<Vector2, string> obstaclePosition;
-    private Dictionary<Vector2, DimensionIn> dimensionType;
-    private Dictionary<Vector2, DimensionOut> dimensionTeleporterType;
-    private Dictionary<Vector2, DoorButton> doorButtonType;
-    private Dictionary<Vector2, Door> doorType;
-    private Dictionary<Vector2, WaterPool> poolType;
     private bool activatePipeEffect = false;
-    private bool isStepOnPool = false;
+    private bool isStepOnIce = false;
     
     int currentMap;
     int xCurrent;
     int yCurrent;
     int xTarget;
-    int yTarget;       
+    int yTarget;
+
+    PhotonView view;
 
     // Start is called before the first frame update
     void Start()
@@ -78,97 +75,97 @@ public class Step : MonoBehaviour
         xCurrent = (int) (playerScript.CurrentPosition.x % 100);
         yCurrent = (int) (playerScript.CurrentPosition.y);
         xTarget = (int) (playerScript.TargetPosition.x % 100);
-        yTarget = (int) (playerScript.TargetPosition.y);       
+        yTarget = (int) (playerScript.TargetPosition.y);
 
         // Create the 2D grid
         //grid = new GameObject[gridWidth, gridHeight];
+        view = GetComponent<PhotonView>();
     }
 
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (view.IsMine)
         {
-            isPauseGame = !isPauseGame;
-        }
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                isPauseGame = !isPauseGame;
+            }
 
-        if (Input.GetKeyDown(KeyCode.UpArrow) && enableMove && !isPauseGame)
-        {
-            playerScript.TempCurrentPosition = new Vector2(transform.position.x, transform.position.y);
-            playerScript.TempTargetPosition = new Vector2(transform.position.x, transform.position.y + moveSteps);
-            playerScript.TempNextKey = "Up";
-            if (CanStepToPosition(playerScript.TempCurrentPosition, playerScript.TempTargetPosition, playerScript.TempNextKey))
+            if (!isStepOnIce && Input.GetKeyDown(KeyCode.UpArrow) && enableMove && !isPauseGame)
             {
-                SetPreviousMove("Up");
-            }
-        }
-        else if (Input.GetKeyDown(KeyCode.DownArrow) && enableMove && !isPauseGame)
-        {
-            playerScript.TempCurrentPosition = new Vector2(transform.position.x, transform.position.y);
-            playerScript.TempTargetPosition = new Vector2(transform.position.x, transform.position.y - moveSteps);
-            playerScript.TempNextKey = "Down";
-            if (CanStepToPosition(playerScript.TempCurrentPosition, playerScript.TempTargetPosition, playerScript.TempNextKey))
-            {
-                //CheckPipeEffect();
-                SetPreviousMove("Down");
-            }
-        }
-        else if (Input.GetKeyDown(KeyCode.LeftArrow) && enableMove && !isPauseGame)
-        {
-            playerScript.TempCurrentPosition = new Vector2(transform.position.x, transform.position.y);
-            playerScript.TempTargetPosition = new Vector2(transform.position.x - moveSteps, transform.position.y);
-            playerScript.TempNextKey = "Left";
-            if (CanStepToPosition(playerScript.TempCurrentPosition, playerScript.TempTargetPosition, playerScript.TempNextKey))
-            {
-                //CheckPipeEffect();
-                SetPreviousMove("Left");
-            }
-            this.transform.localScale = new Vector3(-0.5f, 0.5f, 0.5f);
-        }
-        else if (Input.GetKeyDown(KeyCode.RightArrow) && enableMove && !isPauseGame)
-        {
-            playerScript.TempCurrentPosition = new Vector2(transform.position.x, transform.position.y);
-            playerScript.TempTargetPosition = new Vector2(transform.position.x + moveSteps, transform.position.y);
-            playerScript.TempNextKey = "Right";
-            if (CanStepToPosition(playerScript.TempCurrentPosition, playerScript.TempTargetPosition, playerScript.TempNextKey))
-            {
-                //CheckPipeEffect();
-                SetPreviousMove("Right");
-            }
-            this.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
-        }
-        /*else if (isStepOnPool && enableMove)
-        {
-            moveSpeed = 25f;
-            playerScript.TempCurrentPosition = new Vector2(transform.position.x, transform.position.y);
-            if(GetPreviousMove() == "Left"){
-                playerScript.TempTargetPosition = new Vector2(transform.position.x - moveSteps, transform.position.y);
-            }else if(GetPreviousMove() == "Right"){
-                playerScript.TempTargetPosition = new Vector2(transform.position.x + moveSteps, transform.position.y);
-            }else if(GetPreviousMove() == "Up"){
+                playerScript.TempCurrentPosition = new Vector2(transform.position.x, transform.position.y);
                 playerScript.TempTargetPosition = new Vector2(transform.position.x, transform.position.y + moveSteps);
-            }else if(GetPreviousMove() == "Down"){
-                playerScript.TempTargetPosition = new Vector2(transform.position.x, transform.position.y - moveSteps);
+                playerScript.TempNextKey = "Up";
+                if (CanStepToPosition(playerScript.TempCurrentPosition, playerScript.TempTargetPosition, playerScript.TempNextKey))
+                {
+                    SetPreviousMove("Up");
+                }
             }
-
-            if (CanStepToPosition(playerScript.TempCurrentPosition, playerScript.TempTargetPosition, GetPreviousMove()))
+            else if (!isStepOnIce && Input.GetKeyDown(KeyCode.DownArrow) && enableMove && !isPauseGame)
             {
-                playerScript.CurrentPosition = this.transform.position;
-                if((obstaclePosition.ContainsKey(entranceDimensionPosition) && obstaclePosition[entranceDimensionPosition] == "Dimension")
-                || (obstaclePosition.ContainsKey(entranceDimensionPosition) && obstaclePosition[entranceDimensionPosition] == "DimensionTeleporter"))
-                    playerScript.CurrentPosition = playerScript.TempCurrentPosition;
-
-                playerScript.TargetPosition = playerScript.TempTargetPosition;
-                if (!playerScript.IsNotPickWire) GeneratePipe(GetPreviousMove(), playerScript.CurrentPosition, playerScript.TargetPosition);
-                CheckSocketEndPoint(playerScript.TargetPosition);
-                if (playerScript.IsNotPickWire && playerScript.IsAtSocket) GeneratePipe(GetPreviousMove(), playerScript.CurrentPosition, playerScript.TargetPosition);
-                CheckSocketStartPoint(playerScript.TargetPosition);
-                //CheckPipeEffect();
-                SetPreviousMove(GetPreviousMove());
+                playerScript.TempCurrentPosition = new Vector2(transform.position.x, transform.position.y);
+                playerScript.TempTargetPosition = new Vector2(transform.position.x, transform.position.y - moveSteps);
+                playerScript.TempNextKey = "Down";
+                if (CanStepToPosition(playerScript.TempCurrentPosition, playerScript.TempTargetPosition, playerScript.TempNextKey))
+                {
+                    SetPreviousMove("Down");
+                }
             }
-        }*/
+            else if (!isStepOnIce && Input.GetKeyDown(KeyCode.LeftArrow) && enableMove && !isPauseGame)
+            {
+                playerScript.TempCurrentPosition = new Vector2(transform.position.x, transform.position.y);
+                playerScript.TempTargetPosition = new Vector2(transform.position.x - moveSteps, transform.position.y);
+                playerScript.TempNextKey = "Left";
+                if (CanStepToPosition(playerScript.TempCurrentPosition, playerScript.TempTargetPosition, playerScript.TempNextKey))
+                {
+                    SetPreviousMove("Left");
+                }
+                this.transform.localScale = new Vector3(-0.5f, 0.5f, 0.5f);
+            }
+            else if (!isStepOnIce && Input.GetKeyDown(KeyCode.RightArrow) && enableMove && !isPauseGame)
+            {
+                playerScript.TempCurrentPosition = new Vector2(transform.position.x, transform.position.y);
+                playerScript.TempTargetPosition = new Vector2(transform.position.x + moveSteps, transform.position.y);
+                playerScript.TempNextKey = "Right";
+                if (CanStepToPosition(playerScript.TempCurrentPosition, playerScript.TempTargetPosition, playerScript.TempNextKey))
+                {
+                    SetPreviousMove("Right");
+                }
+                this.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
+            }
+            else if (isStepOnIce && enableMove)
+            {
+                playerScript.TempCurrentPosition = new Vector2(transform.position.x, transform.position.y);
+                if (GetPreviousMove() == "Left")
+                {
+                    playerScript.TempTargetPosition = new Vector2(transform.position.x - moveSteps, transform.position.y);
+                }
+                else if (GetPreviousMove() == "Right")
+                {
+                    playerScript.TempTargetPosition = new Vector2(transform.position.x + moveSteps, transform.position.y);
+                }
+                else if (GetPreviousMove() == "Up")
+                {
+                    playerScript.TempTargetPosition = new Vector2(transform.position.x, transform.position.y + moveSteps);
+                }
+                else if (GetPreviousMove() == "Down")
+                {
+                    playerScript.TempTargetPosition = new Vector2(transform.position.x, transform.position.y - moveSteps);
+                }
 
-        StepMove();
+                if (CanStepToPosition(playerScript.TempCurrentPosition, playerScript.TempTargetPosition, GetPreviousMove()))
+                {
+                    SetPreviousMove(GetPreviousMove());
+                }
+                else
+                {
+                    StopStepOnIce();
+                }
+            }
+
+            StepMove();
+        }
     }
 
     private void UpdateLocation()
@@ -201,8 +198,6 @@ public class Step : MonoBehaviour
             GameObject wire = w.GetWire();
             Vector2 wirePosition = new Vector2(wire.transform.position.x, wire.transform.position.y);
             gameManager.WireMap[wirePosition] = wire.GetComponent<Wire>();
-
-            //playGridList[mapIndex][xAxis, yAxis] = wire;
         }
     }
 
@@ -232,12 +227,64 @@ public class Step : MonoBehaviour
         //check current position
         if (playGridList[currentMap][xCurrent, yCurrent].tag == "Bridge")
         {
-            //Bridge bridge = bridgeType[currentPosition];
             Bridge bridge = mapGridList[currentMap][xCurrent, yCurrent].GetComponent<Bridge>();
             totalCheck = bridge.CheckCurrentStep(bridge, playerScript, GetPreviousMove());
             if(!totalCheck){
                 return false;
             }
+        }
+        else if (playGridList[currentMap][xCurrent, yCurrent].tag == "DoorButton")
+        {
+            int tempCurrentMap = (int) targetPosition.x / 100;
+            int tempXTarget = (int) (targetPosition.x % 100);
+            int tempYTarget = (int) (targetPosition.y); 
+            DoorButton button = playGridList[currentMap][xCurrent, yCurrent].GetComponent<DoorButton>();
+            button.CheckCurrentStep(playerScript, playGridList[tempCurrentMap][tempXTarget, tempYTarget], gameManager.WireMap);
+        }
+        else if (playGridList[currentMap][xCurrent, yCurrent].tag  == "Teleporter")
+        {
+            Teleporter teleporter = playGridList[currentMap][xCurrent, yCurrent].GetComponent<Teleporter>();
+
+            Vector3 tempTargetPosition = teleporter.GetNextPositionInside(playerScript);
+            int tempCurrentMap = (int) tempTargetPosition.x / 100;
+            int tempXTarget = (int) (tempTargetPosition.x % 100);
+            int tempYTarget = (int) (tempTargetPosition.y);  
+            
+            totalCheck = teleporter.CheckNextStepInside(playerScript, playGridList[tempCurrentMap][tempXTarget, tempYTarget], gameManager.WireMap);
+            
+            if(totalCheck) {                 
+                if(teleporter.IsTeleport(tempTargetPosition)){
+                    playerScript.CurrentPosition = playerScript.transform.position;
+                    playerScript.TargetPosition = tempTargetPosition;
+                    playerScript.transform.position = tempTargetPosition;
+
+                    tempCurrentMap = (int) playerScript.TargetPosition.x / 100;
+                    xCurrent = (int) (playerScript.CurrentPosition.x % 100);
+                    yCurrent = (int) (playerScript.CurrentPosition.y);
+                    xTarget = (int) (playerScript.TargetPosition.x % 100);
+                    yTarget = (int) (playerScript.TargetPosition.y);
+
+                    if(playGridList[currentMap][xCurrent, yCurrent].tag == "Bridge"){                 
+                        GenerateWire(currentMap, xCurrent, yCurrent, "Bridge");             
+                    } else{
+                        GenerateWire(currentMap, xCurrent, yCurrent, "Wire");    
+                    }
+
+                    if(playGridList[tempCurrentMap][xTarget, yTarget].tag == "Socket"){                 
+                        Socket socket = playGridList[tempCurrentMap][xTarget, yTarget].GetComponent<Socket>();
+                        if (socket.CheckSocketEndPoint(playerScript))
+                        {
+                            socket.ChangePlayerAttrEndPoint(playerScript);
+                            GenerateWire(tempCurrentMap, xCurrent, yCurrent, "Wire");
+                        }
+                        else if (socket.CheckSocketStartPoint(playerScript))
+                        {
+                            socket.ChangePlayerAttrStartPoint(playerScript);
+                        }                              
+                    }
+                    return true;           
+                }                                              
+            }        
         }
 
         //check target posotion
@@ -272,7 +319,11 @@ public class Step : MonoBehaviour
             {
                 totalCheck = true;
                 UpdateLocation();
-                GenerateWire(currentMap, xCurrent, yCurrent, "Wire");
+                if(playGridList[currentMap][xCurrent, yCurrent].tag == "Bridge"){                 
+                    GenerateWire(currentMap, xCurrent, yCurrent, "Bridge");             
+                } else{
+                    GenerateWire(currentMap, xCurrent, yCurrent, "Wire");    
+                }
                 socket.ChangePlayerAttrEndPoint(playerScript);
                 GenerateWire(currentMap, xTarget, yTarget, "Wire");
             }
@@ -287,10 +338,6 @@ public class Step : MonoBehaviour
         {
             totalCheck = false;
         }
-        else if (gameManager.WireMap.ContainsKey(targetPosition) && !playerScript.IsNotPickWire)
-        {
-            if (!playerScript.IsNotPickWire) totalCheck = false;
-        }
         else if (playGridList[currentMap][xTarget, yTarget].tag == "DimensionIn")
         {
             DimensionIn dIn = mapGridList[currentMap][xTarget, yTarget].GetComponent<DimensionIn>();
@@ -300,7 +347,7 @@ public class Step : MonoBehaviour
             int tempXTarget = (int) (tempTargetPosition.x % 100);
             int tempYTarget = (int) (tempTargetPosition.y);  
             
-            totalCheck = dIn.CheckNextStep(playerScript, playGridList[tempCurrentMap][tempXTarget, tempYTarget]);
+            totalCheck = dIn.CheckNextStep(playerScript, playGridList[tempCurrentMap][tempXTarget, tempYTarget], gameManager.WireMap);
             
             if(totalCheck) {              
                 playerScript.CurrentPosition = playerScript.transform.position;
@@ -342,7 +389,7 @@ public class Step : MonoBehaviour
             int tempXTarget = (int) (tempTargetPosition.x % 100);
             int tempYTarget = (int) (tempTargetPosition.y);  
             
-            totalCheck = dOut.CheckNextStep(playerScript, playGridList[tempCurrentMap][tempXTarget, tempYTarget]);
+            totalCheck = dOut.CheckNextStep(playerScript, playGridList[tempCurrentMap][tempXTarget, tempYTarget], gameManager.WireMap);
             
             if(totalCheck) {              
                 playerScript.CurrentPosition = playerScript.transform.position;
@@ -385,38 +432,97 @@ public class Step : MonoBehaviour
         {
             DoorButton button = mapGridList[currentMap][xTarget, yTarget].GetComponent<DoorButton>();
             button.IsActive = true;
-            totalCheck = true;
-            UpdateLocation();
+            
+            totalCheck = button.CheckNextStep(playerScript);
+            if(totalCheck){
+                UpdateLocation();
+                GenerateWire(currentMap, xCurrent, yCurrent, "Wire");
+            }  
         }
-/*
-        else if (obstaclePosition.ContainsKey(targetPosition) && obstaclePosition[targetPosition] == "DoorButton")
+        else if (playGridList[currentMap][xTarget, yTarget].tag == "Ice")
         {
-            DoorButton button = doorButtonType[targetPosition];
+            IcePallete icePallete = playGridList[currentMap][xTarget, yTarget].GetComponent<IcePallete>();
+            totalCheck = icePallete.CheckNextStep(playerScript, gameManager.WireMap);
+
+            if(totalCheck){
+                moveSpeed = 7f;
+                isStepOnIce = true;
+                UpdateLocation();
+                GenerateWire(currentMap, xCurrent, yCurrent, "Wire");
+            }
+        }
+        else if (playGridList[currentMap][xTarget, yTarget].tag == "DoorButton")
+        {
+            DoorButton button = playGridList[currentMap][xTarget, yTarget].GetComponent<DoorButton>();
             button.IsActive = true;
+            UpdateLocation();
+            GenerateWire(currentMap, xCurrent, yCurrent, "Wire");
         }
-        else if (obstaclePosition.ContainsKey(targetPosition) && obstaclePosition[targetPosition] == "Pool"
-        || (poolType.ContainsKey(targetPosition) && playerScript.IsNotPickWire)
-        )
+        else if (playGridList[currentMap][xTarget, yTarget].tag  == "Door")
         {
-            isStepOnPool = true;
-            return true;
-        }
-   
-        else if (obstaclePosition.ContainsKey(targetPosition) && obstaclePosition[targetPosition] == "Door")
-        {
-            Door door = doorType[targetPosition];
-            if (!door.IsActive)
-            {
-                StopStepOnPool();
-                return false;
-            }
-            else if (!playerScript.IsNotPickWire)
-            {
-                door.HasPipeAtDoorPosition = true;
+            Door door = playGridList[currentMap][xTarget, yTarget].GetComponent<Door>();        
+            totalCheck = door.CheckNextStep(playerScript);
+
+            if(totalCheck){
+                UpdateLocation();
+                GenerateWire(currentMap, xCurrent, yCurrent, "Wire");                   
             }
         }
-        if (!totalCheck) StopStepOnPool();
-*/
+        else if (playGridList[currentMap][xTarget, yTarget].tag  == "Teleporter")
+        {
+            Teleporter teleporter = playGridList[currentMap][xTarget, yTarget].GetComponent<Teleporter>();
+
+            Vector3 tempTargetPosition = teleporter.GetNextPositionOutside(playerScript);
+            int tempCurrentMap = (int) tempTargetPosition.x / 100;
+            int tempXTarget = (int) (tempTargetPosition.x % 100);
+            int tempYTarget = (int) (tempTargetPosition.y);  
+            
+            totalCheck = teleporter.CheckNextStepOutside(playerScript, gameManager.WireMap);
+            
+            if(totalCheck) {                 
+                if(teleporter.IsTeleport(tempTargetPosition)){
+                    playerScript.CurrentPosition = playerScript.transform.position;
+                    playerScript.TargetPosition = tempTargetPosition;
+                    playerScript.transform.position = tempTargetPosition;
+
+                    tempCurrentMap = (int) playerScript.TargetPosition.x / 100;
+                    xCurrent = (int) (playerScript.CurrentPosition.x % 100);
+                    yCurrent = (int) (playerScript.CurrentPosition.y);
+                    xTarget = (int) (playerScript.TargetPosition.x % 100);
+                    yTarget = (int) (playerScript.TargetPosition.y);
+
+                    if(playGridList[currentMap][xCurrent, yCurrent].tag == "Bridge"){                 
+                        GenerateWire(currentMap, xCurrent, yCurrent, "Bridge");             
+                    } else{
+                        GenerateWire(currentMap, xCurrent, yCurrent, "Wire");    
+                    }
+
+                    if(playGridList[tempCurrentMap][xTarget, yTarget].tag == "Socket"){                 
+                        Socket socket = playGridList[tempCurrentMap][xTarget, yTarget].GetComponent<Socket>();
+                        if (socket.CheckSocketEndPoint(playerScript))
+                        {
+                            socket.ChangePlayerAttrEndPoint(playerScript);
+                            GenerateWire(tempCurrentMap, xCurrent, yCurrent, "Wire");
+                        }
+                        else if (socket.CheckSocketStartPoint(playerScript))
+                        {
+                            socket.ChangePlayerAttrStartPoint(playerScript);
+                        }                              
+                    }                  
+                } else{               
+                    UpdateLocation();
+                    if(playGridList[currentMap][xCurrent, yCurrent].tag == "Bridge"){                 
+                        GenerateWire(currentMap, xCurrent, yCurrent, "Bridge");             
+                    } else{
+                        GenerateWire(currentMap, xCurrent, yCurrent, "Wire");    
+                    }
+                }                                             
+            }
+        }
+        else if (gameManager.WireMap.ContainsKey(targetPosition) && !playerScript.IsNotPickWire)
+        {
+            if (!playerScript.IsNotPickWire) totalCheck = false;
+        }
         else
         {
             if (totalCheck)
@@ -455,9 +561,9 @@ public class Step : MonoBehaviour
         previousMove = move;
     }
 
-    private void StopStepOnPool()
+    private void StopStepOnIce()
     {
-        isStepOnPool = false;
+        isStepOnIce = false;
         moveSpeed = 5f;
     }
 }

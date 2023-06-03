@@ -1,12 +1,12 @@
 2
-6 6
-Wall Wall Wall Wall Wall Wall
-Wall Ground Socket_Red Ground Ground Wall
-Wall Player:1 V_Bridge Socket_Yellow Ground Wall
-Wall Ground H_Bridge DimensionIn:1 Ground Wall
-Wall Pool Socket_Red Ground Ground Wall
-Wall Wall Wall Wall Wall Wall
+6 9
+Wall Wall Wall Wall Wall Wall Wall Wall Wall
+Wall Player:0 Ground Ground Ground Ground Ground Ground Wall
+Wall Ground Ground Ground Ground Ground Ground Ground Wall
+Wall Ground Ground Ground Ground Ground Ground Ground Wall
+Wall Ground Ground Ground Ground Ground Ground Ground Wall
+Wall Wall Wall Wall Wall Wall Wall Wall Wall
 3 3
-Wall DimensionOut:Top Wall
-DimensionOut:Left Socket_Yellow DimensionOut:Right
-Wall DimensionOut:Bottom Wall
+Wall Ground Wall
+Wall Ground Wall
+Wall Ground Wall

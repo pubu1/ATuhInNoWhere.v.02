@@ -39,12 +39,12 @@ public class Bridge : MonoBehaviour
 
         if (isOnBridge)
         {
-            //bridge.transform.position = new Vector3(bridge.transform.position.x, bridge.transform.position.y, 8f);
+            if(HasWireOnBridge && !player.IsNotPickWire) return false;
             player.DefaultZAxis = 2f;
         }
         else
-        {
-            //bridge.transform.position = new Vector3(bridge.transform.position.x, bridge.transform.position.y, 3f);
+        {    
+            if(HasWireUnderBridge && !player.IsNotPickWire) return false;   
             player.DefaultZAxis = 5f;
         }
 
@@ -65,11 +65,7 @@ public class Bridge : MonoBehaviour
             || (bridge.IsVertical() && (player.TempNextKey == "Left" || player.TempNextKey == "Right")))
                 return false;
 
-            /*New*/
-            if (!player.IsNotPickWire)
-            {
-                bridge.HasWireOnBridge = true;
-            }
+            if (!player.IsNotPickWire) bridge.HasWireOnBridge = true;
         }
         else
         {
@@ -78,12 +74,6 @@ public class Bridge : MonoBehaviour
                 return false;
 
             if (!player.IsNotPickWire) bridge.HasWireUnderBridge = true;
-
-            /*New*/
-            if (!player.IsNotPickWire)
-            {
-                bridge.HasWireUnderBridge = true;
-            }
         }
         return true;
     }
