@@ -47,39 +47,43 @@ public class Step : MonoBehaviour
         mapGridList = gameManager.MapGridList;
         playGridList = gameManager.PlayGridList;
 
-        for (int i = 0; i < mapGridList.Count; ++i)
+        view = GetComponent<PhotonView>();
+        if (view.IsMine)
         {
-            foreach (GameObject item in mapGridList[i])
+            for (int i = 0; i < mapGridList.Count; ++i)
             {
-                if (item.tag == "Player")
+                foreach (GameObject item in mapGridList[i])
                 {
-                    if (this.gameObject.transform.position == item.transform.position)
+                    if (item.tag == "Player")
                     {
-                        player = item;
-                        break;
+                        if (this.gameObject.transform.position == item.transform.position)
+                        {
+                            player = item;
+                            break;
+                        }
                     }
                 }
             }
+
+            //player = gameManager.GetPlayer();
+            playerScript = player.GetComponent<Player>();
+
+            //        entranceDimensionPosition = player.transform.position;
+            // handlePipeColor = "Default";
+
+            playerScript.HandleWireColor = "Default";
+            previousMove = "";
+
+            currentMap = (int)playerScript.CurrentPosition.x / 100;
+            xCurrent = (int)(playerScript.CurrentPosition.x % 100);
+            yCurrent = (int)(playerScript.CurrentPosition.y);
+            xTarget = (int)(playerScript.TargetPosition.x % 100);
+            yTarget = (int)(playerScript.TargetPosition.y);
+
         }
-
-        //player = gameManager.GetPlayer();
-        playerScript = player.GetComponent<Player>();
-
-//        entranceDimensionPosition = player.transform.position;
-        // handlePipeColor = "Default";
-
-        playerScript.HandleWireColor = "Default";
-        previousMove = "";
-
-        currentMap = (int) playerScript.CurrentPosition.x / 100;
-        xCurrent = (int) (playerScript.CurrentPosition.x % 100);
-        yCurrent = (int) (playerScript.CurrentPosition.y);
-        xTarget = (int) (playerScript.TargetPosition.x % 100);
-        yTarget = (int) (playerScript.TargetPosition.y);
 
         // Create the 2D grid
         //grid = new GameObject[gridWidth, gridHeight];
-        view = GetComponent<PhotonView>();
     }
 
 
