@@ -89,7 +89,9 @@ public class GameManager : MonoBehaviourPunCallbacks
         GameObject prefab = prefabList.FirstOrDefault(o => o.name == "Player");
         Quaternion rotation = playerPrefab.transform.rotation;
         float z = playerPrefab.transform.position.z;
-        GameObject instantiatedPrefab = PhotonNetwork.Instantiate(playerPrefab.name, new Vector3(x, y, z), rotation) as GameObject;
+        Vector3 roundedPosition = new Vector3(x, y, z);
+        GameObject instantiatedPrefab = PhotonNetwork.Instantiate(playerPrefab.name, roundedPosition, rotation) as GameObject;
+        instantiatedPrefab.transform.position = roundedPosition;
         return instantiatedPrefab;
     }
 
