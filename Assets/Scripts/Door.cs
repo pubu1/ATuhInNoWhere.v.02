@@ -12,14 +12,13 @@ public class Door : MonoBehaviour
     private string doorOpenDirection;
 
     [SerializeField]
-    private bool isReverseDoor;
+    private bool isReverseDoor = true;
 
     public bool IsActive{get; set;}  
 
     public bool HasPipeAtDoorPosition{get; set;}
 
-    [SerializeField]
-    private float moveSpeed = 15f;
+    private float moveSpeed = 5f;
     private Vector2 previousPosition; 
     private Vector2 targetPosition; 
     private Vector2 openAxis;
@@ -74,5 +73,18 @@ public class Door : MonoBehaviour
 
     public bool CheckReverseDoor(){
         return isReverseDoor;
+    }
+
+    public bool CheckNextStep(Player player){
+        bool totalCheck = false;
+
+        if(this.IsActive){
+            totalCheck = true;
+            if (!player.IsNotPickWire) this.HasPipeAtDoorPosition = true;
+        } else{
+            totalCheck = false;
+        }
+
+        return totalCheck;
     }
 }

@@ -34,4 +34,33 @@ public class DoorButton : MonoBehaviour
             this.GetComponent<SpriteRenderer>().sprite = unableButton;
         }
     }
+
+    public void CheckCurrentStep(Player player, GameObject nextStepObject, Dictionary<Vector2,Wire> wireMap){
+        bool totalCheck = true;
+        if(wireMap.ContainsKey(nextStepObject.transform.position) && !player.IsNotPickWire){
+            totalCheck = false;
+        }
+        else if(nextStepObject.tag == "Socket" && !player.IsNotPickWire 
+        && nextStepObject.GetComponent<Socket>().Color != player.HandleWireColor
+        && nextStepObject.GetComponent<Socket>().IsConnect == false){
+            totalCheck = false;
+        }
+        else if(nextStepObject.tag == "Wall"){
+            totalCheck = false;
+        }
+
+        if(!totalCheck) 
+            this.IsActive = true;
+        else 
+            this.IsActive = false;
+    }
+
+    public bool CheckNextStep(Player player){
+        if(this.HasPipeOn && !player.IsNotPickWire) 
+            return false;
+        else{
+            if(!player.IsNotPickWire) this.HasPipeOn = true;
+            return true;
+        }          
+    }
 }

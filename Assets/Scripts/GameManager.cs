@@ -45,7 +45,11 @@ public class GameManager : MonoBehaviour
 
     public int Score { get; set; }
 
-    private GameObject check;
+/*Daviz*/
+    private Teleporter tele01;
+    private Teleporter tele02;
+    int indd=0;
+    int indd1=0, indd2=0, indd3=0, indd4=0;
     public void Start()
     {
         inputManager = new InputManager();
@@ -167,6 +171,21 @@ public class GameManager : MonoBehaviour
                         instantiatedPrefab.GetComponent<Door>().ID = doorID;
                         grid[x, y] = instantiatedPrefab;
                     }
+                    /*Daviz*/
+                    else if(item.Contains("Teleporter")){
+                        GameObject instantiatedPrefab = InstantiatePrefab(item, x + offset, y);
+                        if(indd == 0){
+                            indd++;
+                            indd1=x;
+                            indd2=y;
+                            tele01 = instantiatedPrefab.GetComponent<Teleporter>();
+                        } else{
+                            tele02 = instantiatedPrefab.GetComponent<Teleporter>();
+                            indd3=x;
+                            indd4=y;
+                        }
+                        grid[x, y] = instantiatedPrefab;
+                    }
                     else
                     {
                         /*                        prefab = prefabList.FirstOrDefault(o => o.name == item);
@@ -183,6 +202,10 @@ public class GameManager : MonoBehaviour
             offset += 100;
             ++currentMap;
         }
+
+        /*Daviz*/
+        MapGridList[0][indd1,indd2].GetComponent<Teleporter>().TargetTeleporter = tele02;
+        MapGridList[0][indd3, indd4].GetComponent<Teleporter>().TargetTeleporter  = tele01;
     }
 
     private void ConnectMap()

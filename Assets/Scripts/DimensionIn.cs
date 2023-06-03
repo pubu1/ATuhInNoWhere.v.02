@@ -43,9 +43,9 @@ public class DimensionIn : MonoBehaviour
         return entrancePosition;
     }
 
-    public bool CheckNextStep(Player player, GameObject nextStepObject){
+    public bool CheckNextStep(Player player, GameObject nextStepObject, Dictionary<Vector2,Wire> wireMap){
         bool totalCheck = true;
-        if(nextStepObject.tag == "Wire" && !player.IsNotPickWire){
+        if(wireMap.ContainsKey(this.GetNextPosition(player)) && !player.IsNotPickWire){
             totalCheck = false;
         }
         else if(nextStepObject.tag == "Socket" && !player.IsNotPickWire 

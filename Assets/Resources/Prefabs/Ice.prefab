@@ -12,8 +12,8 @@ GameObject:
   - component: {fileID: 7671067400086432849}
   - component: {fileID: 6984967260728561410}
   m_Layer: 0
-  m_Name: Pool
-  m_TagString: Pool
+  m_Name: Ice
+  m_TagString: Ice
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -74,7 +74,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 46f1e479166bc6744af2b4558ebe12b0, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 960b8cdf71c377c4f9d27c7f5bd3be02, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -94,6 +94,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 7671067400086432854}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e7ab3b99e84d5ea4299dab95a3e8e975, type: 3}
+  m_Script: {fileID: 11500000, guid: eb5aede32cf60f2429d92a832a62dfd3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
