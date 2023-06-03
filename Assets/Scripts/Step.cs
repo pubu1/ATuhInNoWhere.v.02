@@ -36,8 +36,8 @@ public class Step : MonoBehaviour
     int yCurrent;
     int xTarget;
     int yTarget;
-
-    PhotonView view;
+    [SerializeField]
+    private PhotonView view ;
 
     // Start is called before the first frame update
     void Start()
@@ -47,7 +47,7 @@ public class Step : MonoBehaviour
         mapGridList = gameManager.MapGridList;
         playGridList = gameManager.PlayGridList;
 
-        view = GetComponent<PhotonView>();
+        //view = GetComponent<PhotonView>();
         if (view.IsMine)
         {
             for (int i = 0; i < mapGridList.Count; ++i)

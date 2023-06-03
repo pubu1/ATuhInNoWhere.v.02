@@ -22,6 +22,7 @@ public class GameManager : MonoBehaviour
 
     // [SerializeField]
     // private GameObject GuideUI;
+    [SerializeField] GameObject playerPrefab;
 
     private GameObject[,] grid;
 
@@ -84,9 +85,9 @@ public class GameManager : MonoBehaviour
     private GameObject InstantiatePlayer(int id, int x, int y)
     {
         GameObject prefab = prefabList.FirstOrDefault(o => o.name == "Player");
-        Quaternion rotation = prefab.transform.rotation;
-        float z = prefab.transform.position.z;
-        GameObject instantiatedPrefab = PhotonNetwork.Instantiate(prefab.name, new Vector3(x, y, z), rotation) as GameObject;
+        Quaternion rotation = playerPrefab.transform.rotation;
+        float z = playerPrefab.transform.position.z;
+        GameObject instantiatedPrefab = PhotonNetwork.Instantiate(playerPrefab.name, new Vector3(x, y, z), rotation) as GameObject;
         return instantiatedPrefab;
     }
 

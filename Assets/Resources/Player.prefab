@@ -106,6 +106,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSteps: 1
   moveSpeed: 5
+  view: {fileID: 678848181199714315}
 --- !u!114 &1320716014698003660
 MonoBehaviour:
   m_ObjectHideFlags: 0
