@@ -14,9 +14,9 @@ public class Teleporter : MonoBehaviour
     void Start()
     {
         HasLeftEntrance = true;
-        HasTopEntrance = true;
-        HasRightEntrance = true;
-        HasBottomEntrance = true;
+        HasTopEntrance = false;
+        HasRightEntrance = false;
+        HasBottomEntrance = false;
     }
 
     public Vector3 GetNextPositionOutside(Player player)

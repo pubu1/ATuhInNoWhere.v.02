@@ -7,6 +7,7 @@ using UnityEngine;
 public class ChangeColor : MonoBehaviour
 {
     private Color COLOR_DEFAULT = new Color(255, 255, 255, 1);
+    private Color COLOR_OPACITY = new Color(255, 255, 255, 0.5f);
     private Color COLOR_RED = new Color(Divider(255f), Divider(0f), Divider(0), 1);
     private Color COLOR_GREEN = new Color(Divider(0), Divider(255f), Divider(0), 1);
     private Color COLOR_BLUE = new Color(Divider(0f), Divider(0f), Divider(255f), 1);
@@ -26,6 +27,7 @@ public class ChangeColor : MonoBehaviour
 
     public ChangeColor(){
         colorConvertMap["Default"] = COLOR_DEFAULT;
+        colorConvertMap["Opacity"] = COLOR_OPACITY;
         colorConvertMap["Red"] = COLOR_RED;
         colorConvertMap["Green"] = COLOR_GREEN;
         colorConvertMap["Blue"] = COLOR_BLUE;

@@ -80,7 +80,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         GameObject prefab = prefabList.FirstOrDefault(o => o.name == prefabName);
         Quaternion rotation = prefab.transform.rotation;
         float z = prefab.transform.position.z;
-        GameObject instantiatedPrefab = PhotonNetwork.Instantiate(prefabName, new Vector3(x, y, z), rotation) as GameObject;
+        GameObject instantiatedPrefab = Instantiate(prefab, new Vector3(x, y, z), rotation) as GameObject;
         return instantiatedPrefab;
     }
 
@@ -200,7 +200,7 @@ public class GameManager : MonoBehaviourPunCallbacks
                         grid[x, y] = instantiatedPrefab;
                     }
                     /*Daviz*/
-                    /*else if(item.Contains("Teleporter")){
+                    else if(item.Contains("Teleporter")){
                         GameObject instantiatedPrefab = InstantiatePrefab(item, x + offset, y);
                         if(indd == 0){
                             indd++;
@@ -213,7 +213,7 @@ public class GameManager : MonoBehaviourPunCallbacks
                             indd4=y;
                         }
                         grid[x, y] = instantiatedPrefab;
-                    }*/
+                    }
                     else
                     {
                         /*                        prefab = prefabList.FirstOrDefault(o => o.name == item);
@@ -232,8 +232,8 @@ public class GameManager : MonoBehaviourPunCallbacks
         }
 
         /*Daviz*/
-/*        MapGridList[0][indd1,indd2].GetComponent<Teleporter>().TargetTeleporter = tele02;
-        MapGridList[0][indd3, indd4].GetComponent<Teleporter>().TargetTeleporter  = tele01;*/
+        MapGridList[0][indd1,indd2].GetComponent<Teleporter>().TargetTeleporter = tele02;
+        MapGridList[0][indd3, indd4].GetComponent<Teleporter>().TargetTeleporter  = tele01;
     }
 
     private void ConnectMap()

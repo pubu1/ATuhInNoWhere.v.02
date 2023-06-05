@@ -7,12 +7,26 @@ public class Bridge : MonoBehaviour
     private string bridgeType;
     public bool HasWireOnBridge { get; set; }
     public bool HasWireUnderBridge { get; set; }
+    public bool HasPlayerOnBridge {get; set; }
+    public bool HasPlayerUnderBridge {get; set; }
+    ChangeColor color;
 
     void Start()
     {
         HasWireOnBridge = false;
         HasWireUnderBridge = false;
+        HasPlayerOnBridge = false;
+        HasPlayerUnderBridge = false;
         bridgeType = "Horizontal";
+        color = new ChangeColor();
+    }
+
+    void Update(){
+        if(HasPlayerUnderBridge){    
+            color.ChangeSpriteColor(this.gameObject, "Opacity");
+        } else{
+            color.ChangeSpriteColor(this.gameObject, "Default");
+        }
     }
 
     public string GetBridgeType()
@@ -40,12 +54,14 @@ public class Bridge : MonoBehaviour
         if (isOnBridge)
         {
             if(HasWireOnBridge && !player.IsNotPickWire) return false;
-            player.DefaultZAxis = 2f;
+            player.DefaultZAxis = 2f;  
+            this.HasPlayerOnBridge = true;        
         }
         else
         {    
             if(HasWireUnderBridge && !player.IsNotPickWire) return false;   
             player.DefaultZAxis = 5f;
+            this.HasPlayerUnderBridge = true;  
         }
 
         return true;
@@ -66,6 +82,7 @@ public class Bridge : MonoBehaviour
                 return false;
 
             if (!player.IsNotPickWire) bridge.HasWireOnBridge = true;
+            this.HasPlayerOnBridge = false;
         }
         else
         {
@@ -74,6 +91,7 @@ public class Bridge : MonoBehaviour
                 return false;
 
             if (!player.IsNotPickWire) bridge.HasWireUnderBridge = true;
+            this.HasPlayerUnderBridge = false;
         }
         return true;
     }

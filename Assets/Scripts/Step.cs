@@ -539,13 +539,22 @@ public class Step : MonoBehaviour
                 }
             }
         }
+
+        if (!totalCheck)
+        {
+            if(playGridList[currentMap][xCurrent, yCurrent].tag == "Bridge") {
+                Bridge bridge = playGridList[currentMap][xCurrent, yCurrent].GetComponent<Bridge>();
+                if(bridge.HasPlayerUnderBridge == false){
+                    bridge.HasPlayerUnderBridge = true;
+                }
+            }
+        }
         return totalCheck;
     }
 
     void StepMove()
     {
         player.transform.position = Vector3.MoveTowards(transform.position, new Vector3(playerScript.TargetPosition.x, playerScript.TargetPosition.y, playerScript.DefaultZAxis), moveSpeed * Time.deltaTime);
-        //player.transform.position = playerScript.TargetPosition;
         if (new Vector2(player.transform.position.x, player.transform.position.y) != playerScript.TargetPosition)
         {
             enableMove = false;
