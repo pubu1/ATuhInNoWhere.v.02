@@ -37,7 +37,7 @@ public class Socket : MonoBehaviour
         Debug.Log("Is start point --- " + player.HandleWireColor);
 
         // Accessing the child object by name
-        Transform childTransform = player.transform.Find("ATuh").transform.Find("Body");
+        Transform childTransform = player.transform.Find("WholePlayerObject").transform.Find("Body");
         if (childTransform != null)
         {
             GameObject body = childTransform.gameObject;
@@ -53,7 +53,7 @@ public class Socket : MonoBehaviour
         Debug.Log("Is end point --- " + player.HandleWireColor);
 
         // Accessing the child object by name
-        Transform childTransform = player.transform.Find("ATuh").transform.Find("Body");
+        Transform childTransform = player.transform.Find("WholePlayerObject").transform.Find("Body");
         if (childTransform != null)
         {
             GameObject body = childTransform.gameObject;

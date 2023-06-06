@@ -45,6 +45,9 @@ public class GameManager : MonoBehaviourPunCallbacks
     private bool openGuideUI = false;
 
     public int Score { get; set; }
+    private int SocketAmount = 0;
+
+    private bool IsCameraTargetPlayer{get; set;}
 
 /*Daviz*/
     private Teleporter tele01;
@@ -55,8 +58,8 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         inputManager = new InputManager();
         doorButtonList = new Dictionary<int, GameObject>();
-        //player.transform.position = new Vector3(player.transform.position.x, player.transform.position.y, 6);
         Score = 0;
+        IsCameraTargetPlayer = false;
         inputList = inputManager.LoadGridFromFile();
         prefabList = FindAllPrefabs();
         if (PhotonNetwork.IsConnected)
@@ -150,6 +153,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 
                         changeColor.ChangeSpriteColor(instantiatedPrefab, hexCode);
                         grid[x, y] = instantiatedPrefab;
+                        SocketAmount++;
                     }
                     else if (item.Contains("Player"))
                     {
@@ -318,11 +322,35 @@ public class GameManager : MonoBehaviourPunCallbacks
     // Update is called once per frame
     void Update()
     {
-        // GameOverUI.SetActive(false);
-        // if (Input.GetKeyDown(KeyCode.R))
-        // {
-        //     ResetTheGame();
-        // }
+        GameOverUI.SetActive(false);
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            ResetTheGame();
+        }
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            //Get the Canvas
+            GameObject canvasObject = GameObject.Find("Canvas");
+            Canvas canvasComponent = canvasObject.GetComponent<Canvas>();
+
+            //Get Player Camera and World Camera
+            Camera playerCamera = GetPlayer().transform.Find("Camera").gameObject.GetComponent<Camera>();
+            Camera worldCamera = GameObject.Find("Main Camera").GetComponent<Camera>();
+
+            if(!IsCameraTargetPlayer){
+                worldCamera.enabled = false;
+                playerCamera.enabled = true;
+                
+                canvasComponent.worldCamera = playerCamera;
+                IsCameraTargetPlayer = true;
+            } else {
+                worldCamera.enabled = true;
+                playerCamera.enabled = false;
+
+                canvasComponent.worldCamera = worldCamera;
+                IsCameraTargetPlayer = false;
+            }
+        }
         // if (Input.GetKeyDown(KeyCode.Escape))
         // {
         //     openPauseUI = !openPauseUI;
@@ -334,12 +362,11 @@ public class GameManager : MonoBehaviourPunCallbacks
         //     openGuideUI = !openGuideUI;
         //     GuideUI.SetActive(openGuideUI);
         // }
-        // if (Score == pointType.Count / 2)
-        // {
-        //     GameOverUI.SetActive(true);
-        // }
+        if (Score == SocketAmount / 2)
+        {
+            //GameOverUI.SetActive(true);
+        }
     }
-
     private void ResetTheGame()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);

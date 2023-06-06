@@ -280,6 +280,7 @@ public class Step : MonoBehaviour
                         {
                             socket.ChangePlayerAttrEndPoint(playerScript);
                             GenerateWire(tempCurrentMap, xCurrent, yCurrent, "Wire");
+                            gameManager.Score++;
                         }
                         else if (socket.CheckSocketStartPoint(playerScript))
                         {
@@ -330,6 +331,7 @@ public class Step : MonoBehaviour
                 }
                 socket.ChangePlayerAttrEndPoint(playerScript);
                 GenerateWire(currentMap, xTarget, yTarget, "Wire");
+                gameManager.Score++;
             }
             else if (socket.CheckSocketStartPoint(playerScript))
             {
@@ -376,6 +378,7 @@ public class Step : MonoBehaviour
                     {
                         socket.ChangePlayerAttrEndPoint(playerScript);
                         GenerateWire(tempCurrentMap, xCurrent, yCurrent, "Wire");
+                        gameManager.Score++;
                     }
                     else if (socket.CheckSocketStartPoint(playerScript))
                     {
@@ -419,6 +422,7 @@ public class Step : MonoBehaviour
                     {
                         socket.ChangePlayerAttrEndPoint(playerScript);
                         GenerateWire(tempCurrentMap, xCurrent, yCurrent, "Wire");
+                        gameManager.Score++;
                     }
                     else if (socket.CheckSocketStartPoint(playerScript))
                     {
@@ -507,6 +511,7 @@ public class Step : MonoBehaviour
                         {
                             socket.ChangePlayerAttrEndPoint(playerScript);
                             GenerateWire(tempCurrentMap, xCurrent, yCurrent, "Wire");
+                            gameManager.Score++;
                         }
                         else if (socket.CheckSocketStartPoint(playerScript))
                         {

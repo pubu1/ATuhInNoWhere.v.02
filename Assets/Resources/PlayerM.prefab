@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8180728362329140955}
   - component: {fileID: 8180728362329140952}
   m_Layer: 0
-  m_Name: ATuh
+  m_Name: WholePlayerObject
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
