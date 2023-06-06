@@ -1,0 +1,8 @@
+1
+6 9
+Wall Wall Wall Wall Wall Wall Wall Wall Wall
+Wall Ground Ground Ground Ground Ground Socket_Yellow Ground Wall
+Wall PlayerF:0 Ground Teleporter Ground Ice Ground Ground Wall
+Wall Ground Socket_Red Ground Teleporter Ground Bridge Ground Wall
+Wall Socket_Yellow Ground Ground Ground Ground Socket_Red Ground Wall
+Wall Wall Wall Wall Wall Wall Wall Wall Wall

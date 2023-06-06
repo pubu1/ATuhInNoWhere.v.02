@@ -4,17 +4,126 @@ using UnityEngine;
 
 public class Bridge : MonoBehaviour
 {
-    [SerializeField] private string bridgeType;
+    private string bridgeType;
+    public bool HasWireOnBridge { get; set; }
+    public bool HasWireUnderBridge { get; set; }
+    public bool HasPlayerOnBridge {get; set; }
+    public bool HasPlayerUnderBridge {get; set; }
+    ChangeColor color;
 
-    public bool HasPipeOnBridge{get;set;}
-    public bool HasPipeUnderBridge{get;set;}
-
-    void Start(){
-        HasPipeOnBridge = false;
-        HasPipeUnderBridge = false;
+    void Start()
+    {
+        HasWireOnBridge = false;
+        HasWireUnderBridge = false;
+        HasPlayerOnBridge = false;
+        HasPlayerUnderBridge = false;
+        bridgeType = "Horizontal";
+        color = new ChangeColor();
     }
 
-    public string GetBridgeType(){
+    void Update(){
+        if(HasPlayerUnderBridge){    
+            color.ChangeSpriteColor(this.gameObject, "Opacity");
+        } else{
+            color.ChangeSpriteColor(this.gameObject, "Default");
+        }
+    }
+
+    public string GetBridgeType()
+    {
         return bridgeType.Trim();
+    }
+
+    public bool IsVertical()
+    {
+        return bridgeType == "Vertical";
+    }
+    public bool IsHorizontal()
+    {
+        return bridgeType == "Horizontal";
+    }
+
+    public bool CheckNextStep(Bridge bridge, Player player)
+    {
+        bool isOnBridge = false;
+
+        if ((bridge.IsHorizontal() && (player.TempNextKey == "Left" || player.TempNextKey == "Right"))
+        || (bridge.IsVertical() && (player.TempNextKey == "Up" || player.TempNextKey == "Down")))
+            isOnBridge = true;
+
+        if (isOnBridge)
+        {
+            if(HasWireOnBridge && !player.IsNotPickWire) return false;
+            player.DefaultZAxis = 2f;  
+            this.HasPlayerOnBridge = true;        
+        }
+        else
+        {    
+            if(HasWireUnderBridge && !player.IsNotPickWire) return false;   
+            player.DefaultZAxis = 5f;
+            this.HasPlayerUnderBridge = true;  
+        }
+
+        return true;
+    }
+
+    public bool CheckCurrentStep(Bridge bridge, Player player, string previousMove)
+    {
+        bool isOnBridge = false;
+
+        if ((bridge.IsHorizontal() && (previousMove == "Left" || previousMove == "Right"))
+        || (bridge.IsVertical() && (previousMove == "Up" || previousMove == "Down")))
+            isOnBridge = true;
+
+        if (isOnBridge)
+        {
+            if ((bridge.IsHorizontal() && (player.TempNextKey == "Up" || player.TempNextKey == "Down"))
+            || (bridge.IsVertical() && (player.TempNextKey == "Left" || player.TempNextKey == "Right")))
+                return false;
+
+            if (!player.IsNotPickWire) bridge.HasWireOnBridge = true;
+            this.HasPlayerOnBridge = false;
+        }
+        else
+        {
+            if ((bridge.IsHorizontal() && (player.TempNextKey == "Left" || player.TempNextKey == "Right"))
+            || (bridge.IsVertical() && (player.TempNextKey == "Up" || player.TempNextKey == "Down")))
+                return false;
+
+            if (!player.IsNotPickWire) bridge.HasWireUnderBridge = true;
+            this.HasPlayerUnderBridge = false;
+        }
+        return true;
+    }
+
+    public float GetZAxisWire(string previousMove)
+    {
+        float wireZAxis = 0f;
+
+        if (this.IsVertical()
+        && (previousMove == "Left" || previousMove == "Right")
+        && this.HasWireUnderBridge)
+        {
+            wireZAxis = 6f;
+        }
+        else if (this.IsHorizontal()
+        && (previousMove == "Up" || previousMove == "Down"
+        && this.HasWireUnderBridge))
+        {
+            wireZAxis = 6f;
+        }
+        else if (this.IsVertical()
+        && (previousMove == "Up" || previousMove == "Down"
+        && this.HasWireOnBridge))
+        {
+            wireZAxis = 3f;
+        }
+        else if (this.IsHorizontal()
+        && (previousMove == "Left" || previousMove == "Right"
+        && this.HasWireOnBridge))
+        {
+            wireZAxis = 3f;
+        }
+        return wireZAxis;
     }
 }

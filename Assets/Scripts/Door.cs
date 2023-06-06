@@ -4,21 +4,19 @@ using UnityEngine;
 
 public class Door : MonoBehaviour
 {
-    [SerializeField]
-    private DoorButton button;
+    public int ID { get; set; }
 
-    [SerializeField]
+    public DoorButton Button { get; set; }
+
     private string doorOpenDirection;
 
-    [SerializeField]
     private bool isReverseDoor;
 
     public bool IsActive{get; set;}  
 
     public bool HasPipeAtDoorPosition{get; set;}
 
-    [SerializeField]
-    private float moveSpeed = 15f;
+    private float moveSpeed = 5f;
     private Vector2 previousPosition; 
     private Vector2 targetPosition; 
     private Vector2 openAxis;
@@ -26,6 +24,9 @@ public class Door : MonoBehaviour
     // Start is called before the first frame update
     public void Start()
     {
+        doorOpenDirection = "Down";
+        isReverseDoor = false;
+
         if(isReverseDoor)           
             IsActive = true;
         else{
@@ -34,16 +35,16 @@ public class Door : MonoBehaviour
 
         previousPosition = this.transform.position;
 
-        if(doorOpenDirection == "Up") targetPosition = new Vector2(previousPosition.x, previousPosition.y+4);
-        else if(doorOpenDirection == "Down") targetPosition = new Vector2(previousPosition.x, previousPosition.y-4);  
-        else if(doorOpenDirection == "Left") targetPosition = new Vector2(previousPosition.x-4, previousPosition.y);
-        else if(doorOpenDirection == "Right") targetPosition = new Vector2(previousPosition.x+4, previousPosition.y);
+        if(doorOpenDirection == "Up") targetPosition = new Vector2(previousPosition.x, previousPosition.y+1);
+        else if(doorOpenDirection == "Down") targetPosition = new Vector2(previousPosition.x, previousPosition.y-1);  
+        else if(doorOpenDirection == "Left") targetPosition = new Vector2(previousPosition.x-1, previousPosition.y);
+        else if(doorOpenDirection == "Right") targetPosition = new Vector2(previousPosition.x+1, previousPosition.y);
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(button.IsActive){
+        if(Button.IsActive){
             openAxis = targetPosition;
             if(isReverseDoor){
                 IsActive = false;
@@ -73,5 +74,18 @@ public class Door : MonoBehaviour
 
     public bool CheckReverseDoor(){
         return isReverseDoor;
+    }
+
+    public bool CheckNextStep(Player player){
+        bool totalCheck = false;
+
+        if(this.IsActive){
+            totalCheck = true;
+            if (!player.IsNotPickWire) this.HasPipeAtDoorPosition = true;
+        } else{
+            totalCheck = false;
+        }
+
+        return totalCheck;
     }
 }
