@@ -322,7 +322,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     // Update is called once per frame
     void Update()
     {
-        GameOverUI.SetActive(false);
+        //GameOverUI.SetActive(false);
         if (Input.GetKeyDown(KeyCode.R))
         {
             ResetTheGame();
