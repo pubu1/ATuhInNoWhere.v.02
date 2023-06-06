@@ -360,6 +360,9 @@ public class Step : MonoBehaviour
                 playerScript.TargetPosition = tempTargetPosition;
                 playerScript.transform.position = tempTargetPosition;
 
+                GameObject mainCamera = GameObject.Find("Main Camera");
+                mainCamera.transform.position = playerScript.TargetPosition;
+
                 tempCurrentMap = (int) playerScript.TargetPosition.x / 100;
                 xCurrent = (int) (playerScript.CurrentPosition.x % 100);
                 yCurrent = (int) (playerScript.CurrentPosition.y);
@@ -402,6 +405,9 @@ public class Step : MonoBehaviour
                 playerScript.CurrentPosition = playerScript.transform.position;
                 playerScript.TargetPosition = tempTargetPosition;
                 playerScript.transform.position = tempTargetPosition;
+
+                GameObject mainCamera = GameObject.Find("Main Camera");
+                mainCamera.transform.position = playerScript.TargetPosition;
              
                 tempCurrentMap = (int) playerScript.TargetPosition.x / 100;
                 xCurrent = (int) (playerScript.CurrentPosition.x % 100);
