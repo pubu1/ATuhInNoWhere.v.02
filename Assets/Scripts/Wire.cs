@@ -17,21 +17,15 @@ public class Wire : MonoBehaviour
     {
         wireZAxis = 7f;
         wireSprites = new Sprite[3];       
-        wireSprites[0] = Resources.Load<Sprite>("straight");
-        wireSprites[1] = Resources.Load<Sprite>("curve");
-        wireSprites[2] = Resources.Load<Sprite>("cap");   
+        wireSprites[0] = Resources.Load<Sprite>("Sprites/Wire/straight");
+        wireSprites[1] = Resources.Load<Sprite>("Sprites/Wire/curve");
+        wireSprites[2] = Resources.Load<Sprite>("Sprites/Wire/cap");
         GameManager gameManager = new GameManager();   
         wireInstance = gameManager.GetPrefabByName("Wire");
     }
 
     public void GenerateWire(Player player, string previousMove)
     {
-        /*chuyen vi tri trong array thanh wire*/
-
-        /*===Code here===*/
-        /*obstaclePosition[player.CurrentPosition] = "Pipe";
-        if(bridgeType.ContainsKey(player.CurrentPosition)) 
-            obstaclePosition[player.CurrentPosition] = "Bridge";*/
         if (player.TempNextKey == "Right")
         {
             if (player.IsAtSocket && !player.IsNotPickWire)

@@ -275,6 +275,8 @@ public class GameManager : MonoBehaviourPunCallbacks
                         }
                         //if (ok == 0) Debug.Log("Not found any!");
                     }
+                    item.GetComponent<DimensionIn>().Start();
+                    item.GetComponent<DimensionIn>().RenderSprite();
                 }
 
 

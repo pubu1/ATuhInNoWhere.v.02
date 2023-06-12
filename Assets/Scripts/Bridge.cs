@@ -96,6 +96,20 @@ public class Bridge : MonoBehaviour
         return true;
     }
 
+    public void CheckOpacity(Player player, string previousMove)
+    {
+        bool isOnBridge = false;
+
+        if ((this.IsHorizontal() && (previousMove == "Left" || previousMove == "Right"))
+        || (this.IsVertical() && (previousMove == "Up" || previousMove == "Down")))
+            isOnBridge = true;
+
+        if (!isOnBridge)
+        {
+            this.HasPlayerUnderBridge = true;
+        }
+    }
+
     public float GetZAxisWire(string previousMove)
     {
         float wireZAxis = 0f;

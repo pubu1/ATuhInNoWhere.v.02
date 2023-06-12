@@ -7,16 +7,6 @@ public class DimensionOut : MonoBehaviour
     public DimensionIn BaseDimension { get; set; }
     public string OutDirection { get; set; }
 
-    // public Vector2 getBaseDimension()
-    // {
-    //     return BaseDimension.transform.position;
-    // }
-
-    // public Vector2 getBaseDimensionEntrance()
-    // {
-    //     return BaseDimension.transform.position;
-    // }
-
     public Vector3 GetNextPosition(Player player)
     {
         Vector3 exitPosition = new Vector3();
