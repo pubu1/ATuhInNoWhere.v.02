@@ -298,8 +298,8 @@ public class Step : MonoBehaviour
                         }
                         else if (socket.CheckSocketStartPoint(playerScript))
                         {
-                            //socket.ChangePlayerAttrStartPoint(playerScript);    
-                            socket.CallChangePlayerAttrStartPoint(playerID);
+                            socket.ChangePlayerAttrStartPoint(playerScript);    
+                            //socket.ChangePlayerAttrStartPoint(playerID);
                         }
                     }
                     return true;
@@ -357,8 +357,8 @@ public class Step : MonoBehaviour
             else if (socket.CheckSocketStartPoint(playerScript))
             {
                 totalCheck = true;
-                //socket.ChangePlayerAttrStartPoint(playerScript);
-                socket.CallChangePlayerAttrStartPoint(playerID);
+                socket.ChangePlayerAttrStartPoint(playerScript);
+                //socket.ChangePlayerAttrStartPoint(playerID);
                 UpdateLocation();
             }
         }
@@ -412,8 +412,8 @@ public class Step : MonoBehaviour
                     }
                     else if (socket.CheckSocketStartPoint(playerScript))
                     {
-                        //socket.ChangePlayerAttrStartPoint(playerScript);
-                        socket.CallChangePlayerAttrStartPoint(playerID);
+                        socket.ChangePlayerAttrStartPoint(playerScript);
+                        //socket.ChangePlayerAttrStartPoint(playerID);
                     }
                 }
                 GameObject dOut = dIn.GetDimensionOut(playerScript);
@@ -467,8 +467,8 @@ public class Step : MonoBehaviour
                     }
                     else if (socket.CheckSocketStartPoint(playerScript))
                     {
-                        //socket.ChangePlayerAttrStartPoint(playerScript);
-                        socket.CallChangePlayerAttrStartPoint(playerID);
+                        socket.ChangePlayerAttrStartPoint(playerScript);
+                        //socket.ChangePlayerAttrStartPoint(playerID);
                     }
                 }
                 else if (gameManager.PlayGridList[tempCurrentMap][xTarget, yTarget].tag == "Bridge")
@@ -569,8 +569,8 @@ public class Step : MonoBehaviour
                         }
                         else if (socket.CheckSocketStartPoint(playerScript))
                         {
-                            //socket.ChangePlayerAttrStartPoint(playerScript);
-                            socket.CallChangePlayerAttrStartPoint(playerID);
+                            socket.ChangePlayerAttrStartPoint(playerScript);
+                            //socket.ChangePlayerAttrStartPoint(playerID);
                         }
                     }
                 }
