@@ -67,15 +67,15 @@ public class Step : MonoBehaviour
             xTarget = (int)(playerScript.TargetPosition.x % 100);
             yTarget = (int)(playerScript.TargetPosition.y);
 
-            string playerID = PhotonNetwork.LocalPlayer.ActorNumber.ToString();
+            playerID = PhotonNetwork.LocalPlayer.ActorNumber.ToString();
         }
     }
 
     //check if 2 player get the same function
     [PunRPC]
-    private void LogMove(string playerID)
+    private void LogMove(string playerGameObjectName)
     {
-        Debug.Log(playerID + " move!");
+        Debug.Log(playerGameObjectName + " move!");
     }
 
     private void Update()

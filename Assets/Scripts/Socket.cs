@@ -33,6 +33,7 @@ public class Socket : MonoBehaviour
     [PunRPC]
     public void CallChangePlayerAttrStartPoint(string playerGameObjectName)
     {
+        Debug.Log("Player: " + playerGameObjectName);
         PhotonView.Get(this).RPC("ChangePlayerAttrStartPoint", RpcTarget.All, playerGameObjectName);
     }
 
