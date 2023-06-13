@@ -56,6 +56,10 @@ public class GameManager : MonoBehaviourPunCallbacks
     int indd1=0, indd2=0, indd3=0, indd4=0;
     public void Start()
     {
+         if (!PhotonNetwork.IsMasterClient)
+        {
+            this.enabled = false;
+        }
         inputManager = new InputManager();
         doorButtonList = new Dictionary<int, GameObject>();
         Score = 0;
