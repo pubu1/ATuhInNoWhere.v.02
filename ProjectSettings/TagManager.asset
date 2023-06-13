@@ -8,7 +8,9 @@ TagManager:
   - Ground
   - Teleporter
   - Wire
-  - Brick
+  - Socket
+  - SingleMode
+  - CoopMode
   layers:
   - Default
   - TransparentFX
@@ -16,7 +18,7 @@ TagManager:
   - 
   - Water
   - UI
-  - 
+  - Brick
   - 
   - 
   - 
