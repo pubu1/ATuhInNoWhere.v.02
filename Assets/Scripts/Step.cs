@@ -68,16 +68,21 @@ public class Step : MonoBehaviour
         }
     }
 
+    //check if 2 player get the same function
+    [PunRPC]
+    private void LogMove()
+    {
+        Debug.Log("Other move!");
+    }
 
     private void Update()
     {
-        //check player move
-        if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.RightArrow)) {
-            Debug.Log("I move!");
-        }
         if (view.IsMine)
         {
-
+            //check player move
+            if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.RightArrow)) {
+                view.RPC("LogMove", RpcTarget.Others);
+            }
 
             if (Input.GetKeyDown(KeyCode.Escape))
             {
