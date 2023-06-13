@@ -35,6 +35,8 @@ public class Step : MonoBehaviour
     [SerializeField]
     private PhotonView view;
 
+    private string playerID;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -65,6 +67,7 @@ public class Step : MonoBehaviour
             xTarget = (int)(playerScript.TargetPosition.x % 100);
             yTarget = (int)(playerScript.TargetPosition.y);
 
+            string playerID = PhotonNetwork.LocalPlayer.ActorNumber.ToString();
         }
     }
 
@@ -81,7 +84,6 @@ public class Step : MonoBehaviour
         {
             //check player move
             if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.RightArrow)) {
-                string playerID = PhotonNetwork.LocalPlayer.ActorNumber.ToString();
                 view.RPC("LogMove", RpcTarget.Others, playerID);
             }
 
@@ -296,7 +298,8 @@ public class Step : MonoBehaviour
                         }
                         else if (socket.CheckSocketStartPoint(playerScript))
                         {
-                            socket.ChangePlayerAttrStartPoint(playerScript);    
+                            //socket.ChangePlayerAttrStartPoint(playerScript);    
+                            socket.CallChangePlayerAttrStartPoint(playerID);
                         }
                     }
                     return true;
@@ -354,7 +357,8 @@ public class Step : MonoBehaviour
             else if (socket.CheckSocketStartPoint(playerScript))
             {
                 totalCheck = true;
-                socket.ChangePlayerAttrStartPoint(playerScript);
+                //socket.ChangePlayerAttrStartPoint(playerScript);
+                socket.CallChangePlayerAttrStartPoint(playerID);
                 UpdateLocation();
             }
         }
@@ -408,7 +412,8 @@ public class Step : MonoBehaviour
                     }
                     else if (socket.CheckSocketStartPoint(playerScript))
                     {
-                        socket.ChangePlayerAttrStartPoint(playerScript);
+                        //socket.ChangePlayerAttrStartPoint(playerScript);
+                        socket.CallChangePlayerAttrStartPoint(playerID);
                     }
                 }
                 GameObject dOut = dIn.GetDimensionOut(playerScript);
@@ -462,7 +467,8 @@ public class Step : MonoBehaviour
                     }
                     else if (socket.CheckSocketStartPoint(playerScript))
                     {
-                        socket.ChangePlayerAttrStartPoint(playerScript);
+                        //socket.ChangePlayerAttrStartPoint(playerScript);
+                        socket.CallChangePlayerAttrStartPoint(playerID);
                     }
                 }
                 else if (gameManager.PlayGridList[tempCurrentMap][xTarget, yTarget].tag == "Bridge")
@@ -563,7 +569,8 @@ public class Step : MonoBehaviour
                         }
                         else if (socket.CheckSocketStartPoint(playerScript))
                         {
-                            socket.ChangePlayerAttrStartPoint(playerScript);
+                            //socket.ChangePlayerAttrStartPoint(playerScript);
+                            socket.CallChangePlayerAttrStartPoint(playerID);
                         }
                     }
                 }

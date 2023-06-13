@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
 
 public class Socket : MonoBehaviour
 {
@@ -28,22 +29,39 @@ public class Socket : MonoBehaviour
         else
             return false;
     }
-    public void ChangePlayerAttrStartPoint(Player player)
-    {
-        player.IsNotPickWire = false;
-        player.IsAtSocket = true;
-        this.IsConnect = true;
-        player.HandleWireColor = this.Color;
-        Debug.Log("Is start point --- " + player.HandleWireColor);
 
-        // Accessing the child object by name
-        Transform childTransform = player.transform.Find("WholePlayerObject").transform.Find("Body");
-        if (childTransform != null)
+    [PunRPC]
+    public void CallChangePlayerAttrStartPoint(string playerGameObjectName)
+    {
+        PhotonView.Get(this).RPC("ChangePlayerAttrStartPoint", RpcTarget.All, playerGameObjectName);
+    }
+
+    [PunRPC]
+public void ChangePlayerAttrStartPoint(string playerGameObjectName)
+{
+    GameObject playerGameObject = GameObject.Find(playerGameObjectName);
+    if (playerGameObject != null)
+    {
+        Player playerScript = playerGameObject.GetComponent<Player>();
+
+        if (playerScript != null)
         {
-            GameObject body = childTransform.gameObject;
-            body.GetComponent<ChangeColor>().ChangeSpriteColor(body, player.HandleWireColor);
+            playerScript.IsNotPickWire = false;
+            playerScript.IsAtSocket = true;
+            this.IsConnect = true;
+            playerScript.HandleWireColor = this.Color;
+            Debug.Log("Is start point --- " + playerScript.HandleWireColor);
+
+            // Accessing the child object by name
+            Transform childTransform = playerScript.transform.Find("WholePlayerObject").transform.Find("Body");
+            if (childTransform != null)
+            {
+                GameObject body = childTransform.gameObject;
+                body.GetComponent<ChangeColor>().ChangeSpriteColor(body, playerScript.HandleWireColor);
+            }
         }
     }
+}
 
     public void ChangePlayerAttrEndPoint(Player player)
     {
