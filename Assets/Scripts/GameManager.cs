@@ -305,7 +305,10 @@ public class GameManager : MonoBehaviourPunCallbacks
         //GameOverUI.SetActive(false);
         if (Input.GetKeyDown(KeyCode.R))
         {
-            ResetTheGame();
+            
+            PhotonView view = this.gameObject.GetComponent<PhotonView>();
+            view.RPC("ResetTheGame", RpcTarget.All);
+            //ResetTheGame();
         }
         if (Input.GetKeyDown(KeyCode.C))
         {
@@ -347,6 +350,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             //GameOverUI.SetActive(true);
         }
     }
+    [PunRPC]
     private void ResetTheGame()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
