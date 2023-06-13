@@ -70,9 +70,9 @@ public class Step : MonoBehaviour
 
     //check if 2 player get the same function
     [PunRPC]
-    private void LogMove()
+    private void LogMove(string playerID)
     {
-        Debug.Log("Other move!");
+        Debug.Log(playerID + " move!");
     }
 
     private void Update()
@@ -81,7 +81,8 @@ public class Step : MonoBehaviour
         {
             //check player move
             if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.RightArrow)) {
-                view.RPC("LogMove", RpcTarget.Others);
+                string playerID = PhotonNetwork.LocalPlayer.ActorNumber.ToString();
+                view.RPC("LogMove", RpcTarget.Others, playerID);
             }
 
             if (Input.GetKeyDown(KeyCode.Escape))
@@ -295,7 +296,7 @@ public class Step : MonoBehaviour
                         }
                         else if (socket.CheckSocketStartPoint(playerScript))
                         {
-                            socket.ChangePlayerAttrStartPoint(playerScript);
+                            socket.ChangePlayerAttrStartPoint(playerScript);    
                         }
                     }
                     return true;
