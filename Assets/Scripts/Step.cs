@@ -35,7 +35,7 @@ public class Step : MonoBehaviour
     [SerializeField]
     private PhotonView view;
 
-    private string playerID;
+    private int photonViewID;
 
     // Start is called before the first frame update
     void Start()
@@ -67,15 +67,21 @@ public class Step : MonoBehaviour
             xTarget = (int)(playerScript.TargetPosition.x % 100);
             yTarget = (int)(playerScript.TargetPosition.y);
 
-            playerID = PhotonNetwork.LocalPlayer.ActorNumber.ToString();
+            photonViewID = PhotonNetwork.LocalPlayer.ActorNumber;
         }
     }
 
     //check if 2 player get the same function
     [PunRPC]
-    private void LogMove(string playerGameObjectName)
+    private void LogMove()
     {
-        Debug.Log(playerGameObjectName + " move!");
+        Debug.Log(photonViewID + " move!");
+    }
+
+    [PunRPC]
+    private void CallChangePlayerAttrStartPoint(int currentMap, int xTarget, int yTarget) {
+        Socket socket = gameManager.PlayGridList[currentMap][xTarget, yTarget].GetComponent<Socket>();
+        socket.ChangePlayerAttrStartPoint(playerScript);    
     }
 
     private void Update()
@@ -84,7 +90,7 @@ public class Step : MonoBehaviour
         {
             //check player move
             if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.RightArrow)) {
-                view.RPC("LogMove", RpcTarget.Others, playerID);
+                view.RPC("LogMove", RpcTarget.Others);
             }
 
             if (Input.GetKeyDown(KeyCode.Escape))
@@ -298,8 +304,8 @@ public class Step : MonoBehaviour
                         }
                         else if (socket.CheckSocketStartPoint(playerScript))
                         {
-                            socket.ChangePlayerAttrStartPoint(playerScript);    
-                            //socket.ChangePlayerAttrStartPoint(playerID);
+                            //socket.ChangePlayerAttrStartPoint(playerScript);    
+                            view.RPC("CallChangePlayerAttrStartPoint", RpcTarget.All, socket, playerScript);
                         }
                     }
                     return true;
@@ -357,8 +363,8 @@ public class Step : MonoBehaviour
             else if (socket.CheckSocketStartPoint(playerScript))
             {
                 totalCheck = true;
-                socket.ChangePlayerAttrStartPoint(playerScript);
-                //socket.ChangePlayerAttrStartPoint(playerID);
+                //socket.ChangePlayerAttrStartPoint(playerScript);
+                view.RPC("CallChangePlayerAttrStartPoint", RpcTarget.All, currentMap, xTarget, yTarget);
                 UpdateLocation();
             }
         }
@@ -412,8 +418,8 @@ public class Step : MonoBehaviour
                     }
                     else if (socket.CheckSocketStartPoint(playerScript))
                     {
-                        socket.ChangePlayerAttrStartPoint(playerScript);
-                        //socket.ChangePlayerAttrStartPoint(playerID);
+                        //socket.ChangePlayerAttrStartPoint(playerScript);
+                        view.RPC("CallChangePlayerAttrStartPoint", RpcTarget.All, socket, playerScript);
                     }
                 }
                 GameObject dOut = dIn.GetDimensionOut(playerScript);
@@ -467,8 +473,8 @@ public class Step : MonoBehaviour
                     }
                     else if (socket.CheckSocketStartPoint(playerScript))
                     {
-                        socket.ChangePlayerAttrStartPoint(playerScript);
-                        //socket.ChangePlayerAttrStartPoint(playerID);
+                        //socket.ChangePlayerAttrStartPoint(playerScript);
+                        view.RPC("CallChangePlayerAttrStartPoint", RpcTarget.All, socket, playerScript);
                     }
                 }
                 else if (gameManager.PlayGridList[tempCurrentMap][xTarget, yTarget].tag == "Bridge")
@@ -569,8 +575,8 @@ public class Step : MonoBehaviour
                         }
                         else if (socket.CheckSocketStartPoint(playerScript))
                         {
-                            socket.ChangePlayerAttrStartPoint(playerScript);
-                            //socket.ChangePlayerAttrStartPoint(playerID);
+                            //socket.ChangePlayerAttrStartPoint(playerScript);
+                            view.RPC("CallChangePlayerAttrStartPoint", RpcTarget.All, socket, playerScript);
                         }
                     }
                 }

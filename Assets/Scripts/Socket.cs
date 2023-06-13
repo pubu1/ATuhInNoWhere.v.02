@@ -30,25 +30,26 @@ public class Socket : MonoBehaviour
             return false;
     }
 
-    public void ChangePlayerAttrStartPoint(Player playerScript)
+
+    [PunRPC]
+    public void ChangePlayerAttrStartPoint(Player player)
     {
-            if (playerScript != null)
-    {
-        playerScript.IsNotPickWire = false;
-        playerScript.IsAtSocket = true;
+        player.IsNotPickWire = false;
+        player.IsAtSocket = true;
         this.IsConnect = true;
-        playerScript.HandleWireColor = this.Color;
-        Debug.Log("Is start point --- " + playerScript.HandleWireColor);
+        player.HandleWireColor = this.Color;
+        Debug.Log("Is start point --- " + player.HandleWireColor);
 
         // Accessing the child object by name
-        Transform childTransform = playerScript.transform.Find("WholePlayerObject").transform.Find("Body");
+        Transform childTransform = player.transform.Find("WholePlayerObject").transform.Find("Body");
         if (childTransform != null)
         {
             GameObject body = childTransform.gameObject;
-            body.GetComponent<ChangeColor>().ChangeSpriteColor(body, playerScript.HandleWireColor);
+            body.GetComponent<ChangeColor>().ChangeSpriteColor(body, player.HandleWireColor);
         }
     }
-    }
+
+
 
 
     public void ChangePlayerAttrEndPoint(Player player)
