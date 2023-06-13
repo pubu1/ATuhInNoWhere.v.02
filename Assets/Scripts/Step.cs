@@ -71,12 +71,13 @@ public class Step : MonoBehaviour
 
     private void Update()
     {
+        //check player move
+        if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.RightArrow)) {
+            Debug.Log("I move!");
+        }
         if (view.IsMine)
         {
-            //check player move
-            if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.RightArrow)) {
-                Debug.Log("I move!");
-            }
+
 
             if (Input.GetKeyDown(KeyCode.Escape))
             {
