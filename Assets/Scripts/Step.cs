@@ -80,8 +80,12 @@ public class Step : MonoBehaviour
 
     [PunRPC]
     private void CallChangePlayerAttrStartPoint(int currentMap, int xTarget, int yTarget) {
+        ChangePlayerAttrStartPoint(currentMap, xTarget, yTarget); 
+    }
+
+    private void ChangePlayerAttrStartPoint(int currentMap, int xTarget, int yTarget) {
         Socket socket = gameManager.PlayGridList[currentMap][xTarget, yTarget].GetComponent<Socket>();
-        socket.ChangePlayerAttrStartPoint(playerScript);    
+        socket.ChangePlayerAttrStartPoint(playerScript);  
     }
 
     private void Update()
