@@ -39,7 +39,7 @@ public class Step : MonoBehaviour
     void Start()
     {
         if (view.IsMine)
-        {
+        {   
             gameManager = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameManager>();
             for (int i = 0; i < gameManager.MapGridList.Count; ++i)
             {
@@ -73,6 +73,11 @@ public class Step : MonoBehaviour
     {
         if (view.IsMine)
         {
+            //check player move
+            if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.RightArrow)) {
+                Debug.Log("I move!");
+            }
+
             if (Input.GetKeyDown(KeyCode.Escape))
             {
                 isPauseGame = !isPauseGame;

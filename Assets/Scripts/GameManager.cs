@@ -100,9 +100,9 @@ public class GameManager : MonoBehaviourPunCallbacks
         int roundedY = Mathf.RoundToInt(y);
         Vector3 flooredPosition = new Vector3(roundedX, roundedY, z);
         GameObject instantiatedPrefab = PhotonNetwork.Instantiate(playerPrefab.name, flooredPosition, rotation) as GameObject;
-        Debug.Log("Player: " + instantiatedPrefab.transform.position.x + " - " + instantiatedPrefab.transform.position.y);
+        //Debug.Log("Player: " + instantiatedPrefab.transform.position.x + " - " + instantiatedPrefab.transform.position.y);
         instantiatedPrefab.transform.position = flooredPosition;
-        Debug.Log("Floored: " + flooredPosition.x + " - " + flooredPosition.y);
+        //Debug.Log("Floored: " + flooredPosition.x + " - " + flooredPosition.y);
         return instantiatedPrefab;
     }
 
