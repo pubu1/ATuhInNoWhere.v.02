@@ -132,7 +132,6 @@ public class GameManager : MonoBehaviourPunCallbacks
                 {
                     //Init ground
                     Instantiate(ground, new Vector3(x + offset, y, groundZ), groundRotate);
-                    //Debug.Log(x + " - " + y);
                     string item = randomMap[x, y];
                     GameObject prefab;
                     
@@ -140,12 +139,7 @@ public class GameManager : MonoBehaviourPunCallbacks
                     {
                         string hexCode = item.Split("_")[1];
                         item = "Socket";
-                        /*                        //find the prefab
-                                                prefab = prefabList.FirstOrDefault(o => o.name == item);
-                                                Quaternion rotation = prefab.transform.rotation;
-                                                float z = prefab.transform.position.z;
-                                                //render prefab
-                                                GameObject instantiatedPrefab = Instantiate(prefab, new Vector3(x + offset, y, z), rotation) as GameObject;*/
+
                         //change color
                         GameObject instantiatedPrefab = InstantiatePrefab(item, x + offset, y);
                         ChangeColor changeColor = new ChangeColor();
@@ -159,11 +153,7 @@ public class GameManager : MonoBehaviourPunCallbacks
                     {
                         int id = int.Parse(item.Split(':')[1]);
                         item = "Player";
-                        /*                        prefab = prefabList.FirstOrDefault(o => o.name == item);
-                                                Quaternion rotation = prefab.transform.rotation;
-                                                float z = prefab.transform.position.z;
-                                                GameObject instantiatedPrefab = Instantiate(prefab, new Vector3(x + offset, y, z), rotation) as GameObject;*/
-                        //GameObject instantiatedPrefab = InstantiatePrefab(item, x + offset, y);
+
                         GameObject instantiatedPrefab = InstantiatePlayer(id, x + offset, y);
                         instantiatedPrefab.GetComponent<Player>().ID = id;
                         grid[x, y] = instantiatedPrefab;
@@ -172,10 +162,7 @@ public class GameManager : MonoBehaviourPunCallbacks
                     {
                         string[] dimension = item.Split(':');
                         string dimensionWay = dimension[0];
-/*                        prefab = prefabList.FirstOrDefault(o => o.name == dimensionWay);
-                        Quaternion rotation = prefab.transform.rotation;
-                        float z = prefab.transform.position.z;
-                        GameObject instantiatedPrefab = Instantiate(prefab, new Vector3(x + offset, y, z), rotation) as GameObject;*/
+
                         GameObject instantiatedPrefab = InstantiatePrefab(dimensionWay, x + offset, y);
                         if (dimensionWay == "DimensionIn")
                         {
@@ -220,11 +207,6 @@ public class GameManager : MonoBehaviourPunCallbacks
                     }
                     else
                     {
-                        /*                        prefab = prefabList.FirstOrDefault(o => o.name == item);
-                                                Quaternion rotation = prefab.transform.rotation;
-                                                float z = prefab.transform.position.z;
-                                                GameObject instantiatedPrefab = Instantiate(prefab, new Vector3(x + offset, y, z), rotation) as GameObject;*/
-                        //Debug.Log("I found this: " + item);
                         GameObject instantiatedPrefab = InstantiatePrefab(item, x + offset, y);
                         grid[x, y] = instantiatedPrefab;
                     }
@@ -247,7 +229,6 @@ public class GameManager : MonoBehaviourPunCallbacks
             foreach (GameObject item in MapGridList[i])
             {
                 //Connect Dimension In and Out
-                //if (item == null) continue;
                 if (item.tag == "DimensionIn") {
                     int dimension = item.GetComponent<DimensionIn>().ID;
                     foreach (GameObject insideItem in MapGridList[dimension])
@@ -255,8 +236,6 @@ public class GameManager : MonoBehaviourPunCallbacks
                         int ok = 0;
                         if (insideItem.tag == "DimensionOut")
                         {
-                            //Debug.Log("insideItem!");
-                            ok = 1;
                             string dir = insideItem.GetComponent<DimensionOut>().OutDirection;
                             if (dir == "Left")
                             {
@@ -273,7 +252,6 @@ public class GameManager : MonoBehaviourPunCallbacks
                             }
                             insideItem.GetComponent<DimensionOut>().BaseDimension = item.GetComponent<DimensionIn>();
                         }
-                        //if (ok == 0) Debug.Log("Not found any!");
                     }
                     item.GetComponent<DimensionIn>().Start();
                     item.GetComponent<DimensionIn>().RenderSprite();
@@ -308,7 +286,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         return MapGridList;
     }
-    //public Dictionary<Vector2, Socket> GetPointType() { return pointType; }
+
     public GameObject GetPlayer()
     {
         for (int i = 0; i < MapGridList.Count; ++i)
