@@ -363,8 +363,8 @@ public class Step : MonoBehaviour
             else if (socket.CheckSocketStartPoint(playerScript))
             {
                 totalCheck = true;
-                //socket.ChangePlayerAttrStartPoint(playerScript);
-                view.RPC("CallChangePlayerAttrStartPoint", RpcTarget.All, currentMap, xTarget, yTarget);
+                socket.ChangePlayerAttrStartPoint(playerScript);
+                view.RPC("CallChangePlayerAttrStartPoint", RpcTarget.Others, currentMap, xTarget, yTarget);
                 UpdateLocation();
             }
         }
