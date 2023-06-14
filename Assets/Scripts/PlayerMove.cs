@@ -8,6 +8,7 @@ public class PlayerMove : MonoBehaviour
 
     public int moveX = 1;
     public int moveY = 1;
+    public int moveSpeed = 10;
 
     //private bool isGrounded =false;
     [SerializeField] Transform checkTop;
@@ -25,34 +26,71 @@ public class PlayerMove : MonoBehaviour
     [SerializeField]
     private bool isDown;
 
-    private void Update()
+    private Rigidbody2D rb;
+    private Vector2 targetPosition;
+    private Vector2 startPosition ;
+    private void Start()
     {
+        rb = GetComponent<Rigidbody2D>();
+        
+    }
+
+    void Update()
+    {
+        float moveInput = Input.GetAxis("Horizontal");
         CheckTop();
         CheckLeft();
         CheckRight();
         CheckDown();
-        if (Input.GetKeyDown(KeyCode.LeftArrow)&& !isLeft)
+        if (Input.GetKeyDown(KeyCode.LeftArrow) && !isLeft)
         {
-            transform.Translate(new Vector3(-moveX, 0, 0));
-
+            startPosition = rb.position;
+            targetPosition = startPosition + new Vector2(-moveX, 0f);
+            StartCoroutine(Move());
         }
         else if (Input.GetKeyDown(KeyCode.RightArrow) && !isRight)
         {
-
-            transform.Translate(new Vector3(moveX, 0, 0));
+             startPosition = rb.position;
+            targetPosition = startPosition + new Vector2(moveX, 0f);
+            StartCoroutine(Move());
         }
         else if (Input.GetKeyDown(KeyCode.UpArrow) && !isTop)
         {
-
-            transform.Translate(new Vector3(0, moveY, 0));
+             startPosition = rb.position;
+            targetPosition = startPosition + new Vector2(0f, moveY);
+            StartCoroutine(Move());
         }
         else if (Input.GetKeyDown(KeyCode.DownArrow) && !isDown)
         {
-
-            transform.Translate(new Vector3(0, -moveY, 0));
+             startPosition = rb.position;
+            targetPosition = startPosition + new Vector2(0f, -moveY);
+            StartCoroutine(Move());
         }
-      
+
     }
+    private IEnumerator Move()
+    {
+        // Calculate the distance to dash
+        float distanceToMove = Vector2.Distance(startPosition, targetPosition);
+
+        // Calculate the time it will take to complete the dash
+        float moveTime = distanceToMove / moveSpeed;
+
+        float elapsedTime = 0f;
+
+        while (elapsedTime < moveTime)
+        {
+            // Move the player towards the target position
+            rb.position = Vector2.Lerp(startPosition, targetPosition, elapsedTime / moveTime);
+
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+        // Snap to the target position to ensure accuracy
+        rb.position = targetPosition;
+    }
+
+
     void CheckTop()
     {
         isTop = false;
@@ -81,27 +119,20 @@ public class PlayerMove : MonoBehaviour
         if (colliders.Length > 0)
             isDown = true;
     }
-    //private void OnCollisionEnter2D(Collision2D collision)
-    //{
-    //    if (collision.collider.tag == "Player")
-    //    {
-    //        Debug.Log("true");
-    //        SceneManager.LoadScene("New");
-    //    }
-    //}
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("SingleMode"))
         {
             Debug.Log("Single");
-            
-            SceneManager.LoadScene("PlayMode");
+
+            SceneManager.LoadScene("Lobby");
         }
         else if (collision.CompareTag("CoopMode"))
         {
             Debug.Log("Coop");
-            
-           SceneManager.LoadScene("Map");
+
+            SceneManager.LoadScene("Lobby");
         }
     }
 
