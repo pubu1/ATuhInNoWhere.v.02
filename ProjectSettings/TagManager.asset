@@ -7,6 +7,10 @@ TagManager:
   - Door
   - Ground
   - Teleporter
+  - Wire
+  - Socket
+  - SingleMode
+  - CoopMode
   layers:
   - Default
   - TransparentFX
@@ -14,7 +18,7 @@ TagManager:
   - 
   - Water
   - UI
-  - 
+  - Brick
   - 
   - 
   - 
