@@ -80,7 +80,9 @@ public class Step : MonoBehaviour
 
     [PunRPC]
     private void CallChangePlayerAttrStartPoint(int currentMap, int xTarget, int yTarget) {
-        ChangePlayerAttrStartPoint(currentMap, xTarget, yTarget); 
+        //ChangePlayerAttrStartPoint(currentMap, xTarget, yTarget); 
+        Socket socket = gameManager.PlayGridList[currentMap][xTarget, yTarget].GetComponent<Socket>();
+        Debug.Log("Socket found: " + socket.transform.position);
     }
 
     private void ChangePlayerAttrStartPoint(int currentMap, int xTarget, int yTarget) {
@@ -310,7 +312,7 @@ public class Step : MonoBehaviour
                         else if (socket.CheckSocketStartPoint(playerScript))
                         {
                             //socket.ChangePlayerAttrStartPoint(playerScript);    
-                            view.RPC("CallChangePlayerAttrStartPoint", RpcTarget.All, socket, playerScript);
+                            //view.RPC("CallChangePlayerAttrStartPoint", RpcTarget.All, socket, playerScript);
                         }
                     }
                     return true;
@@ -424,7 +426,7 @@ public class Step : MonoBehaviour
                     else if (socket.CheckSocketStartPoint(playerScript))
                     {
                         //socket.ChangePlayerAttrStartPoint(playerScript);
-                        view.RPC("CallChangePlayerAttrStartPoint", RpcTarget.All, socket, playerScript);
+                        //view.RPC("CallChangePlayerAttrStartPoint", RpcTarget.All, socket, playerScript);
                     }
                 }
                 GameObject dOut = dIn.GetDimensionOut(playerScript);
@@ -479,7 +481,7 @@ public class Step : MonoBehaviour
                     else if (socket.CheckSocketStartPoint(playerScript))
                     {
                         //socket.ChangePlayerAttrStartPoint(playerScript);
-                        view.RPC("CallChangePlayerAttrStartPoint", RpcTarget.All, socket, playerScript);
+                        //view.RPC("CallChangePlayerAttrStartPoint", RpcTarget.All, socket, playerScript);
                     }
                 }
                 else if (gameManager.PlayGridList[tempCurrentMap][xTarget, yTarget].tag == "Bridge")
@@ -581,7 +583,7 @@ public class Step : MonoBehaviour
                         else if (socket.CheckSocketStartPoint(playerScript))
                         {
                             //socket.ChangePlayerAttrStartPoint(playerScript);
-                            view.RPC("CallChangePlayerAttrStartPoint", RpcTarget.All, socket, playerScript);
+                            //view.RPC("CallChangePlayerAttrStartPoint", RpcTarget.All, socket, playerScript);
                         }
                     }
                 }
