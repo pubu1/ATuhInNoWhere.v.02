@@ -85,7 +85,8 @@ public class Step : MonoBehaviour
 
     private void ChangePlayerAttrStartPoint(int currentMap, int xTarget, int yTarget) {
         Socket socket = gameManager.PlayGridList[currentMap][xTarget, yTarget].GetComponent<Socket>();
-        socket.ChangePlayerAttrStartPoint(playerScript);  
+        Debug.Log("Socet found: " + socket);
+        //socket.ChangePlayerAttrStartPoint(playerScript);  
     }
 
     private void Update()
@@ -368,7 +369,7 @@ public class Step : MonoBehaviour
             {
                 totalCheck = true;
                 socket.ChangePlayerAttrStartPoint(playerScript);
-                view.RPC("CallChangePlayerAttrStartPoint", RpcTarget.Others, currentMap, xTarget, yTarget);
+                view.RPC("CallChangePlayerAttrStartPoint", RpcTarget.All, currentMap, xTarget, yTarget);
                 UpdateLocation();
             }
         }

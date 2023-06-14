@@ -83,7 +83,14 @@ public class GameManager : MonoBehaviourPunCallbacks
         GameObject prefab = prefabList.FirstOrDefault(o => o.name == prefabName);
         Quaternion rotation = prefab.transform.rotation;
         float z = prefab.transform.position.z;
-        GameObject instantiatedPrefab = Instantiate(prefab, new Vector3(x, y, z), rotation) as GameObject;
+        //GameObject instantiatedPrefab = Instantiate(prefab, new Vector3(x, y, z), rotation) as GameObject;
+        /*Daviz*/
+        GameObject instantiatedPrefab;
+        if(prefabName == "Socket"){
+            instantiatedPrefab = PhotonNetwork.Instantiate(prefabName, new Vector3(x, y, z), rotation) as GameObject;
+        } else{
+            instantiatedPrefab = Instantiate(prefab, new Vector3(x, y, z), rotation) as GameObject;
+        }
         return instantiatedPrefab;
     }
 
