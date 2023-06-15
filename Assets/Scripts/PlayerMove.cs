@@ -126,7 +126,7 @@ public class PlayerMove : MonoBehaviour
         {
             Debug.Log("Single");
 
-            SceneManager.LoadScene("Lobby");
+            SceneManager.LoadScene("Map");
         }
         else if (collision.CompareTag("CoopMode"))
         {
