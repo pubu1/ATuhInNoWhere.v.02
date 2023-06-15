@@ -119,16 +119,16 @@ public class Step : MonoBehaviour
     [PunRPC]
     void CallChangePlayerAttrStartPoint(int currentMap, int xTarget, int yTarget)
     {
-        Socket socket = gameManager.PlayGridList[currentMap][xTarget, yTarget].GetComponent<Socket>();
-        socket.ChangePlayerAttrStartPoint(playerScript);
-        Debug.Log("Socket found: " + socket.transform.position);
+        Socket socket = gameManager.MapGridList[currentMap][xTarget, yTarget].GetComponent<Socket>();
+        //socket.ChangePlayerAttrStartPoint(playerScript);
+        Debug.LogError("Socket found: " + socket.transform.position);
+        ChangePlayerAttrStartPoint(socket);
     }
 
-    private void ChangePlayerAttrStartPoint(int currentMap, int xTarget, int yTarget)
+    private void ChangePlayerAttrStartPoint(Socket socket)
     {
-        Socket socket = gameManager.PlayGridList[currentMap][xTarget, yTarget].GetComponent<Socket>();
-        Debug.Log("Socet found: " + socket);
-        //socket.ChangePlayerAttrStartPoint(playerScript);  
+        Debug.LogError("Socet found: " + socket);
+        socket.ChangePlayerAttrStartPoint(playerScript);  
     }
 
     private void Update()
@@ -353,7 +353,7 @@ public class Step : MonoBehaviour
                         else if (socket.CheckSocketStartPoint(playerScript))
                         {
                             //socket.ChangePlayerAttrStartPoint(playerScript);    
-                            //view.RPC("CallChangePlayerAttrStartPoint", RpcTarget.All, socket, playerScript);
+                            view.RPC("CallChangePlayerAttrStartPoint", RpcTarget.All, socket, playerScript);
                         }
                     }
                     return true;
