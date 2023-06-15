@@ -154,18 +154,19 @@ public class Step : MonoBehaviour
     }
 
     [PunRPC]
-    void CallChangePlayerAttrStartPoint(int currentMap, int xTarget, int yTarget)
+    void CallChangePlayerAttrStartPoint(int currentMap, int xTarget, int yTarget, int photonTargetID)
     {
         Socket socket = gameManager.MapGridList[currentMap][xTarget, yTarget].GetComponent<Socket>();
         //socket.ChangePlayerAttrStartPoint(playerScript);
         Debug.Log("Socket found: " + socket.transform.position);
-        ChangePlayerAttrStartPoint(socket);
+        ChangePlayerAttrStartPoint(socket, photonTargetID);
     }
 
-    private void ChangePlayerAttrStartPoint(Socket socket)
+    private void ChangePlayerAttrStartPoint(Socket socket, int photonTargetID)
     {
         Debug.Log("Socet found: " + socket);
-        socket.ChangePlayerAttrStartPoint(playerScript);
+        GameObject targetP = (photonTargetID == 1) ? gameManager.PlayerM : gameManager.PlayerF;
+        socket.ChangePlayerAttrStartPoint(targetP.GetComponent<Player>());
     }
 
     private void Update()
@@ -390,7 +391,7 @@ public class Step : MonoBehaviour
                         else if (socket.CheckSocketStartPoint(playerScript))
                         {
                             //socket.ChangePlayerAttrStartPoint(playerScript);    
-                            view.RPC("CallChangePlayerAttrStartPoint", RpcTarget.All, socket, playerScript);
+                            view.RPC("CallChangePlayerAttrStartPoint", RpcTarget.All, socket, playerScript, photonViewID);
                         }
                     }
                     return true;
