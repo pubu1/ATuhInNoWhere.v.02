@@ -121,13 +121,13 @@ public class Step : MonoBehaviour
     {
         Socket socket = gameManager.MapGridList[currentMap][xTarget, yTarget].GetComponent<Socket>();
         //socket.ChangePlayerAttrStartPoint(playerScript);
-        Debug.LogError("Socket found: " + socket.transform.position);
+        Debug.Log("Socket found: " + socket.transform.position);
         ChangePlayerAttrStartPoint(socket);
     }
 
     private void ChangePlayerAttrStartPoint(Socket socket)
     {
-        Debug.LogError("Socet found: " + socket);
+        Debug.Log("Socet found: " + socket);
         socket.ChangePlayerAttrStartPoint(playerScript);  
     }
 

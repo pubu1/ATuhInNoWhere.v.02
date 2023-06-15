@@ -30,8 +30,6 @@ public class Socket : MonoBehaviour
             return false;
     }
 
-
-    [PunRPC]
     public void ChangePlayerAttrStartPoint(Player player)
     {
         player.IsNotPickWire = false;
