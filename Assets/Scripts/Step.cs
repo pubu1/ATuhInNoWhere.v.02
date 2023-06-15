@@ -41,31 +41,16 @@ public class Step : MonoBehaviour
     void Start()
     {
         photonViewID = PhotonNetwork.LocalPlayer.ActorNumber;
+        gameManager = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameManager>();
         Debug.Log("Photon View ID: " + photonViewID);
         if (view.IsMine)
         {
-            gameManager = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameManager>();
             if (photonViewID == 1) player = gameManager.PlayerM;
             else player = gameManager.PlayerF;
-            // for (int i = 0; i < gameManager.MapGridList.Count; ++i)
-            // {
-            //     foreach (GameObject item in gameManager.MapGridList[i])
-            //     {
-            //         Debug.Log(item.name);
-            //         if ((item.name.Contains("PlayerM") && photonViewID == 1) || (item.name == "PlayerF(Clone)" && photonViewID == 2))
-            //         {
-            //             //  player = item;
-            //             //     break;
-            //             Debug.Log(item);
-            //             Debug.Log(item.transform.position);
-            //             if (this.gameObject.transform.position == item.transform.position)
-            //             {
-            //                 player = item;
-            //                 break;
-            //             }
-            //         }
-            //     }
-            // }
+
+            if (gameManager.PlayerF == null) gameManager.PlayerF = player;
+            else gameManager.PlayerM = player;
+
             Debug.Log(player);
             playerScript = player.GetComponent<Player>();
             playerScript.HandleWireColor = "Default";
@@ -160,7 +145,7 @@ public class Step : MonoBehaviour
         // Socket socket = gameManager.MapGridList[currentMap][xTarget, yTarget].GetComponent<Socket>();
         // //socket.ChangePlayerAttrStartPoint(playerScript);
         // Debug.Log("Socket found: " + socket + " - " + socket.transform.position);
-        ChangePlayerAttrStartPoint(currentMap, xTarget, yTarget, socket, photonTargetID);
+        ChangePlayerAttrStartPoint(currentMap, xTarget, yTarget, photonTargetID);
     }
 
     private void ChangePlayerAttrStartPoint(int currentMap, int xTarget, int yTarget, int photonTargetID)
