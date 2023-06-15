@@ -154,9 +154,11 @@ public class Step : MonoBehaviour
         Debug.Log("Socket found: " + socket);
         Player targetP = playerScript;
         if (photonTargetID != photonViewID) {
+            Debug.Log( gameManager.PlayerM.transform.position);
+            Debug.Log( gameManager.PlayerF.transform.position);
             if (photonTargetID == 1) targetP = gameManager.PlayerM.GetComponent<Player>();
             else targetP = gameManager.PlayerF.GetComponent<Player>();
-        }
+        }   
         socket.ChangePlayerAttrStartPoint(targetP);
     }
 
