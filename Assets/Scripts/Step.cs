@@ -12,7 +12,7 @@ public class Step : MonoBehaviour
     [SerializeField] private float moveSteps = 1.0f;
     [SerializeField] private float moveSpeed = 5.0f;
     private GameObject player;
-    private Player playerScript;
+    private Player playerScript, otherPlayerScript;
     //[SerializeField] private GameObject body;
     private bool enableMove = true;
     private bool isPauseGame = false;
@@ -48,7 +48,7 @@ public class Step : MonoBehaviour
             if (photonViewID == 1) player = gameManager.PlayerM;
             else player = gameManager.PlayerF;
 
-            if (gameManager.PlayerF == null) gameManager.PlayerF = player;
+            if (gameManager.PlayerF == null && photonViewID == 2) gameManager.PlayerF = player;
             else gameManager.PlayerM = player;
 
             Debug.Log(player);
@@ -152,8 +152,12 @@ public class Step : MonoBehaviour
     {
         Socket socket = gameManager.MapGridList[currentMap][xTarget, yTarget].GetComponent<Socket>();
         Debug.Log("Socket found: " + socket);
-        GameObject targetP = (photonTargetID == 1) ? gameManager.PlayerM : gameManager.PlayerF;
-        socket.ChangePlayerAttrStartPoint(targetP.GetComponent<Player>());
+        Player targetP = playerScript;
+        if (photonTargetID != photonViewID) {
+            if (photonTargetID == 1) targetP = gameManager.PlayerM.GetComponent<Player>();
+            else targetP = gameManager.PlayerF.GetComponent<Player>();
+        }
+        socket.ChangePlayerAttrStartPoint(targetP);
     }
 
     private void Update()
