@@ -40,73 +40,104 @@ public class Step : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        gameManager = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameManager>();
+        photonViewID = PhotonNetwork.LocalPlayer.ActorNumber;
         if (view.IsMine)
         {
-            if (PhotonNetwork.LocalPlayer.ActorNumber == 1)
+            gameManager = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameManager>();
+            for (int i = 0; i < gameManager.MapGridList.Count; ++i)
             {
-                for (int i = 0; i < gameManager.MapGridList.Count; ++i)
+                foreach (GameObject item in gameManager.MapGridList[i])
                 {
-                    foreach (GameObject item in gameManager.MapGridList[i])
+                    if ((item.name == "PlayerM(Clone)" && photonViewID == 1) || (item.name == "PlayerF(Clone)" && photonViewID == 2))
                     {
-                        if (item.tag == "Player" && item.name == "PlayerM(Clone)")
+                        //  player = item;
+                        //     break;
+                        if (this.gameObject.transform.position == item.transform.position)
                         {
-                            if (this.gameObject.transform.position == item.transform.position)
-                            {
-                                player = item;
-                                break;
-                            }
+                            player = item;
+                            break;
                         }
                     }
                 }
-
-                if (player != null)
-                {
-                    playerScript = player.GetComponent<Player>();
-                    playerScript.HandleWireColor = "Default";
-                    previousMove = "";
-
-                    currentMap = (int)playerScript.CurrentPosition.x / 100;
-                    xCurrent = (int)(playerScript.CurrentPosition.x % 100);
-                    yCurrent = (int)(playerScript.CurrentPosition.y);
-                    xTarget = (int)(playerScript.TargetPosition.x % 100);
-                    yTarget = (int)(playerScript.TargetPosition.y);
-
-                    photonViewID = PhotonNetwork.LocalPlayer.ActorNumber;
-                }
             }
-            else
-            {
-                for (int i = 0; i < gameManager.MapGridList.Count; ++i)
-                {
-                    foreach (GameObject item in gameManager.MapGridList[i])
-                    {
-                        if (item.tag == "Player" && item.name == "PlayerF(Clone)")
-                        {
-                            if (this.gameObject.transform.position == item.transform.position)
-                            {
-                                player = item;
-                                break;
-                            }
-                        }
-                    }
-                }
-                if (player != null)
-                {
-                    playerScript = player.GetComponent<Player>();
-                    playerScript.HandleWireColor = "Default";
-                    previousMove = "";
+            Debug.Log(player);
+            playerScript = player.GetComponent<Player>();
+            playerScript.HandleWireColor = "Default";
+            previousMove = "";
 
-                    currentMap = (int)playerScript.CurrentPosition.x / 100;
-                    xCurrent = (int)(playerScript.CurrentPosition.x % 100);
-                    yCurrent = (int)(playerScript.CurrentPosition.y);
-                    xTarget = (int)(playerScript.TargetPosition.x % 100);
-                    yTarget = (int)(playerScript.TargetPosition.y);
+            currentMap = (int)playerScript.CurrentPosition.x / 100;
+            xCurrent = (int)(playerScript.CurrentPosition.x % 100);
+            yCurrent = (int)(playerScript.CurrentPosition.y);
+            xTarget = (int)(playerScript.TargetPosition.x % 100);
+            yTarget = (int)(playerScript.TargetPosition.y);
 
-                    photonViewID = PhotonNetwork.LocalPlayer.ActorNumber;
-                }
-            }
         }
+        // if (view.IsMine)
+        // {
+        //     if (PhotonNetwork.LocalPlayer.ActorNumber == 1)
+        //     {
+        //         for (int i = 0; i < gameManager.MapGridList.Count; ++i)
+        //         {
+        //             foreach (GameObject item in gameManager.MapGridList[i])
+        //             {
+        //                 if (item.tag == "Player" && item.name == "PlayerM(Clone)")
+        //                 {
+        //                     if (this.gameObject.transform.position == item.transform.position)
+        //                     {
+        //                         player = item;
+        //                         break;
+        //                     }
+        //                 }
+        //             }
+        //         }
+
+        //         if (player != null)
+        //         {
+        //             playerScript = player.GetComponent<Player>();
+        //             playerScript.HandleWireColor = "Default";
+        //             previousMove = "";
+
+        //             currentMap = (int)playerScript.CurrentPosition.x / 100;
+        //             xCurrent = (int)(playerScript.CurrentPosition.x % 100);
+        //             yCurrent = (int)(playerScript.CurrentPosition.y);
+        //             xTarget = (int)(playerScript.TargetPosition.x % 100);
+        //             yTarget = (int)(playerScript.TargetPosition.y);
+
+        //             photonViewID = PhotonNetwork.LocalPlayer.ActorNumber;
+        //         }
+        //     }
+        //     else
+        //     {
+        //         for (int i = 0; i < gameManager.MapGridList.Count; ++i)
+        //         {
+        //             foreach (GameObject item in gameManager.MapGridList[i])
+        //             {
+        //                 if (item.tag == "Player" && item.name == "PlayerF(Clone)")
+        //                 {
+        //                     if (this.gameObject.transform.position == item.transform.position)
+        //                     {
+        //                         player = item;
+        //                         break;
+        //                     }
+        //                 }
+        //             }
+        //         }
+        //         if (player != null)
+        //         {
+        //             playerScript = player.GetComponent<Player>();
+        //             playerScript.HandleWireColor = "Default";
+        //             previousMove = "";
+
+        //             currentMap = (int)playerScript.CurrentPosition.x / 100;
+        //             xCurrent = (int)(playerScript.CurrentPosition.x % 100);
+        //             yCurrent = (int)(playerScript.CurrentPosition.y);
+        //             xTarget = (int)(playerScript.TargetPosition.x % 100);
+        //             yTarget = (int)(playerScript.TargetPosition.y);
+
+        //             photonViewID = PhotonNetwork.LocalPlayer.ActorNumber;
+        //         }
+        //     }
+        // }
     }
 
     //check if 2 player get the same function
@@ -128,7 +159,7 @@ public class Step : MonoBehaviour
     private void ChangePlayerAttrStartPoint(Socket socket)
     {
         Debug.Log("Socet found: " + socket);
-        socket.ChangePlayerAttrStartPoint(playerScript);  
+        socket.ChangePlayerAttrStartPoint(playerScript);
     }
 
     private void Update()
