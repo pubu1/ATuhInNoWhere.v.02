@@ -90,7 +90,6 @@ public class PlayerMove : MonoBehaviour
         rb.position = targetPosition;
     }
 
-
     void CheckTop()
     {
         isTop = false;
@@ -119,21 +118,9 @@ public class PlayerMove : MonoBehaviour
         if (colliders.Length > 0)
             isDown = true;
     }
-
-    private void OnTriggerEnter2D(Collider2D collision)
+    public void LoadSceneByName(string sceneName)
     {
-        if (collision.CompareTag("SingleMode"))
-        {
-            Debug.Log("Single");
-
-            SceneManager.LoadScene("Map");
-        }
-        else if (collision.CompareTag("CoopMode"))
-        {
-            Debug.Log("Coop");
-
-            SceneManager.LoadScene("Lobby");
-        }
+        SceneManager.LoadScene(sceneName);
     }
 
 }
