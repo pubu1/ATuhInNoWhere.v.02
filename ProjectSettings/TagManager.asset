@@ -9,8 +9,6 @@ TagManager:
   - Teleporter
   - Wire
   - Socket
-  - SingleMode
-  - CoopMode
   layers:
   - Default
   - TransparentFX
