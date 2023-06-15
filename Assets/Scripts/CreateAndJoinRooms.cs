@@ -21,20 +21,7 @@ public class CreateAndJoinRooms : MonoBehaviourPunCallbacks
 
     public override void OnJoinedRoom()
     {
-        CheckPlayerCountAndLoadScene();
-    }
-
-    public override void OnPlayerEnteredRoom(Photon.Realtime.Player newPlayer)
-    {
-        CheckPlayerCountAndLoadScene();
-    }
-
-    private void CheckPlayerCountAndLoadScene()
-    {
-        if (PhotonNetwork.CurrentRoom.PlayerCount == 2)
-        {
-            PhotonNetwork.LoadLevel("Game");
-        }
+        PhotonNetwork.LoadLevel("Game");
     }
 
 }
