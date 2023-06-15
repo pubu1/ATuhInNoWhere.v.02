@@ -391,7 +391,7 @@ public class Step : MonoBehaviour
                         else if (socket.CheckSocketStartPoint(playerScript))
                         {
                             //socket.ChangePlayerAttrStartPoint(playerScript);    
-                            view.RPC("CallChangePlayerAttrStartPoint", RpcTarget.All, socket, playerScript, photonViewID);
+                            view.RPC("CallChangePlayerAttrStartPoint", RpcTarget.All, currentMap, xTarget, yTarget, photonViewID);
                         }
                     }
                     return true;
@@ -450,7 +450,7 @@ public class Step : MonoBehaviour
             {
                 totalCheck = true;
                 //socket.ChangePlayerAttrStartPoint(playerScript);
-                view.RPC("CallChangePlayerAttrStartPoint", RpcTarget.All, currentMap, xTarget, yTarget);
+                view.RPC("CallChangePlayerAttrStartPoint", RpcTarget.All, currentMap, xTarget, yTarget, photonViewID);
                 UpdateLocation();
             }
         }
