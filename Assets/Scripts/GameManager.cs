@@ -22,7 +22,8 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     // [SerializeField]
     // private GameObject GuideUI;
-    [SerializeField] GameObject playerPrefab;
+    [SerializeField] GameObject playerPrefabM;
+    [SerializeField] GameObject playerPrefabF;
 
     private GameObject[,] grid;
 
@@ -46,66 +47,71 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     public int Score { get; set; }
     private int SocketAmount = 0;
-
     private bool IsCameraTargetPlayer{get; set;}
 
-/*Daviz*/
-    private Teleporter tele01;
-    private Teleporter tele02;
-    int indd=0;
-    int indd1=0, indd2=0, indd3=0, indd4=0;
     public void Start()
     {
-        inputManager = new InputManager();
-        doorButtonList = new Dictionary<int, GameObject>();
-        Score = 0;
-        IsCameraTargetPlayer = false;
-        inputList = inputManager.LoadGridFromFile();
-        prefabList = FindAllPrefabs();
-        if (PhotonNetwork.IsConnected)
-        {
-            InitializeMap();
-            ConnectMap();
-        }
-/*        for (int i = 0; i < MapGridList.Count; ++i)
-        {
-            foreach (GameObject item in MapGridList[i])
+            inputManager = new InputManager();
+            doorButtonList = new Dictionary<int, GameObject>();
+            Score = 0;
+            IsCameraTargetPlayer = false;
+            inputList = inputManager.LoadGridFromFile();
+            prefabList = FindAllPrefabs();
+            if (PhotonNetwork.IsConnected)
             {
-                Debug.Log(item);
+                //this.gameObject.GetComponent<PhotonView>().RPC("RPC_PunMap", RpcTarget.All);   
+                InitializeMap();
+                ConnectMap();
             }
-        }*/
 
-        PlayGridList = MapGridList;
+            PlayGridList = MapGridList;  
     }
+
+    // [PunRPC]
+    // private void RPC_PunMap(){
+    //     InitializeMap();
+    //     ConnectMap();
+    //     PlayGridList = MapGridList;
+    // }
 
     private GameObject InstantiatePrefab(string prefabName, int x, int y)
     {
         GameObject prefab = prefabList.FirstOrDefault(o => o.name == prefabName);
         Quaternion rotation = prefab.transform.rotation;
         float z = prefab.transform.position.z;
-        //GameObject instantiatedPrefab = Instantiate(prefab, new Vector3(x, y, z), rotation) as GameObject;
+        GameObject instantiatedPrefab = Instantiate(prefab, new Vector3(x, y, z), rotation) as GameObject;
         /*Daviz*/
-        GameObject instantiatedPrefab;
-        if(prefabName == "Socket"){
-            instantiatedPrefab = PhotonNetwork.Instantiate(prefabName, new Vector3(x, y, z), rotation) as GameObject;
-        } else{
-            instantiatedPrefab = Instantiate(prefab, new Vector3(x, y, z), rotation) as GameObject;
-        }
+        // GameObject instantiatedPrefab;
+        // if(prefabName == "Socket"){
+        //     instantiatedPrefab = PhotonNetwork.Instantiate(prefabName, new Vector3(x, y, z), rotation) as GameObject;
+        // } else{
+        //     instantiatedPrefab = Instantiate(prefab, new Vector3(x, y, z), rotation) as GameObject;
+        // }
         return instantiatedPrefab;
     }
 
-    private GameObject InstantiatePlayer(int id, int x, int y)
+    private GameObject InstantiatePlayerM(int id, int x, int y)
     {
         GameObject prefab = prefabList.FirstOrDefault(o => o.name == "Player");
-        Quaternion rotation = playerPrefab.transform.rotation;
-        float z = playerPrefab.transform.position.z;
+        Quaternion rotation = playerPrefabM.transform.rotation;
+        float z = playerPrefabM.transform.position.z;
         int roundedX = Mathf.RoundToInt(x);
         int roundedY = Mathf.RoundToInt(y);
         Vector3 flooredPosition = new Vector3(roundedX, roundedY, z);
-        GameObject instantiatedPrefab = PhotonNetwork.Instantiate(playerPrefab.name, flooredPosition, rotation) as GameObject;
-        //Debug.Log("Player: " + instantiatedPrefab.transform.position.x + " - " + instantiatedPrefab.transform.position.y);
+        GameObject instantiatedPrefab = PhotonNetwork.Instantiate(playerPrefabM.name, flooredPosition, rotation) as GameObject;
         instantiatedPrefab.transform.position = flooredPosition;
-        //Debug.Log("Floored: " + flooredPosition.x + " - " + flooredPosition.y);
+        return instantiatedPrefab;
+    }
+    private GameObject InstantiatePlayerF(int id, int x, int y)
+    {
+        GameObject prefab = prefabList.FirstOrDefault(o => o.name == "Player");
+        Quaternion rotation = playerPrefabF.transform.rotation;
+        float z = playerPrefabF.transform.position.z;
+        int roundedX = Mathf.RoundToInt(x);
+        int roundedY = Mathf.RoundToInt(y);
+        Vector3 flooredPosition = new Vector3(roundedX, roundedY, z);
+        GameObject instantiatedPrefab = PhotonNetwork.Instantiate(playerPrefabF.name, flooredPosition, rotation) as GameObject;
+        instantiatedPrefab.transform.position = flooredPosition;
         return instantiatedPrefab;
     }
 
@@ -156,14 +162,26 @@ public class GameManager : MonoBehaviourPunCallbacks
                         grid[x, y] = instantiatedPrefab;
                         SocketAmount++;
                     }
-                    else if (item.Contains("Player"))
+                    else if (item.Contains("PlayerM"))
                     {
                         int id = int.Parse(item.Split(':')[1]);
                         item = "Player";
 
-                        GameObject instantiatedPrefab = InstantiatePlayer(id, x + offset, y);
+
+                        GameObject instantiatedPrefab = InstantiatePlayerM(id, x + offset, y);
                         instantiatedPrefab.GetComponent<Player>().ID = id;
                         grid[x, y] = instantiatedPrefab;
+                    }
+                    else if (item.Contains("PlayerF"))
+                    {
+                        int id = int.Parse(item.Split(':')[1]);
+                        item = "Player";
+
+
+                        GameObject instantiatedPrefab = InstantiatePlayerF(id, x + offset, y);
+                        instantiatedPrefab.GetComponent<Player>().ID = id;
+                        grid[x, y] = instantiatedPrefab;
+
                     }
                     else if (item.Contains("Dimension"))
                     {
@@ -197,21 +215,6 @@ public class GameManager : MonoBehaviourPunCallbacks
                         instantiatedPrefab.GetComponent<Door>().ID = doorID;
                         grid[x, y] = instantiatedPrefab;
                     }
-                    /*Daviz*/
-                    else if(item.Contains("Teleporter")){
-                        GameObject instantiatedPrefab = InstantiatePrefab(item, x + offset, y);
-                        if(indd == 0){
-                            indd++;
-                            indd1=x;
-                            indd2=y;
-                            tele01 = instantiatedPrefab.GetComponent<Teleporter>();
-                        } else{
-                            tele02 = instantiatedPrefab.GetComponent<Teleporter>();
-                            indd3=x;
-                            indd4=y;
-                        }
-                        grid[x, y] = instantiatedPrefab;
-                    }
                     else
                     {
                         GameObject instantiatedPrefab = InstantiatePrefab(item, x + offset, y);
@@ -223,10 +226,6 @@ public class GameManager : MonoBehaviourPunCallbacks
             offset += 100;
             ++currentMap;
         }
-
-        /*Daviz*/
-        MapGridList[0][indd1,indd2].GetComponent<Teleporter>().TargetTeleporter = tele02;
-        MapGridList[0][indd3, indd4].GetComponent<Teleporter>().TargetTeleporter  = tele01;
     }
 
     private void ConnectMap()

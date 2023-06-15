@@ -44,6 +44,7 @@ MonoBehaviour:
   - ResetTheGame
   - CallChangePlayerAttrStartPoint
   - ChangePlayerAttrStartPoint
+  - RPC_PunMap
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

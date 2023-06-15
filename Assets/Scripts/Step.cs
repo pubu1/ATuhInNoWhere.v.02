@@ -40,34 +40,72 @@ public class Step : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        gameManager = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameManager>();
         if (view.IsMine)
-        {   
-            gameManager = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameManager>();
-            for (int i = 0; i < gameManager.MapGridList.Count; ++i)
+        {
+            if (PhotonNetwork.LocalPlayer.ActorNumber == 1)
             {
-                foreach (GameObject item in gameManager.MapGridList[i])
+                for (int i = 0; i < gameManager.MapGridList.Count; ++i)
                 {
-                    if (item.tag == "Player")
+                    foreach (GameObject item in gameManager.MapGridList[i])
                     {
-                        if (this.gameObject.transform.position == item.transform.position)
+                        if (item.tag == "Player" && item.name == "PlayerM(Clone)")
                         {
-                            player = item;
-                            break;
+                            if (this.gameObject.transform.position == item.transform.position)
+                            {
+                                player = item;
+                                break;
+                            }
                         }
                     }
                 }
+
+                if (player != null)
+                {
+                    playerScript = player.GetComponent<Player>();
+                    playerScript.HandleWireColor = "Default";
+                    previousMove = "";
+
+                    currentMap = (int)playerScript.CurrentPosition.x / 100;
+                    xCurrent = (int)(playerScript.CurrentPosition.x % 100);
+                    yCurrent = (int)(playerScript.CurrentPosition.y);
+                    xTarget = (int)(playerScript.TargetPosition.x % 100);
+                    yTarget = (int)(playerScript.TargetPosition.y);
+
+                    photonViewID = PhotonNetwork.LocalPlayer.ActorNumber;
+                }
             }
-            playerScript = player.GetComponent<Player>();
-            playerScript.HandleWireColor = "Default";
-            previousMove = "";
+            else
+            {
+                for (int i = 0; i < gameManager.MapGridList.Count; ++i)
+                {
+                    foreach (GameObject item in gameManager.MapGridList[i])
+                    {
+                        if (item.tag == "Player" && item.name == "PlayerF(Clone)")
+                        {
+                            if (this.gameObject.transform.position == item.transform.position)
+                            {
+                                player = item;
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (player != null)
+                {
+                    playerScript = player.GetComponent<Player>();
+                    playerScript.HandleWireColor = "Default";
+                    previousMove = "";
 
-            currentMap = (int)playerScript.CurrentPosition.x / 100;
-            xCurrent = (int)(playerScript.CurrentPosition.x % 100);
-            yCurrent = (int)(playerScript.CurrentPosition.y);
-            xTarget = (int)(playerScript.TargetPosition.x % 100);
-            yTarget = (int)(playerScript.TargetPosition.y);
+                    currentMap = (int)playerScript.CurrentPosition.x / 100;
+                    xCurrent = (int)(playerScript.CurrentPosition.x % 100);
+                    yCurrent = (int)(playerScript.CurrentPosition.y);
+                    xTarget = (int)(playerScript.TargetPosition.x % 100);
+                    yTarget = (int)(playerScript.TargetPosition.y);
 
-            photonViewID = PhotonNetwork.LocalPlayer.ActorNumber;
+                    photonViewID = PhotonNetwork.LocalPlayer.ActorNumber;
+                }
+            }
         }
     }
 
@@ -79,13 +117,15 @@ public class Step : MonoBehaviour
     }
 
     [PunRPC]
-    private void CallChangePlayerAttrStartPoint(int currentMap, int xTarget, int yTarget) {
-        //ChangePlayerAttrStartPoint(currentMap, xTarget, yTarget); 
+    void CallChangePlayerAttrStartPoint(int currentMap, int xTarget, int yTarget)
+    {
         Socket socket = gameManager.PlayGridList[currentMap][xTarget, yTarget].GetComponent<Socket>();
+        socket.ChangePlayerAttrStartPoint(playerScript);
         Debug.Log("Socket found: " + socket.transform.position);
     }
 
-    private void ChangePlayerAttrStartPoint(int currentMap, int xTarget, int yTarget) {
+    private void ChangePlayerAttrStartPoint(int currentMap, int xTarget, int yTarget)
+    {
         Socket socket = gameManager.PlayGridList[currentMap][xTarget, yTarget].GetComponent<Socket>();
         Debug.Log("Socet found: " + socket);
         //socket.ChangePlayerAttrStartPoint(playerScript);  
@@ -93,10 +133,11 @@ public class Step : MonoBehaviour
 
     private void Update()
     {
-        if (view.IsMine)
+        if (view.IsMine && player != null)
         {
             //check player move
-            if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.RightArrow)) {
+            if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.RightArrow))
+            {
                 view.RPC("LogMove", RpcTarget.Others);
             }
 
@@ -205,11 +246,11 @@ public class Step : MonoBehaviour
         {
             if (!view.IsMine || view.IsMine)
             {
-            Wire w = new Wire();
-            w.Start();
-            w.GenerateWire(playerScript, previousMove);
+                Wire w = new Wire();
+                w.Start();
+                w.GenerateWire(playerScript, previousMove);
 
-            
+
                 GameObject wire = w.GetWire();
                 Vector2 wirePosition = new Vector2(wire.transform.position.x, wire.transform.position.y);
                 gameManager.WireMap[wirePosition] = wire.GetComponent<Wire>();
@@ -370,7 +411,7 @@ public class Step : MonoBehaviour
             else if (socket.CheckSocketStartPoint(playerScript))
             {
                 totalCheck = true;
-                socket.ChangePlayerAttrStartPoint(playerScript);
+                //socket.ChangePlayerAttrStartPoint(playerScript);
                 view.RPC("CallChangePlayerAttrStartPoint", RpcTarget.All, currentMap, xTarget, yTarget);
                 UpdateLocation();
             }
