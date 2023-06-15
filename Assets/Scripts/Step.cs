@@ -41,25 +41,31 @@ public class Step : MonoBehaviour
     void Start()
     {
         photonViewID = PhotonNetwork.LocalPlayer.ActorNumber;
+        Debug.Log("Photon View ID: " + photonViewID);
         if (view.IsMine)
         {
             gameManager = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameManager>();
-            for (int i = 0; i < gameManager.MapGridList.Count; ++i)
-            {
-                foreach (GameObject item in gameManager.MapGridList[i])
-                {
-                    if ((item.name == "PlayerM(Clone)" && photonViewID == 1) || (item.name == "PlayerF(Clone)" && photonViewID == 2))
-                    {
-                        //  player = item;
-                        //     break;
-                        if (this.gameObject.transform.position == item.transform.position)
-                        {
-                            player = item;
-                            break;
-                        }
-                    }
-                }
-            }
+            if (photonViewID == 1) player = gameManager.PlayerM;
+            else player = gameManager.PlayerF;
+            // for (int i = 0; i < gameManager.MapGridList.Count; ++i)
+            // {
+            //     foreach (GameObject item in gameManager.MapGridList[i])
+            //     {
+            //         Debug.Log(item.name);
+            //         if ((item.name.Contains("PlayerM") && photonViewID == 1) || (item.name == "PlayerF(Clone)" && photonViewID == 2))
+            //         {
+            //             //  player = item;
+            //             //     break;
+            //             Debug.Log(item);
+            //             Debug.Log(item.transform.position);
+            //             if (this.gameObject.transform.position == item.transform.position)
+            //             {
+            //                 player = item;
+            //                 break;
+            //             }
+            //         }
+            //     }
+            // }
             Debug.Log(player);
             playerScript = player.GetComponent<Player>();
             playerScript.HandleWireColor = "Default";

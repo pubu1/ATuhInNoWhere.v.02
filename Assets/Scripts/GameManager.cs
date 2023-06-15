@@ -25,6 +25,8 @@ public class GameManager : MonoBehaviourPunCallbacks
     [SerializeField] GameObject playerPrefabM;
     [SerializeField] GameObject playerPrefabF;
 
+    public GameObject? PlayerM, PlayerF;
+
     private GameObject[,] grid;
 
     private GameObject[] prefabList;
@@ -49,8 +51,10 @@ public class GameManager : MonoBehaviourPunCallbacks
     private int SocketAmount = 0;
     private bool IsCameraTargetPlayer{get; set;}
 
+    private PhotonView view;
     public void Start()
     {
+        view = this.gameObject.GetComponent<PhotonView>();
             inputManager = new InputManager();
             doorButtonList = new Dictionary<int, GameObject>();
             Score = 0;
@@ -144,7 +148,7 @@ public class GameManager : MonoBehaviourPunCallbacks
                 for (int y = 0; y < n; ++y)
                 {
                     //Init ground
-                    Instantiate(ground, new Vector3(x + offset, y, groundZ), groundRotate);
+                    GameObject groundObject = Instantiate(ground, new Vector3(x + offset, y, groundZ), groundRotate);
                     string item = randomMap[x, y];
                     GameObject prefab;
                     
@@ -164,24 +168,31 @@ public class GameManager : MonoBehaviourPunCallbacks
                     }
                     else if (item.Contains("PlayerM"))
                     {
+                        //store ground instead of player
+                        grid[x, y] = groundObject;
+                        if (PhotonNetwork.LocalPlayer.ActorNumber != 1) continue;
+
                         int id = int.Parse(item.Split(':')[1]);
                         item = "Player";
 
 
                         GameObject instantiatedPrefab = InstantiatePlayerM(id, x + offset, y);
                         instantiatedPrefab.GetComponent<Player>().ID = id;
-                        grid[x, y] = instantiatedPrefab;
+                        PlayerM = instantiatedPrefab;
                     }
                     else if (item.Contains("PlayerF"))
                     {
+                        //store ground instead of player
+                        grid[x, y] = groundObject;    
+                        if (PhotonNetwork.LocalPlayer.ActorNumber != 2) continue;
+
                         int id = int.Parse(item.Split(':')[1]);
                         item = "Player";
 
 
                         GameObject instantiatedPrefab = InstantiatePlayerF(id, x + offset, y);
                         instantiatedPrefab.GetComponent<Player>().ID = id;
-                        grid[x, y] = instantiatedPrefab;
-
+                        PlayerF = instantiatedPrefab;
                     }
                     else if (item.Contains("Dimension"))
                     {
