@@ -156,15 +156,16 @@ public class Step : MonoBehaviour
     [PunRPC]
     void CallChangePlayerAttrStartPoint(int currentMap, int xTarget, int yTarget, int photonTargetID)
     {
+        Debug.Log("map grid: " + gameManager.MapGridList[currentMap][xTarget, yTarget]);
         Socket socket = gameManager.MapGridList[currentMap][xTarget, yTarget].GetComponent<Socket>();
         //socket.ChangePlayerAttrStartPoint(playerScript);
-        Debug.Log("Socket found: " + socket.transform.position);
+        Debug.Log("Socket found: " + socket + " - " + socket.transform.position);
         ChangePlayerAttrStartPoint(socket, photonTargetID);
     }
 
     private void ChangePlayerAttrStartPoint(Socket socket, int photonTargetID)
     {
-        Debug.Log("Socet found: " + socket);
+        Debug.Log("Socket found: " + socket);
         GameObject targetP = (photonTargetID == 1) ? gameManager.PlayerM : gameManager.PlayerF;
         socket.ChangePlayerAttrStartPoint(targetP.GetComponent<Player>());
     }
