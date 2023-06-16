@@ -69,13 +69,28 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
 
     public void EnterRoomNum()
     {
-        Debug.Log("Joined room" + roomNameJoin.text);
-        PhotonNetwork.JoinRoom(roomNameJoin.text);
+        CheckRoomExists(roomNameJoin.text);
+    }
+
+    private void CheckRoomExists(string roomName)
+    {
+        RoomInfo[] rooms = PhotonNetwork.GetRoomList();
+        foreach (RoomInfo room in rooms)
+        {
+            if (room.Name == roomName)
+            {
+                PhotonNetwork.JoinRoom(room.Name);
+                return;
+            }
+        }
+
+        errorText.text = "Room does not exist!";
+        // Handle the case when the room does not exist
     }
 
     public override void OnJoinedRoom()
     {
-        PhotonNetwork.LoadLevel("Game");
+        PhotonNetwork.LoadLevel("Lobby_Dual");
     }
 
     public void ClickRoomNumber(string buttonText)
