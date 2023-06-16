@@ -25,7 +25,11 @@ public class GameManager : MonoBehaviourPunCallbacks
     [SerializeField] GameObject playerPrefabM;
     [SerializeField] GameObject playerPrefabF;
 
-    public GameObject? PlayerM, PlayerF;
+    [PunRPC]
+    public GameObject PlayerM { get; set; }
+
+    [PunRPC]
+    public GameObject PlayerF { get; set; }
 
     private GameObject[,] grid;
 
@@ -34,6 +38,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     private List<string[,]> inputList;
 
     private InputManager inputManager;
+    private GameObject player;
 
 
     public List<GameObject[,]> MapGridList { get; set; }
@@ -63,20 +68,38 @@ public class GameManager : MonoBehaviourPunCallbacks
             prefabList = FindAllPrefabs();
             if (PhotonNetwork.IsConnected)
             {
-                //this.gameObject.GetComponent<PhotonView>().RPC("RPC_PunMap", RpcTarget.All);   
-                InitializeMap();
-                ConnectMap();
+            if (PhotonNetwork.CurrentRoom.PlayerCount == 2)
+            {
+                //InitializeMap();
+                view.RPC("InitializeMapRPC", RpcTarget.All);
             }
-
-            PlayGridList = MapGridList;  
+        }
     }
 
-    // [PunRPC]
-    // private void RPC_PunMap(){
-    //     InitializeMap();
-    //     ConnectMap();
-    //     PlayGridList = MapGridList;
-    // }
+    [PunRPC]
+    public void InitializeMapRPC()
+    {
+            InitializeMap();
+            ConnectMap();
+        
+    }
+
+    [PunRPC]
+    public void SetPlayerM(int playerID, int x, int y)
+    {
+        GameObject instantiatedPrefab = InstantiatePlayerM(playerID, x, y);
+        instantiatedPrefab.GetComponent<Player>().ID = playerID;
+        PlayerM = instantiatedPrefab;
+    }
+
+    [PunRPC]
+    public void SetPlayerF(int playerID, int x, int y)
+    {
+        GameObject instantiatedPrefab = InstantiatePlayerF(playerID, x, y);
+        instantiatedPrefab.GetComponent<Player>().ID = playerID;
+        PlayerF = instantiatedPrefab;
+    }
+
 
     private GameObject InstantiatePrefab(string prefabName, int x, int y)
     {
@@ -168,32 +191,38 @@ public class GameManager : MonoBehaviourPunCallbacks
                     }
                     else if (item.Contains("PlayerM"))
                     {
-                        //store ground instead of player
+                        // store ground instead of player
                         grid[x, y] = groundObject;
-                        if (PhotonNetwork.LocalPlayer.ActorNumber != 1) continue;
 
-                        int id = int.Parse(item.Split(':')[1]);
-                        item = "Player";
+                        if (PhotonNetwork.LocalPlayer.ActorNumber == 1)
+                        {
+                            int id = int.Parse(item.Split(':')[1]);
+                            item = "Player";
 
-
-                        GameObject instantiatedPrefab = InstantiatePlayerM(id, x + offset, y);
-                        instantiatedPrefab.GetComponent<Player>().ID = id;
-                        PlayerM = instantiatedPrefab;
+                            //PlayerM = InstantiatePlayerM(id, x + offset, y);
+                            //SetPlayerM(id, x + offset, y);
+                            view.RPC("SetPlayerM", RpcTarget.All, id, x + offset, y);
+                            PlayerM.GetComponent<Player>().ID = id;
+                        }
                     }
                     else if (item.Contains("PlayerF"))
                     {
-                        //store ground instead of player
-                        grid[x, y] = groundObject;    
-                        if (PhotonNetwork.LocalPlayer.ActorNumber != 2) continue;
+                        // store ground instead of player
+                        grid[x, y] = groundObject;
+                        if (PhotonNetwork.LocalPlayer.ActorNumber == 2)
+                        {
+                            int id = int.Parse(item.Split(':')[1]);
+                            item = "Player";
 
-                        int id = int.Parse(item.Split(':')[1]);
-                        item = "Player";
-
-
-                        GameObject instantiatedPrefab = InstantiatePlayerF(id, x + offset, y);
-                        instantiatedPrefab.GetComponent<Player>().ID = id;
-                        PlayerF = instantiatedPrefab;
+                            //PlayerF = InstantiatePlayerF(id, x + offset, y);
+                            //SetPlayerF(id, x + offset, y);
+                            view.RPC("SetPlayerF", RpcTarget.All, id, x + offset, y);
+                            PlayerF.GetComponent<Player>().ID = id;
+                        }
                     }
+
+
+
                     else if (item.Contains("Dimension"))
                     {
                         string[] dimension = item.Split(':');
@@ -286,7 +315,16 @@ public class GameManager : MonoBehaviourPunCallbacks
                 }
             }
         }
+        PlayGridList = MapGridList;
+        if (PlayerM == null)
+        {
 
+        } else
+        {
+
+        }
+        Debug.Log("Player M in GM: " + PlayerM);
+        Debug.Log("Player F in GM: " + PlayerF);
     }
 
     public List<string> GetPath() { return path; }
