@@ -7,6 +7,10 @@ TagManager:
   - Door
   - Ground
   - Teleporter
+  - Wall
+  - Escalator
+  - Wire
+  - DimensionIn
   layers:
   - Default
   - TransparentFX

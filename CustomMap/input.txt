@@ -1,16 +1,16 @@
 3
 6 9
 Wall Wall Wall Wall Wall Wall Wall Wall Wall
-Wall Ground Ground Ground PlayerM:1 Ground Socket_Yellow Ground Wall
-Wall PlayerF:0 Ground Ground Ground Ice Ground Ground Wall
-Wall Ground Socket_Red Ground Ground DimensionIn:1 Bridge Ground Wall
-Wall Socket_Yellow Ground Ground DimensionIn:2 Ground Socket_Red Ground Wall
+Wall Escalator:Down Escalator:Left Escalator:Left Escalator:Left Escalator:Left Ground Ground Wall
+Wall Escalator:Right Escalator:Down Escalator:Right Escalator:Down Escalator:Right Ground PlayerM:0 Wall
+Wall Escalator:Down Escalator:Left Escalator:Up Escalator:Down Escalator:Up Ground Ground Wall
+Wall Escalator:Right DimensionIn:1 Escalator:Up Escalator:Right DimensionIn:2 Ground Ground Wall
 Wall Wall Wall Wall Wall Wall Wall Wall Wall
 3 6
 Wall Wall Wall Wall Wall Wall
 DimensionOut:Left Ground Ground Ground Ground DimensionOut:Right
-Wall Wall Wall Wall DimensionOut:Bottom Wall
-3 6
 Wall Wall Wall Wall Wall Wall
-DimensionOut:Left Ground Ground Ground Ground Wall
+3 6
+Wall Wall Wall Wall DimensionOut:Top Wall
+DimensionOut:Left Ground Ground Ground Escalator:Up Wall
 Wall Wall Wall Wall Wall Wall

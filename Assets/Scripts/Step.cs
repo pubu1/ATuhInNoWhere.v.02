@@ -26,6 +26,7 @@ public class Step : MonoBehaviour
     private string previousMove;
     private bool activatePipeEffect = false;
     private bool isStepOnIce = false;
+    private bool isStepOnEscalator = false;
 
     int currentMap;
     int xCurrent;
@@ -146,47 +147,23 @@ public class Step : MonoBehaviour
                 isPauseGame = !isPauseGame;
             }
 
-            if (!isStepOnIce && Input.GetKeyDown(KeyCode.UpArrow) && enableMove && !isPauseGame)
-            {
+            if (isStepOnEscalator && enableMove)
+            {           
                 playerScript.TempCurrentPosition = new Vector2(transform.position.x, transform.position.y);
-                playerScript.TempTargetPosition = new Vector2(transform.position.x, transform.position.y + moveSteps);
-                playerScript.TempNextKey = "Up";
-                if (CanStepToPosition(playerScript.TempCurrentPosition, playerScript.TempTargetPosition, playerScript.TempNextKey))
-                {
-                    SetPreviousMove("Up");
+            
+                if (gameManager.PlayGridList[currentMap][xTarget, yTarget].tag == "Escalator"){
+                    Escalator escalator = gameManager.PlayGridList[currentMap][xTarget, yTarget].GetComponent<Escalator>();
+                    playerScript.TempTargetPosition = escalator.GetNextPosition(playerScript);
+                    playerScript.TempNextKey = escalator.Direction;
+                } else {
+                    StopStepOnEscalator();      
+                    return;
+                }             
+
+                if (CanStepToPosition(playerScript.TempCurrentPosition, playerScript.TempTargetPosition, GetPreviousMove()))
+                {             
+                    SetPreviousMove(playerScript.TempNextKey);
                 }
-            }
-            else if (!isStepOnIce && Input.GetKeyDown(KeyCode.DownArrow) && enableMove && !isPauseGame)
-            {
-                playerScript.TempCurrentPosition = new Vector2(transform.position.x, transform.position.y);
-                playerScript.TempTargetPosition = new Vector2(transform.position.x, transform.position.y - moveSteps);
-                playerScript.TempNextKey = "Down";
-                if (CanStepToPosition(playerScript.TempCurrentPosition, playerScript.TempTargetPosition, playerScript.TempNextKey))
-                {
-                    SetPreviousMove("Down");
-                }
-            }
-            else if (!isStepOnIce && Input.GetKeyDown(KeyCode.LeftArrow) && enableMove && !isPauseGame)
-            {
-                playerScript.TempCurrentPosition = new Vector2(transform.position.x, transform.position.y);
-                playerScript.TempTargetPosition = new Vector2(transform.position.x - moveSteps, transform.position.y);
-                playerScript.TempNextKey = "Left";
-                if (CanStepToPosition(playerScript.TempCurrentPosition, playerScript.TempTargetPosition, playerScript.TempNextKey))
-                {
-                    SetPreviousMove("Left");
-                }
-                this.transform.localScale = new Vector3(-0.5f, 0.5f, 0.5f);
-            }
-            else if (!isStepOnIce && Input.GetKeyDown(KeyCode.RightArrow) && enableMove && !isPauseGame)
-            {
-                playerScript.TempCurrentPosition = new Vector2(transform.position.x, transform.position.y);
-                playerScript.TempTargetPosition = new Vector2(transform.position.x + moveSteps, transform.position.y);
-                playerScript.TempNextKey = "Right";
-                if (CanStepToPosition(playerScript.TempCurrentPosition, playerScript.TempTargetPosition, playerScript.TempNextKey))
-                {
-                    SetPreviousMove("Right");
-                }
-                this.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
             }
             else if (isStepOnIce && enableMove)
             {
@@ -217,8 +194,58 @@ public class Step : MonoBehaviour
                     StopStepOnIce();
                 }
             }
+            else if (Input.GetKeyDown(KeyCode.UpArrow) && enableMove && !isPauseGame)
+            {
+                playerScript.TempCurrentPosition = new Vector2(transform.position.x, transform.position.y);
+                playerScript.TempTargetPosition = new Vector2(transform.position.x, transform.position.y + moveSteps);
+                playerScript.TempNextKey = "Up";
+                if (CanStepToPosition(playerScript.TempCurrentPosition, playerScript.TempTargetPosition, playerScript.TempNextKey))
+                {
+                    SetPreviousMove("Up");
+                }
+            }
+            else if (Input.GetKeyDown(KeyCode.DownArrow) && enableMove && !isPauseGame)
+            {
+                playerScript.TempCurrentPosition = new Vector2(transform.position.x, transform.position.y);
+                playerScript.TempTargetPosition = new Vector2(transform.position.x, transform.position.y - moveSteps);
+                playerScript.TempNextKey = "Down";
+                if (CanStepToPosition(playerScript.TempCurrentPosition, playerScript.TempTargetPosition, playerScript.TempNextKey))
+                {
+                    SetPreviousMove("Down");
+                }
+            }
+            else if (Input.GetKeyDown(KeyCode.LeftArrow) && enableMove && !isPauseGame)
+            {
+                playerScript.TempCurrentPosition = new Vector2(transform.position.x, transform.position.y);
+                playerScript.TempTargetPosition = new Vector2(transform.position.x - moveSteps, transform.position.y);
+                playerScript.TempNextKey = "Left";
+                if (CanStepToPosition(playerScript.TempCurrentPosition, playerScript.TempTargetPosition, playerScript.TempNextKey))
+                {
+                    SetPreviousMove("Left");
+                }
+                this.transform.localScale = new Vector3(-0.5f, 0.5f, 0.5f);
+            }
+            else if (Input.GetKeyDown(KeyCode.RightArrow) && enableMove && !isPauseGame)
+            {
+                playerScript.TempCurrentPosition = new Vector2(transform.position.x, transform.position.y);
+                playerScript.TempTargetPosition = new Vector2(transform.position.x + moveSteps, transform.position.y);
+                playerScript.TempNextKey = "Right";
+                if (CanStepToPosition(playerScript.TempCurrentPosition, playerScript.TempTargetPosition, playerScript.TempNextKey))
+                {
+                    SetPreviousMove("Right");
+                }
+                this.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
+            }         
             StepMove();
         }
+    }
+
+    private void StopStepOnEscalator(){
+        isStepOnEscalator = false;
+        if(isStepOnIce) 
+            moveSpeed = 7f;
+        else 
+            moveSpeed = 5f;
     }
 
     private void UpdateLocation()
@@ -640,6 +667,18 @@ public class Step : MonoBehaviour
                         GenerateWire(currentMap, xCurrent, yCurrent, "Wire", null);
                     }
                 }
+            }
+        }
+        else if (gameManager.PlayGridList[currentMap][xTarget, yTarget].tag == "Escalator")
+        {
+            Escalator escalator = gameManager.PlayGridList[currentMap][xTarget, yTarget].GetComponent<Escalator>();
+            
+            totalCheck = escalator.CheckNextStep(playerScript, gameManager.WireMap);
+            if(totalCheck){
+                isStepOnEscalator = true;    
+                moveSpeed = 7f;         
+                UpdateLocation();
+                GenerateWire(currentMap, xCurrent, yCurrent, "Wire", null);
             }
         }
         else if (gameManager.WireMap.ContainsKey(targetPosition) && !playerScript.IsNotPickWire)

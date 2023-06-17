@@ -215,6 +215,15 @@ public class GameManager : MonoBehaviourPunCallbacks
                         instantiatedPrefab.GetComponent<Door>().ID = doorID;
                         grid[x, y] = instantiatedPrefab;
                     }
+                    else if (item.Contains("Escalator"))
+                    {
+                        string direction = item.Split(':')[1];
+                        item = "Escalator";
+
+                        GameObject instantiatedPrefab = InstantiatePrefab(item, x + offset, y);
+                        instantiatedPrefab.GetComponent<Escalator>().Direction = direction;
+                        grid[x, y] = instantiatedPrefab;
+                    }
                     else
                     {
                         GameObject instantiatedPrefab = InstantiatePrefab(item, x + offset, y);
