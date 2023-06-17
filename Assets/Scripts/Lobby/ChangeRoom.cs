@@ -12,34 +12,27 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
 {
     [Header("Screens")]
     [SerializeField]
-    private GameObject choosingScreen;
+    private GameObject optionSelectScreen; // screen to select create or join a room
 
     [SerializeField]
-    private GameObject joinScreen;
+    private GameObject joinRoomScreen; // canvas screen to click the room number and enter the room
 
     [Header("Room")]
     [SerializeField]
-    private TMP_InputField roomNameJoin;
+    private TMP_InputField roomNameJoin; // input-field of text of the room to join
 
     [SerializeField]
-    private TMP_Text errorText;
+    private TMP_Text errorText; // error text to display if the room exist or not
 
-    // [SerializeField]
-    // private Button btn;
+    public RoomOptions roomOptions = new RoomOptions(); // new RoomOption to create a room
 
-    // private Color disabledColor  = new Color(1f, 1f, 1f, 0.5f);
-
-    public RoomOptions roomOptions = new RoomOptions();
-
-    public void Start()
+    private void Start()
     {
-        // var textComponent = roomNameJoin.textComponent;
-        // var backgroundComponent = roomNameJoin.GetComponent<Image>();
+        PhotonNetwork.JoinLobby(); // auto join lobby as the scene load
 
-        // textComponent.color = disabledColor;
-        // backgroundComponent.color = disabledColor;
     }
 
+    // Random a room number (dont let player to create a room name), it is a room with xxxx (0<x<5)
     public string roomRandom()
     {
         string roomNumber = "";
@@ -53,54 +46,45 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
         return roomNumber;
     }
 
+    // Create a room with maximum 2 player
     public void CreateRoom()
     {
         roomOptions.MaxPlayers = 2;
-        string roomNum = roomRandom();
-        Debug.Log("Creating room: " + roomNum);
-        PhotonNetwork.CreateRoom(roomNum, roomOptions, TypedLobby.Default);
+        string roomNum = roomRandom(); // after random a room code
+        Debug.Log("Creating room: " + roomNum); 
+        PhotonNetwork.CreateRoom(roomNum, roomOptions, TypedLobby.Default); // enter the room
     }
 
-    public void JoinRoom()
+    // Click join to open the canvas enter the room code
+    public void OnClickJoinRoom()
     {
-        choosingScreen.SetActive(false);
-        joinScreen.SetActive(true);
+        optionSelectScreen.SetActive(false);
+        joinRoomScreen.SetActive(true);
     }
 
-    public void EnterRoomNum()
-    {
-        CheckRoomExists(roomNameJoin.text);
-    }
-
-    private void CheckRoomExists(string roomName)
-    {
-        RoomInfo[] rooms = PhotonNetwork.GetRoomList();
-        foreach (RoomInfo room in rooms)
-        {
-            if (room.Name == roomName)
-            {
-                PhotonNetwork.JoinRoom(room.Name);
-                return;
-            }
-        }
-
-        errorText.text = "Room does not exist!";
-        // Handle the case when the room does not exist
-    }
-
+    // enter the lobby_dual after create a room successfully
     public override void OnJoinedRoom()
     {
         PhotonNetwork.LoadLevel("Lobby_Dual");
     }
 
-    public void ClickRoomNumber(string buttonText)
+    // after enter the text in canvas joinRoom, click enter to enter the room
+    public void EnterRoomNum()
+    {
+        PhotonNetwork.JoinRoom(roomNameJoin.text);
+    }
+
+
+    // this is for choosing number for the room code to enter 
+    public void ClickRoomNumber(TMP_Text buttonText)
     {
         if (roomNameJoin.text.Length < 4)
         {
-            roomNameJoin.text += buttonText;
+            roomNameJoin.text += buttonText.text;
         }
     }
 
+    // this is for deleting if the player enter wrong number
     public void DeleteRoomNumber()
     {
         // Get the current text from the input field

@@ -584,7 +584,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2139387816969959679, guid: b74a28d64b86bf24b9e5674dc18b020e, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 5
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 2139387816969959679, guid: b74a28d64b86bf24b9e5674dc18b020e, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
@@ -604,7 +604,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2139387816969959679, guid: b74a28d64b86bf24b9e5674dc18b020e, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: UnityEngine.Object, UnityEngine
+      value: TMPro.TMP_Text, Unity.TextMeshPro
       objectReference: {fileID: 0}
     - target: {fileID: 4545343254413947063, guid: b74a28d64b86bf24b9e5674dc18b020e, type: 3}
       propertyPath: m_text
@@ -1008,6 +1008,10 @@ PrefabInstance:
       value: DeleteBTN
       objectReference: {fileID: 0}
     - target: {fileID: 2139387816969959679, guid: b74a28d64b86bf24b9e5674dc18b020e, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2139387816969959679, guid: b74a28d64b86bf24b9e5674dc18b020e, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1883486903}
@@ -1018,6 +1022,10 @@ PrefabInstance:
     - target: {fileID: 2139387816969959679, guid: b74a28d64b86bf24b9e5674dc18b020e, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
       value: ChangeRoom, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 2139387816969959679, guid: b74a28d64b86bf24b9e5674dc18b020e, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgument
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 2139387816969959679, guid: b74a28d64b86bf24b9e5674dc18b020e, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
@@ -1889,7 +1897,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2139387816969959679, guid: b74a28d64b86bf24b9e5674dc18b020e, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 5
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 2139387816969959679, guid: b74a28d64b86bf24b9e5674dc18b020e, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
@@ -1909,7 +1917,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2139387816969959679, guid: b74a28d64b86bf24b9e5674dc18b020e, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: UnityEngine.Object, UnityEngine
+      value: TMPro.TMP_Text, Unity.TextMeshPro
       objectReference: {fileID: 0}
     - target: {fileID: 4545343254413947063, guid: b74a28d64b86bf24b9e5674dc18b020e, type: 3}
       propertyPath: m_text
@@ -2019,7 +2027,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2139387816969959679, guid: b74a28d64b86bf24b9e5674dc18b020e, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 5
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 2139387816969959679, guid: b74a28d64b86bf24b9e5674dc18b020e, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
@@ -2039,7 +2047,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2139387816969959679, guid: b74a28d64b86bf24b9e5674dc18b020e, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: UnityEngine.Object, UnityEngine
+      value: TMPro.TMP_Text, Unity.TextMeshPro
       objectReference: {fileID: 0}
     - target: {fileID: 4545343254413947063, guid: b74a28d64b86bf24b9e5674dc18b020e, type: 3}
       propertyPath: m_text
@@ -2145,7 +2153,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1883486902}
-  - component: {fileID: 1883486901}
   - component: {fileID: 1883486903}
   m_Layer: 0
   m_Name: CreateAndJoinRooms
@@ -2154,20 +2161,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1883486901
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1883486900}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c17e0cd1b0b159242a699c0afaedf4a1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  roomNameCreate: {fileID: 0}
-  roomNameJoin: {fileID: 0}
 --- !u!4 &1883486902
 Transform:
   m_ObjectHideFlags: 0
@@ -2195,8 +2188,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 54a9916d6b5339f469acf3998b92d9e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  choosingScreen: {fileID: 1480515238}
-  joinScreen: {fileID: 1782303688}
+  optionSelectScreen: {fileID: 0}
+  joinRoomScreen: {fileID: 0}
   roomNameJoin: {fileID: 103925228}
   errorText: {fileID: 0}
 --- !u!1 &1954454603
@@ -2581,29 +2574,9 @@ PrefabInstance:
       value: btn1
       objectReference: {fileID: 0}
     - target: {fileID: 2139387816969959679, guid: b74a28d64b86bf24b9e5674dc18b020e, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 2139387816969959679, guid: b74a28d64b86bf24b9e5674dc18b020e, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1883486903}
-    - target: {fileID: 2139387816969959679, guid: b74a28d64b86bf24b9e5674dc18b020e, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: ClickRoomNumber
-      objectReference: {fileID: 0}
-    - target: {fileID: 2139387816969959679, guid: b74a28d64b86bf24b9e5674dc18b020e, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: ChangeRoom, Assembly-CSharp
-      objectReference: {fileID: 0}
-    - target: {fileID: 2139387816969959679, guid: b74a28d64b86bf24b9e5674dc18b020e, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_StringArgument
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2139387816969959679, guid: b74a28d64b86bf24b9e5674dc18b020e, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: UnityEngine.Object, UnityEngine
-      objectReference: {fileID: 0}
     - target: {fileID: 8844879416674027092, guid: b74a28d64b86bf24b9e5674dc18b020e, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
