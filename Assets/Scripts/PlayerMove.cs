@@ -8,7 +8,8 @@ public class PlayerMove : MonoBehaviour
 
     public int moveX = 1;
     public int moveY = 1;
-    public int moveSpeed = 10;
+    public int moveSpeed = 5;
+    public bool isMove = true;
 
     //private bool isGrounded =false;
     [SerializeField] Transform checkTop;
@@ -42,25 +43,26 @@ public class PlayerMove : MonoBehaviour
         CheckLeft();
         CheckRight();
         CheckDown();
-        if (Input.GetKeyDown(KeyCode.LeftArrow) && !isLeft)
+        if (Input.GetKeyDown(KeyCode.LeftArrow) && !isLeft && isMove)
         {
+            
             startPosition = rb.position;
             targetPosition = startPosition + new Vector2(-moveX, 0f);
             StartCoroutine(Move());
         }
-        else if (Input.GetKeyDown(KeyCode.RightArrow) && !isRight)
+        else if (Input.GetKeyDown(KeyCode.RightArrow) && !isRight && isMove)
         {
              startPosition = rb.position;
             targetPosition = startPosition + new Vector2(moveX, 0f);
             StartCoroutine(Move());
         }
-        else if (Input.GetKeyDown(KeyCode.UpArrow) && !isTop)
+        else if (Input.GetKeyDown(KeyCode.UpArrow) && !isTop && isMove)
         {
              startPosition = rb.position;
             targetPosition = startPosition + new Vector2(0f, moveY);
             StartCoroutine(Move());
         }
-        else if (Input.GetKeyDown(KeyCode.DownArrow) && !isDown)
+        else if (Input.GetKeyDown(KeyCode.DownArrow) && !isDown && isMove)
         {
              startPosition = rb.position;
             targetPosition = startPosition + new Vector2(0f, -moveY);
@@ -70,12 +72,13 @@ public class PlayerMove : MonoBehaviour
     }
     private IEnumerator Move()
     {
+        isMove = false;
         // Calculate the distance to dash
         float distanceToMove = Vector2.Distance(startPosition, targetPosition);
 
         // Calculate the time it will take to complete the dash
         float moveTime = distanceToMove / moveSpeed;
-
+        Debug.Log(moveTime);
         float elapsedTime = 0f;
 
         while (elapsedTime < moveTime)
@@ -88,6 +91,7 @@ public class PlayerMove : MonoBehaviour
         }
         // Snap to the target position to ensure accuracy
         rb.position = targetPosition;
+        isMove = true;
     }
 
     void CheckTop()
