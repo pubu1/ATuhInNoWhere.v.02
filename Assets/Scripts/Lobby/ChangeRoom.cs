@@ -7,6 +7,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 public class ChangeRoom : MonoBehaviourPunCallbacks
 {
@@ -24,12 +25,27 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
     [SerializeField]
     private TMP_Text errorText; // error text to display if the room exist or not
 
+    [Header("Event System")]
+    [SerializeField]
+    private EventSystem eventSystem;
+
+    [SerializeField]
+    private GameObject choosePanelButton;
+    [SerializeField]
+    private GameObject joinPanelButton;
+
+
     public RoomOptions roomOptions = new RoomOptions(); // new RoomOption to create a room
+
 
     private void Start()
     {
         PhotonNetwork.JoinLobby(); // auto join lobby as the scene load
+        eventSystem.firstSelectedGameObject = choosePanelButton;
 
+        //lock the cursor 
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 
     // Random a room number (dont let player to create a room name), it is a room with xxxx (0<x<5)
@@ -60,6 +76,7 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
     {
         optionSelectScreen.SetActive(false);
         joinRoomScreen.SetActive(true);
+        eventSystem.SetSelectedGameObject(joinPanelButton);
     }
 
     // enter the lobby_dual after create a room successfully
@@ -93,14 +110,15 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
         // Check if the text is not empty
         if (!string.IsNullOrEmpty(currentText))
         {
-            // Create a StringBuilder from the current text
-            StringBuilder stringBuilder = new StringBuilder(currentText);
-
-            // Remove the last character from the StringBuilder
-            stringBuilder.Remove(stringBuilder.Length - 1, 1);
-
-            // Update the text in the input field
-            roomNameJoin.text = stringBuilder.ToString();
+            // Remove the last character from the text
+            roomNameJoin.text = currentText.Substring(0, currentText.Length - 1);
         }
+    }
+
+    public void OnClickBackPanel()
+    {
+        optionSelectScreen.SetActive(true);
+        joinRoomScreen.SetActive(false);
+        eventSystem.SetSelectedGameObject(choosePanelButton);
     }
 }
