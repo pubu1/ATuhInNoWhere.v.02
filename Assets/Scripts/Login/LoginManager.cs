@@ -11,6 +11,8 @@ public class LoginManager : MonoBehaviourPunCallbacks
     public TMP_InputField passwordInput;
     public Button loginButton;
     private bool connectedToMaster = false;
+    public ErrorPopup errorPopup;
+
 
     private void Start()
     {
@@ -33,16 +35,20 @@ public class LoginManager : MonoBehaviourPunCallbacks
                 PhotonNetwork.AuthValues = new AuthenticationValues(username);
                 PhotonNetwork.ConnectUsingSettings();
             }
-            else
+            else 
             {
                 // Display an error message
                 Debug.Log("Tài khoản không tồn tại!");
+                errorPopup.ShowPopup("Username or password error! ");
+
             }
         }
         else
         {
             // Display an error message
             Debug.Log("Tên người dùng và mật khẩu không thể để trống!");
+            errorPopup.ShowPopup("Username or password can not null!");
+
         }
     }
 

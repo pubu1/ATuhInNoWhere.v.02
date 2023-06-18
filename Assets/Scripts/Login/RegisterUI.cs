@@ -9,6 +9,7 @@ public class RegisterUI : MonoBehaviour
     public TMP_InputField passwordInput;
     public TMP_InputField confirmPasswordInput;
     public Button registerButton;
+    public ErrorPopup errorPopup;
 
     private void Start()
     {
@@ -32,6 +33,8 @@ public class RegisterUI : MonoBehaviour
             {
                 // Hiển thị thông báo lỗi nếu tài khoản đã tồn tại
                 Debug.Log("Tài khoản đã tồn tại!");
+                errorPopup.ShowPopup("Username is existed!");
+
             }
             else if (password == confirmPassword)
             {
@@ -47,12 +50,16 @@ public class RegisterUI : MonoBehaviour
             {
                 // Hiển thị thông báo lỗi nếu mật khẩu không khớp
                 Debug.Log("Mật khẩu và xác nhận mật khẩu không khớp!");
+                errorPopup.ShowPopup("Username or password is error!");
+
             }
         }
         else
         {
             // Hiển thị thông báo lỗi nếu có trường đầu vào bị để trống
             Debug.Log("Vui lòng điền đầy đủ thông tin!");
+            errorPopup.ShowPopup("Please fill in all the information!");
+
         }
     }
 
