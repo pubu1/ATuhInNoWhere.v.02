@@ -14,6 +14,8 @@ public class SoundtrackManager : MonoBehaviour
     [SerializeField]
     private Slider volumeSlider;
 
+    public Text volumeText;
+
     private void Awake()
     {
         if (instance == null)
@@ -53,5 +55,8 @@ public class SoundtrackManager : MonoBehaviour
         {
             source.volume = value;
         }
+
+        // Hiển thị chỉ số âm lượng
+        volumeText.text = Mathf.RoundToInt(value * 100).ToString();
     }
 }
