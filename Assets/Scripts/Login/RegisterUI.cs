@@ -50,7 +50,7 @@ public class RegisterUI : MonoBehaviour
             {
                 // Hiển thị thông báo lỗi nếu mật khẩu không khớp
                 Debug.Log("Mật khẩu và xác nhận mật khẩu không khớp!");
-                errorPopup.ShowPopup("Username or password is error!");
+                errorPopup.ShowPopup("Password and confirm password do not match!");
 
             }
         }
