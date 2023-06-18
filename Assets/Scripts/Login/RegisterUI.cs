@@ -10,10 +10,17 @@ public class RegisterUI : MonoBehaviour
     public TMP_InputField confirmPasswordInput;
     public Button registerButton;
     public ErrorPopup errorPopup;
+    [SerializeField]
+    private GameObject registerPanel;
+
+    [SerializeField]
+    private GameObject loginPanel;
 
     private void Start()
     {
         registerButton.onClick.AddListener(Register);
+        registerPanel.SetActive(true);
+        loginPanel.SetActive(false);
     }
 
     public void Register()
@@ -45,6 +52,8 @@ public class RegisterUI : MonoBehaviour
 
                 // Đăng ký thành công
                 Debug.Log("Đăng ký thành công. Tên người dùng: " + username + ", Nickname: " + nickname);
+                registerPanel.SetActive(false);
+                loginPanel.SetActive(true);
             }
             else
             {
