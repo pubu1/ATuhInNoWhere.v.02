@@ -1,14 +1,16 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 using Photon.Realtime;
 using Photon.Pun;
 using UnityEngine.SceneManagement;
 
 public class LoginManager : MonoBehaviourPunCallbacks
 {
-    public InputField usernameInput;
-    public InputField passwordInput;
+    public TMP_InputField usernameInput;
+    public TMP_InputField passwordInput;
     public Button loginButton;
+    private bool connectedToMaster = false;
 
     private void Start()
     {
@@ -22,31 +24,31 @@ public class LoginManager : MonoBehaviourPunCallbacks
 
         if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password))
         {
-            // Kiểm tra xem tài khoản đã được đăng ký hay không
+            // Check if the account exists
             bool accountExists = CheckAccountExistence(username, password);
 
             if (accountExists)
             {
-                // Gửi thông tin đăng nhập lên máy chủ Photon
+                // Send login information to the Photon server
                 PhotonNetwork.AuthValues = new AuthenticationValues(username);
                 PhotonNetwork.ConnectUsingSettings();
             }
             else
             {
-                // Hiển thị thông báo lỗi
+                // Display an error message
                 Debug.Log("Tài khoản không tồn tại!");
             }
         }
         else
         {
-            // Hiển thị thông báo lỗi
+            // Display an error message
             Debug.Log("Tên người dùng và mật khẩu không thể để trống!");
         }
     }
 
     private bool CheckAccountExistence(string username, string password)
     {
-        // Kiểm tra xem tài khoản có tồn tại trong PlayerPrefs hay không
+        // Check if the account exists in PlayerPrefs
         string savedUsername = PlayerPrefs.GetString("Username");
         string savedPassword = PlayerPrefs.GetString("Password");
 
@@ -55,14 +57,28 @@ public class LoginManager : MonoBehaviourPunCallbacks
 
     public override void OnConnectedToMaster()
     {
-        // Đăng nhập thành công, tiếp tục vào phòng chơi hoặc thực hiện các hành động khác
+        // Successful login, continue to the loading scene or perform other actions
         Debug.Log("Đăng nhập thành công");
-        SceneManager.LoadScene("Loading");
+        connectedToMaster = true;
+        PhotonNetwork.JoinLobby();
+    }
+
+    public override void OnJoinedLobby()
+    {
+        if (connectedToMaster)
+        {
+            if (PhotonNetwork.NickName != usernameInput.text)
+            {
+                PhotonNetwork.NickName = usernameInput.text;
+            }
+
+            SceneManager.LoadScene("PlayMode");
+        }
     }
 
     public override void OnDisconnected(DisconnectCause cause)
     {
-        // Xử lý khi bị ngắt kết nối
+        // Handle disconnection
         Debug.Log("Ngắt kết nối: " + cause.ToString());
     }
 }

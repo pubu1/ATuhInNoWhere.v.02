@@ -1,12 +1,13 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class RegisterUI : MonoBehaviour
 {
-    public InputField usernameInput;
-    public InputField nicknameInput;
-    public InputField passwordInput;
-    public InputField confirmPasswordInput;
+    public TMP_InputField usernameInput;
+    public TMP_InputField nicknameInput;
+    public TMP_InputField passwordInput;
+    public TMP_InputField confirmPasswordInput;
     public Button registerButton;
 
     private void Start()
@@ -24,7 +25,15 @@ public class RegisterUI : MonoBehaviour
         if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(nickname) &&
             !string.IsNullOrEmpty(password) && !string.IsNullOrEmpty(confirmPassword))
         {
-            if (password == confirmPassword)
+            // Kiểm tra xem tài khoản đã tồn tại hay chưa
+            bool accountExists = CheckAccountExistence(username);
+
+            if (accountExists)
+            {
+                // Hiển thị thông báo lỗi nếu tài khoản đã tồn tại
+                Debug.Log("Tài khoản đã tồn tại!");
+            }
+            else if (password == confirmPassword)
             {
                 // Lưu thông tin đăng ký vào PlayerPrefs
                 PlayerPrefs.SetString("Username", username);
@@ -45,5 +54,13 @@ public class RegisterUI : MonoBehaviour
             // Hiển thị thông báo lỗi nếu có trường đầu vào bị để trống
             Debug.Log("Vui lòng điền đầy đủ thông tin!");
         }
+    }
+
+    private bool CheckAccountExistence(string username)
+    {
+        // Kiểm tra xem tài khoản có tồn tại trong PlayerPrefs hay không
+        string savedUsername = PlayerPrefs.GetString("Username");
+
+        return (username == savedUsername);
     }
 }
