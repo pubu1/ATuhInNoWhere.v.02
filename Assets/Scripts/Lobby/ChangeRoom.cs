@@ -3,11 +3,13 @@ using System.Text;
 using Random = System.Random;
 using Photon.Pun;
 using Photon.Realtime;
+using ExitGames.Client.Photon;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+
 
 public class ChangeRoom : MonoBehaviourPunCallbacks
 {
@@ -34,9 +36,9 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
     [SerializeField]
     private GameObject joinPanelButton;
 
-
     public RoomOptions roomOptions = new RoomOptions(); // new RoomOption to create a room
 
+    private bool existedRoom = false;
 
     private void Start()
     {
@@ -46,6 +48,11 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
         //lock the cursor 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+    }
+
+    private void Update()
+    {
+        OnRoomListUpdate();
     }
 
     // Random a room number (dont let player to create a room name), it is a room with xxxx (0<x<5)
@@ -88,7 +95,50 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
     // after enter the text in canvas joinRoom, click enter to enter the room
     public void EnterRoomNum()
     {
-        PhotonNetwork.JoinRoom(roomNameJoin.text);
+        string roomEnter = roomNameJoin.text;
+
+        if (PhotonNetwork.IsConnectedAndReady)
+        {
+
+            if (existedRoom)
+            {
+                // Room exists, join the room
+                PhotonNetwork.JoinRoom(roomEnter);
+            }
+            else
+            {
+                // Room doesn't exist, show an error message
+                errorText.text = "The room does not exist!";
+            }
+        }
+        else
+        {
+            errorText.text = "Not connected to the server!";
+        }
+
+    }
+
+    public bool CheckRoomExists(List<RoomInfo> roomList, string roomName)
+    {
+        foreach (RoomInfo room in roomList)
+        {
+            Debug.Log("Room Exists: " + room.Name);
+            if (room.Name == roomName)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public override void OnRoomListUpdate(List<RoomInfo> roomList)
+    {
+        if (roomNameJoin.text.Length == 4)
+        {
+            existedRoom = CheckRoomExists(roomList, roomNameJoin.text);
+        }
+        
+        Debug.Log("It is existed: " + existedRoom);
     }
 
 
@@ -121,4 +171,5 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
         joinRoomScreen.SetActive(false);
         eventSystem.SetSelectedGameObject(choosePanelButton);
     }
+
 }

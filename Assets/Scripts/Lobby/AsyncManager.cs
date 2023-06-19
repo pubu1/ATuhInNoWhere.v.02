@@ -13,11 +13,17 @@ public class AsyncManager : MonoBehaviourPunCallbacks
     [SerializeField]
     private TMP_Text loadingBtn;
 
-    public void OnClickConnect()
+    private void Start()
     {
         loadingBtn.text = "Connecting...";
         PhotonNetwork.ConnectUsingSettings();
     }
+
+    /*public void OnClickConnect()
+    {
+        loadingBtn.text = "Connecting...";
+        PhotonNetwork.ConnectUsingSettings();
+    }*/
 
     public override void OnConnectedToMaster()
     {   
