@@ -296,15 +296,30 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     private void ConnectMap()
     {
-         for (int x = 0; x < m; ++x)
+        int offset = 0;
+        int currentMap = 0;
+        foreach (string[,] inputMap in inputList)
+        {
+            int n = inputMap.GetLength(0);
+            int m = inputMap.GetLength(1);
+
+            //Debug.Log(n + " x " + m);
+            string[,] randomMap = new string[m, n];
+
+            for (int i = 0; i < m; ++i)
+            {
+                for (int j = 0; j < n; ++j)
+                {
+                    randomMap[i, j] = inputMap[n - j - 1, i];
+                }
+            }
+            for (int x = 0; x < m; ++x)
             {
                 for (int y = 0; y < n; ++y)
                 {
+                    string item = randomMap[x, y];
                     if (item.Contains("PlayerM"))
                     {
-                        // store ground instead of player
-                        grid[x, y] = groundObject;
-
                         if (PhotonNetwork.LocalPlayer.ActorNumber == 1)
                         {
                             int id = int.Parse(item.Split(':')[1]);
@@ -318,8 +333,6 @@ public class GameManager : MonoBehaviourPunCallbacks
                     }
                     else if (item.Contains("PlayerF"))
                     {
-                        // store ground instead of player
-                        grid[x, y] = groundObject;
                         if (PhotonNetwork.LocalPlayer.ActorNumber == 2)
                         {
                             int id = int.Parse(item.Split(':')[1]);
@@ -333,6 +346,9 @@ public class GameManager : MonoBehaviourPunCallbacks
                     }
                 }
             }
+            offset += 100;
+            ++currentMap;
+        }
         for (int i = 0; i < MapGridList.Count; ++i)
         {
             foreach (GameObject item in MapGridList[i])
