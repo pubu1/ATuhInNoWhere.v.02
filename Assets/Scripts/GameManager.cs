@@ -219,31 +219,31 @@ public class GameManager : MonoBehaviourPunCallbacks
                         // store ground instead of player
                         grid[x, y] = groundObject;
 
-                        if (PhotonNetwork.LocalPlayer.ActorNumber == 1)
-                        {
-                            int id = int.Parse(item.Split(':')[1]);
-                            item = "Player";
+                        // if (PhotonNetwork.LocalPlayer.ActorNumber == 1)
+                        // {
+                        //     int id = int.Parse(item.Split(':')[1]);
+                        //     item = "Player";
 
-                            //PlayerM = InstantiatePlayerM(id, x + offset, y);
-                            //SetPlayerM(id, x + offset, y);
-                            view.RPC("SetPlayerM", RpcTarget.All, id, x + offset, y);
-                            PlayerM.GetComponent<Player>().ID = id;
-                        }
+                        //     //PlayerM = InstantiatePlayerM(id, x + offset, y);
+                        //     //SetPlayerM(id, x + offset, y);
+                        //     view.RPC("SetPlayerM", RpcTarget.All, id, x + offset, y);
+                        //     PlayerM.GetComponent<Player>().ID = id;
+                        // }
                     }
                     else if (item.Contains("PlayerF"))
                     {
                         // store ground instead of player
                         grid[x, y] = groundObject;
-                        if (PhotonNetwork.LocalPlayer.ActorNumber == 2)
-                        {
-                            int id = int.Parse(item.Split(':')[1]);
-                            item = "Player";
+                        // if (PhotonNetwork.LocalPlayer.ActorNumber == 2)
+                        // {
+                        //     int id = int.Parse(item.Split(':')[1]);
+                        //     item = "Player";
 
-                            //PlayerF = InstantiatePlayerF(id, x + offset, y);
-                            //SetPlayerF(id, x + offset, y);
-                            view.RPC("SetPlayerF", RpcTarget.All, id, x + offset, y);
-                            PlayerF.GetComponent<Player>().ID = id;
-                        }
+                        //     //PlayerF = InstantiatePlayerF(id, x + offset, y);
+                        //     //SetPlayerF(id, x + offset, y);
+                        //     view.RPC("SetPlayerF", RpcTarget.All, id, x + offset, y);
+                        //     PlayerF.GetComponent<Player>().ID = id;
+                        // }
                     }
 
 
@@ -296,30 +296,43 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     private void ConnectMap()
     {
-        if (PlayerF == null)
-        {
-            GameObject[] allPlayers = GameObject.FindGameObjectsWithTag("Player");
-            foreach (GameObject obj in allPlayers)
+         for (int x = 0; x < m; ++x)
             {
-                if (PlayerM != obj)
+                for (int y = 0; y < n; ++y)
                 {
-                    PlayerF = obj;
-                    break;
+                    if (item.Contains("PlayerM"))
+                    {
+                        // store ground instead of player
+                        grid[x, y] = groundObject;
+
+                        if (PhotonNetwork.LocalPlayer.ActorNumber == 1)
+                        {
+                            int id = int.Parse(item.Split(':')[1]);
+                            item = "Player";
+
+                            //PlayerM = InstantiatePlayerM(id, x + offset, y);
+                            //SetPlayerM(id, x + offset, y);
+                            view.RPC("SetPlayerM", RpcTarget.All, id, x + offset, y);
+                            PlayerM.GetComponent<Player>().ID = id;
+                        }
+                    }
+                    else if (item.Contains("PlayerF"))
+                    {
+                        // store ground instead of player
+                        grid[x, y] = groundObject;
+                        if (PhotonNetwork.LocalPlayer.ActorNumber == 2)
+                        {
+                            int id = int.Parse(item.Split(':')[1]);
+                            item = "Player";
+
+                            //PlayerF = InstantiatePlayerF(id, x + offset, y);
+                            //SetPlayerF(id, x + offset, y);
+                            view.RPC("SetPlayerF", RpcTarget.All, id, x + offset, y);
+                            PlayerF.GetComponent<Player>().ID = id;
+                        }
+                    }
                 }
             }
-        }
-        else if (PlayerM == null)
-        {
-            GameObject[] allPlayers = GameObject.FindGameObjectsWithTag("Player");
-            foreach (GameObject obj in allPlayers)
-            {
-                if (PlayerF != obj)
-                {
-                    PlayerM = obj;
-                    break;
-                }
-            }
-        }
         for (int i = 0; i < MapGridList.Count; ++i)
         {
             foreach (GameObject item in MapGridList[i])
