@@ -42,14 +42,18 @@ public class Step : MonoBehaviour
     {
         photonViewID = PhotonNetwork.LocalPlayer.ActorNumber;
         gameManager = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameManager>();
+        if (gameManager.PlayGridList != null)
+        {
+            Debug.Log("I found Game PlayGridList");
+        } else
+        {
+            Debug.Log("Cannot find Game PlayGridList");
+        }
         Debug.Log("Photon View ID: " + photonViewID);
         if (view.IsMine)
         {
             if (photonViewID == 1) player = gameManager.PlayerM;
             else player = gameManager.PlayerF;
-
-            if (gameManager.PlayerF == null && photonViewID == 2) gameManager.PlayerF = player;
-            else gameManager.PlayerM = player;
 
             Debug.Log(player);
             playerScript = player.GetComponent<Player>();
@@ -63,72 +67,6 @@ public class Step : MonoBehaviour
             yTarget = (int)(playerScript.TargetPosition.y);
 
         }
-        // if (view.IsMine)
-        // {
-        //     if (PhotonNetwork.LocalPlayer.ActorNumber == 1)
-        //     {
-        //         for (int i = 0; i < gameManager.MapGridList.Count; ++i)
-        //         {
-        //             foreach (GameObject item in gameManager.MapGridList[i])
-        //             {
-        //                 if (item.tag == "Player" && item.name == "PlayerM(Clone)")
-        //                 {
-        //                     if (this.gameObject.transform.position == item.transform.position)
-        //                     {
-        //                         player = item;
-        //                         break;
-        //                     }
-        //                 }
-        //             }
-        //         }
-
-        //         if (player != null)
-        //         {
-        //             playerScript = player.GetComponent<Player>();
-        //             playerScript.HandleWireColor = "Default";
-        //             previousMove = "";
-
-        //             currentMap = (int)playerScript.CurrentPosition.x / 100;
-        //             xCurrent = (int)(playerScript.CurrentPosition.x % 100);
-        //             yCurrent = (int)(playerScript.CurrentPosition.y);
-        //             xTarget = (int)(playerScript.TargetPosition.x % 100);
-        //             yTarget = (int)(playerScript.TargetPosition.y);
-
-        //             photonViewID = PhotonNetwork.LocalPlayer.ActorNumber;
-        //         }
-        //     }
-        //     else
-        //     {
-        //         for (int i = 0; i < gameManager.MapGridList.Count; ++i)
-        //         {
-        //             foreach (GameObject item in gameManager.MapGridList[i])
-        //             {
-        //                 if (item.tag == "Player" && item.name == "PlayerF(Clone)")
-        //                 {
-        //                     if (this.gameObject.transform.position == item.transform.position)
-        //                     {
-        //                         player = item;
-        //                         break;
-        //                     }
-        //                 }
-        //             }
-        //         }
-        //         if (player != null)
-        //         {
-        //             playerScript = player.GetComponent<Player>();
-        //             playerScript.HandleWireColor = "Default";
-        //             previousMove = "";
-
-        //             currentMap = (int)playerScript.CurrentPosition.x / 100;
-        //             xCurrent = (int)(playerScript.CurrentPosition.x % 100);
-        //             yCurrent = (int)(playerScript.CurrentPosition.y);
-        //             xTarget = (int)(playerScript.TargetPosition.x % 100);
-        //             yTarget = (int)(playerScript.TargetPosition.y);
-
-        //             photonViewID = PhotonNetwork.LocalPlayer.ActorNumber;
-        //         }
-        //     }
-        // }
     }
 
     //check if 2 player get the same function
@@ -142,7 +80,7 @@ public class Step : MonoBehaviour
     void CallChangePlayerAttrStartPoint(int currentMap, int xTarget, int yTarget, int photonTargetID)
     {
         // Debug.Log("map grid: " + gameManager.PlayGridList);
-        // Socket socket = gameManager.MapGridList[currentMap][xTarget, yTarget].GetComponent<Socket>();
+        // Socket socket = gameManager.PlayGridList[currentMap][xTarget, yTarget].GetComponent<Socket>();
         // //socket.ChangePlayerAttrStartPoint(playerScript);
         // Debug.Log("Socket found: " + socket + " - " + socket.transform.position);
         ChangePlayerAttrStartPoint(currentMap, xTarget, yTarget, photonTargetID);
@@ -150,11 +88,13 @@ public class Step : MonoBehaviour
 
     private void ChangePlayerAttrStartPoint(int currentMap, int xTarget, int yTarget, int photonTargetID)
     {
-        Socket socket = gameManager.MapGridList[currentMap][xTarget, yTarget].GetComponent<Socket>();
+        Socket socket = gameManager.PlayGridList[currentMap][xTarget, yTarget].GetComponent<Socket>();
         Debug.Log("Socket found: " + socket);
         Player targetP = playerScript;
         if (photonTargetID != photonViewID) {
+            Debug.Log(gameManager.PlayerM);
             Debug.Log( gameManager.PlayerM.transform.position);
+            Debug.Log(gameManager.PlayerF);
             Debug.Log( gameManager.PlayerF.transform.position);
             if (photonTargetID == 1) targetP = gameManager.PlayerM.GetComponent<Player>();
             else targetP = gameManager.PlayerF.GetComponent<Player>();
@@ -323,7 +263,7 @@ public class Step : MonoBehaviour
         //check current position
         if (gameManager.PlayGridList[currentMap][xCurrent, yCurrent].tag == "Bridge")
         {
-            Bridge bridge = gameManager.MapGridList[currentMap][xCurrent, yCurrent].GetComponent<Bridge>();
+            Bridge bridge = gameManager.PlayGridList[currentMap][xCurrent, yCurrent].GetComponent<Bridge>();
             totalCheck = bridge.CheckCurrentStep(bridge, playerScript, GetPreviousMove());
             if (!totalCheck)
             {
@@ -395,7 +335,7 @@ public class Step : MonoBehaviour
         //check target posotion
         if (gameManager.PlayGridList[currentMap][xTarget, yTarget].tag == "Bridge")
         {
-            Bridge bridge = gameManager.MapGridList[currentMap][xTarget, yTarget].GetComponent<Bridge>();
+            Bridge bridge = gameManager.PlayGridList[currentMap][xTarget, yTarget].GetComponent<Bridge>();
             totalCheck = bridge.CheckNextStep(bridge, playerScript);
             if (totalCheck)
             {
@@ -453,7 +393,7 @@ public class Step : MonoBehaviour
         }
         else if (gameManager.PlayGridList[currentMap][xTarget, yTarget].tag == "DimensionIn")
         {
-            DimensionIn dIn = gameManager.MapGridList[currentMap][xTarget, yTarget].GetComponent<DimensionIn>();
+            DimensionIn dIn = gameManager.PlayGridList[currentMap][xTarget, yTarget].GetComponent<DimensionIn>();
 
             Vector3 tempTargetPosition = dIn.GetNextPosition(playerScript);
             int tempCurrentMap = (int)tempTargetPosition.x / 100;
@@ -507,7 +447,7 @@ public class Step : MonoBehaviour
         }
         else if (gameManager.PlayGridList[currentMap][xTarget, yTarget].tag == "DimensionOut")
         {
-            DimensionOut dOut = gameManager.MapGridList[currentMap][xTarget, yTarget].GetComponent<DimensionOut>();
+            DimensionOut dOut = gameManager.PlayGridList[currentMap][xTarget, yTarget].GetComponent<DimensionOut>();
 
             Vector3 tempTargetPosition = dOut.GetNextPosition(playerScript);
             int tempCurrentMap = (int)tempTargetPosition.x / 100;
@@ -568,7 +508,7 @@ public class Step : MonoBehaviour
         }
         else if (gameManager.PlayGridList[currentMap][xTarget, yTarget].tag == "DoorButton")
         {
-            DoorButton button = gameManager.MapGridList[currentMap][xTarget, yTarget].GetComponent<DoorButton>();
+            DoorButton button = gameManager.PlayGridList[currentMap][xTarget, yTarget].GetComponent<DoorButton>();
             button.IsActive = true;
 
             totalCheck = button.CheckNextStep(playerScript);
