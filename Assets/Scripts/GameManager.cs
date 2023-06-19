@@ -25,9 +25,11 @@ public class GameManager : MonoBehaviourPunCallbacks
     [SerializeField] GameObject playerPrefabM;
     [SerializeField] GameObject playerPrefabF;
 
-    public static GameObject PlayerM { get; set; }
+    [PunRPC]
+    public GameObject PlayerM { get; set; }
 
-    public static GameObject PlayerF { get; set; }
+    [PunRPC]
+    public GameObject PlayerF { get; set; }
 
     private GameObject[,] grid;
 
