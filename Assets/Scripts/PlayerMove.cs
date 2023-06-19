@@ -95,13 +95,13 @@ public class PlayerMove : MonoBehaviour
         {
             Debug.Log("Single");
             
-            SceneManager.LoadScene("PlayMode");
+            SceneManager.LoadScene("Map");
         }
         else if (collision.CompareTag("CoopMode"))
         {
             Debug.Log("Coop");
             
-           SceneManager.LoadScene("Map");
+           SceneManager.LoadScene("Lobby");
         }
     }
 

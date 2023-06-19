@@ -5,10 +5,10 @@ using UnityEngine;
 
 public class RoomItem : MonoBehaviour
 {
-    public TMP_Text roomName;
+    public string roomName; 
 
     public void setRoomName(string _roomName)
     {
-        roomName.text = _roomName;
+        roomName = _roomName;
     }
 }

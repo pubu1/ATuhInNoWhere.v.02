@@ -38,12 +38,30 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
 
     public RoomOptions roomOptions = new RoomOptions(); // new RoomOption to create a room
 
+    [Header("PLayer")]
+    [SerializeField]
+    private TMP_Text playerName;
+
+    [Header("Room List")]
+    private RoomItem roomItem = new RoomItem();
+    private List<RoomItem> roomItems = new List<RoomItem>();
     private bool existedRoom = false;
+
+    [Header("Scale Selected Button")]
+    private Button currSelectButton;
+    private Vector2 selectedScale = new Vector2(1.2f, 1.2f);
+    private Vector2 defaultScale = new Vector2(1f, 1f);
 
     private void Start()
     {
+        roomItems.Clear();
+
         PhotonNetwork.JoinLobby(); // auto join lobby as the scene load
         eventSystem.firstSelectedGameObject = choosePanelButton;
+        currSelectButton = choosePanelButton.GetComponent<Button>();
+
+        // display player name
+        playerName.text = PlayerPrefs.GetString("Nickname");
 
         //lock the cursor 
         Cursor.lockState = CursorLockMode.Locked;
@@ -52,7 +70,38 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
 
     private void Update()
     {
-        OnRoomListUpdate();
+        if (currSelectButton != null)
+        {
+            RectTransform rectTransform = currSelectButton.GetComponent<RectTransform>();
+            rectTransform.localScale = defaultScale;
+        }
+
+        // Update currently selected button
+        currSelectButton = GetCurrentlySelectedButton();
+
+        // Scale the currently selected button
+        if (currSelectButton != null)
+        {
+            RectTransform rectTransform = currSelectButton.GetComponent<RectTransform>();
+            rectTransform.localScale = selectedScale;
+        }
+    }
+
+    private Button GetCurrentlySelectedButton()
+    {
+        GameObject selectedGameObject = EventSystem.current.currentSelectedGameObject;
+
+        // Check if the selected GameObject has a Button component
+        if (selectedGameObject != null)
+        {
+            Button selectedButton = selectedGameObject.GetComponent<Button>();
+            if (selectedButton != null)
+            {
+                return selectedButton;
+            }
+        }
+
+        return null;
     }
 
     // Random a room number (dont let player to create a room name), it is a room with xxxx (0<x<5)
@@ -84,6 +133,7 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
         optionSelectScreen.SetActive(false);
         joinRoomScreen.SetActive(true);
         eventSystem.SetSelectedGameObject(joinPanelButton);
+        currSelectButton = joinPanelButton.GetComponent<Button>();
     }
 
     // enter the lobby_dual after create a room successfully
@@ -99,7 +149,8 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
 
         if (PhotonNetwork.IsConnectedAndReady)
         {
-
+            PhotonNetwork.JoinRoom(roomEnter);
+            /*CheckExisted();
             if (existedRoom)
             {
                 // Room exists, join the room
@@ -109,7 +160,7 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
             {
                 // Room doesn't exist, show an error message
                 errorText.text = "The room does not exist!";
-            }
+            }*/
         }
         else
         {
@@ -118,28 +169,44 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
 
     }
 
-    public bool CheckRoomExists(List<RoomInfo> roomList, string roomName)
+    /*private void CheckExisted()
     {
-        foreach (RoomInfo room in roomList)
+        foreach (RoomItem roomItem in roomItems)
         {
-            Debug.Log("Room Exists: " + room.Name);
-            if (room.Name == roomName)
+            if (roomItem.roomName.Equals(roomNameJoin.text))
             {
-                return true;
+                existedRoom = true;
+                Debug.Log(existedRoom);
+            }
+            else
+            {
+                existedRoom = false;
+                Debug.Log(existedRoom);
             }
         }
-        return false;
+    }*/
+
+    /*public override void OnRoomListUpdate(List<RoomInfo> roomList)
+    {
+        UpdateRoomList(roomList);
     }
 
-    public override void OnRoomListUpdate(List<RoomInfo> roomList)
+    private void UpdateRoomList(List<RoomInfo> roomList)
     {
-        if (roomNameJoin.text.Length == 4)
-        {
-            existedRoom = CheckRoomExists(roomList, roomNameJoin.text);
+        foreach (RoomItem roomItem in roomItems) {
+            roomItems.Remove(roomItem);
         }
-        
-        Debug.Log("It is existed: " + existedRoom);
-    }
+        roomItems.Clear();
+
+        foreach (RoomInfo roomInfo in roomList)
+        {
+            RoomItem newRoom = new RoomItem();
+            newRoom.name = roomInfo.Name;
+            roomItems.Add(newRoom);
+            Debug.Log(newRoom.name);
+        }
+
+    }*/
 
 
     // this is for choosing number for the room code to enter 
@@ -161,7 +228,7 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
         if (!string.IsNullOrEmpty(currentText))
         {
             // Remove the last character from the text
-            roomNameJoin.text = currentText.Substring(0, currentText.Length - 1);
+            roomNameJoin.text = currentText.Substring(0, 0);
         }
     }
 
@@ -170,6 +237,7 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
         optionSelectScreen.SetActive(true);
         joinRoomScreen.SetActive(false);
         eventSystem.SetSelectedGameObject(choosePanelButton);
+        currSelectButton = choosePanelButton.GetComponent<Button>();
     }
 
 }
