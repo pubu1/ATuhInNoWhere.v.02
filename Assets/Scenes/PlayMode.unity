@@ -135,10 +135,9 @@ GameObject:
   - component: {fileID: 189558628}
   - component: {fileID: 189558627}
   - component: {fileID: 189558630}
-  - component: {fileID: 189558631}
   m_Layer: 0
   m_Name: SingleMode
-  m_TagString: Untagged
+  m_TagString: SingleMode
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -257,19 +256,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!114 &189558631
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 189558626}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1caea74d30b80924ebb5be09788d93d6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  targetScreenName: PlayMode
 --- !u!1 &408586313
 GameObject:
   m_ObjectHideFlags: 0
@@ -412,10 +398,9 @@ GameObject:
   - component: {fileID: 863224258}
   - component: {fileID: 863224257}
   - component: {fileID: 863224260}
-  - component: {fileID: 863224261}
   m_Layer: 0
   m_Name: CoopMode
-  m_TagString: Untagged
+  m_TagString: CoopMode
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -534,19 +519,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!114 &863224261
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 863224256}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1caea74d30b80924ebb5be09788d93d6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  targetScreenName: Map
 --- !u!1 &1041818433
 GameObject:
   m_ObjectHideFlags: 0
@@ -1863,18 +1835,9 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1975744296105548693, guid: 41e9063fc9702694586e18daa632b82d, type: 3}
-      propertyPath: m_Size.x
-      value: 1.8
-      objectReference: {fileID: 0}
-    - target: {fileID: 1975744296105548693, guid: 41e9063fc9702694586e18daa632b82d, type: 3}
-      propertyPath: m_Size.y
-      value: 1.8
-      objectReference: {fileID: 0}
     - target: {fileID: 1975744296105548694, guid: 41e9063fc9702694586e18daa632b82d, type: 3}
       propertyPath: m_Name
       value: ATuh-body
       objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 1975744296105548688, guid: 41e9063fc9702694586e18daa632b82d, type: 3}
+    m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 41e9063fc9702694586e18daa632b82d, type: 3}

@@ -74,6 +74,7 @@ GameObject:
   - component: {fileID: 1975744296105548690}
   - component: {fileID: 1975744296105548693}
   - component: {fileID: 1975744296105548695}
+  - component: {fileID: 1975744296105548688}
   - component: {fileID: 1975744296105548689}
   m_Layer: 0
   m_Name: ATuh-body
@@ -177,7 +178,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1.8, y: 1.8}
+  m_Size: {x: 2.0025, y: 1.8275}
   m_EdgeRadius: 0
 --- !u!114 &1975744296105548695
 MonoBehaviour:
@@ -193,7 +194,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveX: 1
   moveY: 1
-  moveSpeed: 10
   checkTop: {fileID: 1975744296897435283}
   checkLeft: {fileID: 1975744295885896713}
   checkRight: {fileID: 1975744295453074911}
@@ -205,6 +205,18 @@ MonoBehaviour:
   isLeft: 0
   isRight: 0
   isDown: 0
+--- !u!114 &1975744296105548688
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1975744296105548694}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d539c0a362dc049439df046b9598bc9b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!50 &1975744296105548689
 Rigidbody2D:
   serializedVersion: 4
