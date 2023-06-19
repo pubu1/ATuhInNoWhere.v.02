@@ -40,10 +40,9 @@ public class PlayerMove : MonoBehaviour
     {
         float moveInput = Input.GetAxis("Horizontal");
         CheckTop();
-        CheckLeft();
-        CheckRight();
+        CheckFront();
         CheckDown();
-        if (Input.GetKeyDown(KeyCode.LeftArrow) && !isRight && isMove)
+        if (Input.GetKeyDown(KeyCode.LeftArrow) && !isLeft && isMove)
         {
 
             startPosition = rb.position;
@@ -103,19 +102,23 @@ public class PlayerMove : MonoBehaviour
         if (colliders.Length > 0)
             isTop = true;
     }
-    void CheckLeft()
-    {
-        isLeft = false;
-        Collider2D[] colliders = Physics2D.OverlapCircleAll(checkLeft.position, 0.2f, brickLayer);
-        if (colliders.Length > 0)
-            isLeft = true;
-    }
-    void CheckRight()
+
+    void CheckFront()
     {
         isRight = false;
         Collider2D[] colliders = Physics2D.OverlapCircleAll(checkRight.position, 0.2f, brickLayer);
         if (colliders.Length > 0)
-            isRight = true;
+            if (transform.localScale.x == -0.5)
+            {
+                isLeft = true;
+                isRight = false;
+            }
+            else
+            {
+                isLeft = false;
+                isRight = true;
+            }
+
     }
     void CheckDown()
     {
