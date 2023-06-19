@@ -45,7 +45,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     public List<GameObject[,]> PlayGridList { get; set; }
 
     private Dictionary<int, GameObject> doorButtonList;
-    public Dictionary<Vector2, Wire> WireMap {get; set;}
+    public Dictionary<Vector2, Wire> WireMap { get; set; }
 
     // private Dictionary<Vector2, Socket> pointType;
 
@@ -54,20 +54,20 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     public int Score { get; set; }
     private int SocketAmount = 0;
-    private bool IsCameraTargetPlayer{get; set;}
+    private bool IsCameraTargetPlayer { get; set; }
 
     private PhotonView view;
     public void Start()
     {
         view = this.gameObject.GetComponent<PhotonView>();
-            inputManager = new InputManager();
-            doorButtonList = new Dictionary<int, GameObject>();
-            Score = 0;
-            IsCameraTargetPlayer = false;
-            inputList = inputManager.LoadGridFromFile();
-            prefabList = FindAllPrefabs();
-            if (PhotonNetwork.IsConnected)
-            {
+        inputManager = new InputManager();
+        doorButtonList = new Dictionary<int, GameObject>();
+        Score = 0;
+        IsCameraTargetPlayer = false;
+        inputList = inputManager.LoadGridFromFile();
+        prefabList = FindAllPrefabs();
+        if (PhotonNetwork.IsConnected)
+        {
             if (PhotonNetwork.CurrentRoom.PlayerCount == 2)
             {
                 //InitializeMap();
@@ -79,25 +79,50 @@ public class GameManager : MonoBehaviourPunCallbacks
     [PunRPC]
     public void InitializeMapRPC()
     {
-            InitializeMap();
-            ConnectMap();
-        
+        InitializeMap();
+        ConnectMap();
+
     }
 
+    // [PunRPC]
+    // public void SetPlayerM(int playerID, int x, int y)
+    // {
+    //     GameObject instantiatedPrefab = InstantiatePlayerM(playerID, x, y);
+    //     instantiatedPrefab.GetComponent<Player>().ID = playerID;
+    //     PlayerM = instantiatedPrefab;
+    // }
+
+    // [PunRPC]
+    // public void SetPlayerF(int playerID, int x, int y)
+    // {
+    //     GameObject instantiatedPrefab = InstantiatePlayerF(playerID, x, y);
+    //     instantiatedPrefab.GetComponent<Player>().ID = playerID;
+    //     PlayerF = instantiatedPrefab;
+    // }
     [PunRPC]
     public void SetPlayerM(int playerID, int x, int y)
     {
-        GameObject instantiatedPrefab = InstantiatePlayerM(playerID, x, y);
-        instantiatedPrefab.GetComponent<Player>().ID = playerID;
-        PlayerM = instantiatedPrefab;
+        if (PlayerM == null && PhotonNetwork.LocalPlayer.ActorNumber == 1)
+        {
+            PlayerM = InstantiatePlayerM(playerID, x, y);
+            PlayerM.GetComponent<Player>().ID = playerID;
+
+            // Synchronize the player object across the network
+            PhotonView.Get(this).RPC("SetPlayerM", RpcTarget.OthersBuffered, playerID, x, y);
+        }
     }
 
     [PunRPC]
     public void SetPlayerF(int playerID, int x, int y)
     {
-        GameObject instantiatedPrefab = InstantiatePlayerF(playerID, x, y);
-        instantiatedPrefab.GetComponent<Player>().ID = playerID;
-        PlayerF = instantiatedPrefab;
+        if (PlayerF == null && PhotonNetwork.LocalPlayer.ActorNumber == 2)
+        {
+            PlayerF = InstantiatePlayerF(playerID, x, y);
+            PlayerF.GetComponent<Player>().ID = playerID;
+
+            // Synchronize the player object across the network
+            PhotonView.Get(this).RPC("SetPlayerF", RpcTarget.OthersBuffered, playerID, x, y);
+        }
     }
 
 
@@ -174,7 +199,7 @@ public class GameManager : MonoBehaviourPunCallbacks
                     GameObject groundObject = Instantiate(ground, new Vector3(x + offset, y, groundZ), groundRotate);
                     string item = randomMap[x, y];
                     GameObject prefab;
-                    
+
                     if (item.Contains("Socket"))
                     {
                         string hexCode = item.Split("_")[1];
@@ -232,7 +257,8 @@ public class GameManager : MonoBehaviourPunCallbacks
                         if (dimensionWay == "DimensionIn")
                         {
                             instantiatedPrefab.GetComponent<DimensionIn>().ID = int.Parse(dimension[1]);
-                        } else
+                        }
+                        else
                         {
                             instantiatedPrefab.GetComponent<DimensionOut>().OutDirection = dimension[1];
                         }
@@ -247,7 +273,7 @@ public class GameManager : MonoBehaviourPunCallbacks
                         instantiatedPrefab.GetComponent<DoorButton>().ID = buttonID;
                         grid[x, y] = instantiatedPrefab;
                         doorButtonList[buttonID] = instantiatedPrefab;
-                    } 
+                    }
                     else if (item.Contains("Door"))
                     {
                         int doorID = int.Parse(item.Split(':')[1]);
@@ -270,12 +296,37 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     private void ConnectMap()
     {
+        if (PlayerF == null)
+        {
+            GameObject[] allPlayers = GameObject.FindGameObjectsWithTag("Player");
+            foreach (GameObject obj in allPlayers)
+            {
+                if (PlayerM != obj)
+                {
+                    PlayerF = obj;
+                    break;
+                }
+            }
+        }
+        else if (PlayerM == null)
+        {
+            GameObject[] allPlayers = GameObject.FindGameObjectsWithTag("Player");
+            foreach (GameObject obj in allPlayers)
+            {
+                if (PlayerF != obj)
+                {
+                    PlayerM = obj;
+                    break;
+                }
+            }
+        }
         for (int i = 0; i < MapGridList.Count; ++i)
         {
             foreach (GameObject item in MapGridList[i])
             {
                 //Connect Dimension In and Out
-                if (item.tag == "DimensionIn") {
+                if (item.tag == "DimensionIn")
+                {
                     int dimension = item.GetComponent<DimensionIn>().ID;
                     foreach (GameObject insideItem in MapGridList[dimension])
                     {
@@ -286,13 +337,16 @@ public class GameManager : MonoBehaviourPunCallbacks
                             if (dir == "Left")
                             {
                                 item.GetComponent<DimensionIn>().exitLeft = insideItem;
-                            } else if (dir == "Top")
+                            }
+                            else if (dir == "Top")
                             {
                                 item.GetComponent<DimensionIn>().exitTop = insideItem;
-                            } else if (dir == "Bottom")
+                            }
+                            else if (dir == "Bottom")
                             {
                                 item.GetComponent<DimensionIn>().exitBottom = insideItem;
-                            } else
+                            }
+                            else
                             {
                                 item.GetComponent<DimensionIn>().exitRight = insideItem;
                             }
@@ -319,7 +373,8 @@ public class GameManager : MonoBehaviourPunCallbacks
         if (PlayerM == null)
         {
 
-        } else
+        }
+        else
         {
 
         }
@@ -360,7 +415,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         //GameOverUI.SetActive(false);
         if (Input.GetKeyDown(KeyCode.R))
         {
-            
+
             PhotonView view = this.gameObject.GetComponent<PhotonView>();
             view.RPC("ResetTheGame", RpcTarget.All);
             //ResetTheGame();
@@ -375,13 +430,16 @@ public class GameManager : MonoBehaviourPunCallbacks
             Camera playerCamera = GetPlayer().transform.Find("Camera").gameObject.GetComponent<Camera>();
             Camera worldCamera = GameObject.Find("Main Camera").GetComponent<Camera>();
 
-            if(!IsCameraTargetPlayer){
+            if (!IsCameraTargetPlayer)
+            {
                 worldCamera.enabled = false;
                 playerCamera.enabled = true;
-                
+
                 canvasComponent.worldCamera = playerCamera;
                 IsCameraTargetPlayer = true;
-            } else {
+            }
+            else
+            {
                 worldCamera.enabled = true;
                 playerCamera.enabled = false;
 
