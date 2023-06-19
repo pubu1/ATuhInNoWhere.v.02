@@ -38,7 +38,7 @@ public class Step : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        if (view.IsMine)
+        if (view.IsMine || !PhotonNetwork.IsConnected)
         {
             gameManager = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameManager>();
             for (int i = 0; i < gameManager.MapGridList.Count; ++i)
@@ -71,7 +71,7 @@ public class Step : MonoBehaviour
 
     private void Update()
     {
-        if (view.IsMine)
+        if (view.IsMine || !PhotonNetwork.IsConnected)
         {
             if (Input.GetKeyDown(KeyCode.Escape))
             {
@@ -178,11 +178,11 @@ public class Step : MonoBehaviour
         {
             if (!view.IsMine || view.IsMine)
             {
-            Wire w = new Wire();
-            w.Start();
-            w.GenerateWire(playerScript, previousMove);
+                Wire w = new Wire();
+                w.Start();
+                w.GenerateWire(playerScript, previousMove);
 
-            
+
                 GameObject wire = w.GetWire();
                 Vector2 wirePosition = new Vector2(wire.transform.position.x, wire.transform.position.y);
                 gameManager.WireMap[wirePosition] = wire.GetComponent<Wire>();

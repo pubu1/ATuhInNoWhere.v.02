@@ -1664,7 +1664,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4858224510690953616, guid: f88b699ddc2e7064597c3500bbc3eb04, type: 3}
       propertyPath: targetScreenName
-      value: Map3
+      value: input
       objectReference: {fileID: 0}
     - target: {fileID: 7647093841718796978, guid: f88b699ddc2e7064597c3500bbc3eb04, type: 3}
       propertyPath: m_RootOrder
@@ -1730,7 +1730,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4858224510690953616, guid: f88b699ddc2e7064597c3500bbc3eb04, type: 3}
       propertyPath: targetScreenName
-      value: Map4
+      value: input
       objectReference: {fileID: 0}
     - target: {fileID: 7647093841718796978, guid: f88b699ddc2e7064597c3500bbc3eb04, type: 3}
       propertyPath: m_RootOrder
@@ -1796,7 +1796,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4858224510690953616, guid: f88b699ddc2e7064597c3500bbc3eb04, type: 3}
       propertyPath: targetScreenName
-      value: Map5
+      value: input
       objectReference: {fileID: 0}
     - target: {fileID: 7647093841718796978, guid: f88b699ddc2e7064597c3500bbc3eb04, type: 3}
       propertyPath: m_RootOrder
@@ -1862,7 +1862,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4858224510690953616, guid: f88b699ddc2e7064597c3500bbc3eb04, type: 3}
       propertyPath: targetScreenName
-      value: Map6
+      value: input
       objectReference: {fileID: 0}
     - target: {fileID: 7647093841718796978, guid: f88b699ddc2e7064597c3500bbc3eb04, type: 3}
       propertyPath: m_RootOrder
@@ -2569,7 +2569,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4858224510690953616, guid: f88b699ddc2e7064597c3500bbc3eb04, type: 3}
       propertyPath: targetScreenName
-      value: Map2
+      value: Map1
       objectReference: {fileID: 0}
     - target: {fileID: 7647093841718796978, guid: f88b699ddc2e7064597c3500bbc3eb04, type: 3}
       propertyPath: m_RootOrder
@@ -2635,7 +2635,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4858224510690953616, guid: f88b699ddc2e7064597c3500bbc3eb04, type: 3}
       propertyPath: targetScreenName
-      value: Map1
+      value: input
       objectReference: {fileID: 0}
     - target: {fileID: 7647093841718796978, guid: f88b699ddc2e7064597c3500bbc3eb04, type: 3}
       propertyPath: m_RootOrder

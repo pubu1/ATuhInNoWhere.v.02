@@ -29,11 +29,11 @@ public class PlayerMove : MonoBehaviour
 
     private Rigidbody2D rb;
     private Vector2 targetPosition;
-    private Vector2 startPosition ;
+    private Vector2 startPosition;
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        
+        // inputManager = new InputManager();
     }
 
     void Update()
@@ -45,26 +45,26 @@ public class PlayerMove : MonoBehaviour
         CheckDown();
         if (Input.GetKeyDown(KeyCode.LeftArrow) && !isLeft && isMove)
         {
-            
+
             startPosition = rb.position;
             targetPosition = startPosition + new Vector2(-moveX, 0f);
             StartCoroutine(Move());
         }
         else if (Input.GetKeyDown(KeyCode.RightArrow) && !isRight && isMove)
         {
-             startPosition = rb.position;
+            startPosition = rb.position;
             targetPosition = startPosition + new Vector2(moveX, 0f);
             StartCoroutine(Move());
         }
         else if (Input.GetKeyDown(KeyCode.UpArrow) && !isTop && isMove)
         {
-             startPosition = rb.position;
+            startPosition = rb.position;
             targetPosition = startPosition + new Vector2(0f, moveY);
             StartCoroutine(Move());
         }
         else if (Input.GetKeyDown(KeyCode.DownArrow) && !isDown && isMove)
         {
-             startPosition = rb.position;
+            startPosition = rb.position;
             targetPosition = startPosition + new Vector2(0f, -moveY);
             StartCoroutine(Move());
         }
@@ -124,7 +124,12 @@ public class PlayerMove : MonoBehaviour
     }
     public void LoadSceneByName(string sceneName)
     {
-        SceneManager.LoadScene(sceneName);
+        InputManager.fileName = sceneName + ".txt";
+        Debug.Log(sceneName);
+        Debug.Log(sceneName + ".txt");
+
+        SceneManager.LoadScene("Game");
+
     }
 
 }

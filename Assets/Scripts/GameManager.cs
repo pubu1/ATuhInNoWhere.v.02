@@ -37,7 +37,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     public List<GameObject[,]> PlayGridList { get; set; }
 
     private Dictionary<int, GameObject> doorButtonList;
-    public Dictionary<Vector2, Wire> WireMap {get; set;}
+    public Dictionary<Vector2, Wire> WireMap { get; set; }
 
     // private Dictionary<Vector2, Socket> pointType;
 
@@ -47,13 +47,13 @@ public class GameManager : MonoBehaviourPunCallbacks
     public int Score { get; set; }
     private int SocketAmount = 0;
 
-    private bool IsCameraTargetPlayer{get; set;}
+    private bool IsCameraTargetPlayer { get; set; }
 
-/*Daviz*/
+    /*Daviz*/
     private Teleporter tele01;
     private Teleporter tele02;
-    int indd=0;
-    int indd1=0, indd2=0, indd3=0, indd4=0;
+    int indd = 0;
+    int indd1 = 0, indd2 = 0, indd3 = 0, indd4 = 0;
     public void Start()
     {
         inputManager = new InputManager();
@@ -62,18 +62,18 @@ public class GameManager : MonoBehaviourPunCallbacks
         IsCameraTargetPlayer = false;
         inputList = inputManager.LoadGridFromFile();
         prefabList = FindAllPrefabs();
-        if (PhotonNetwork.IsConnected)
+        if (PhotonNetwork.IsConnected || !PhotonNetwork.IsConnected)
         {
             InitializeMap();
             ConnectMap();
         }
-/*        for (int i = 0; i < MapGridList.Count; ++i)
-        {
-            foreach (GameObject item in MapGridList[i])
-            {
-                Debug.Log(item);
-            }
-        }*/
+        /*        for (int i = 0; i < MapGridList.Count; ++i)
+                {
+                    foreach (GameObject item in MapGridList[i])
+                    {
+                        Debug.Log(item);
+                    }
+                }*/
 
         PlayGridList = MapGridList;
     }
@@ -134,7 +134,7 @@ public class GameManager : MonoBehaviourPunCallbacks
                     Instantiate(ground, new Vector3(x + offset, y, groundZ), groundRotate);
                     string item = randomMap[x, y];
                     GameObject prefab;
-                    
+
                     if (item.Contains("Socket"))
                     {
                         string hexCode = item.Split("_")[1];
@@ -152,9 +152,9 @@ public class GameManager : MonoBehaviourPunCallbacks
                     else if (item.Contains("Player"))
                     {
                         int id = int.Parse(item.Split(':')[1]);
-                        item = "Player";
+                        item = "PlayerM";
 
-                        GameObject instantiatedPrefab = InstantiatePlayer(id, x + offset, y);
+                        GameObject instantiatedPrefab = InstantiatePrefab(item, x + offset, y);
                         instantiatedPrefab.GetComponent<Player>().ID = id;
                         grid[x, y] = instantiatedPrefab;
                     }
@@ -167,7 +167,8 @@ public class GameManager : MonoBehaviourPunCallbacks
                         if (dimensionWay == "DimensionIn")
                         {
                             instantiatedPrefab.GetComponent<DimensionIn>().ID = int.Parse(dimension[1]);
-                        } else
+                        }
+                        else
                         {
                             instantiatedPrefab.GetComponent<DimensionOut>().OutDirection = dimension[1];
                         }
@@ -182,7 +183,7 @@ public class GameManager : MonoBehaviourPunCallbacks
                         instantiatedPrefab.GetComponent<DoorButton>().ID = buttonID;
                         grid[x, y] = instantiatedPrefab;
                         doorButtonList[buttonID] = instantiatedPrefab;
-                    } 
+                    }
                     else if (item.Contains("Door"))
                     {
                         int doorID = int.Parse(item.Split(':')[1]);
@@ -191,17 +192,21 @@ public class GameManager : MonoBehaviourPunCallbacks
                         grid[x, y] = instantiatedPrefab;
                     }
                     /*Daviz*/
-                    else if(item.Contains("Teleporter")){
+                    else if (item.Contains("Teleporter"))
+                    {
                         GameObject instantiatedPrefab = InstantiatePrefab(item, x + offset, y);
-                        if(indd == 0){
+                        if (indd == 0)
+                        {
                             indd++;
-                            indd1=x;
-                            indd2=y;
+                            indd1 = x;
+                            indd2 = y;
                             tele01 = instantiatedPrefab.GetComponent<Teleporter>();
-                        } else{
+                        }
+                        else
+                        {
                             tele02 = instantiatedPrefab.GetComponent<Teleporter>();
-                            indd3=x;
-                            indd4=y;
+                            indd3 = x;
+                            indd4 = y;
                         }
                         grid[x, y] = instantiatedPrefab;
                     }
@@ -218,8 +223,8 @@ public class GameManager : MonoBehaviourPunCallbacks
         }
 
         /*Daviz*/
-        MapGridList[0][indd1,indd2].GetComponent<Teleporter>().TargetTeleporter = tele02;
-        MapGridList[0][indd3, indd4].GetComponent<Teleporter>().TargetTeleporter  = tele01;
+        MapGridList[0][indd1, indd2].GetComponent<Teleporter>().TargetTeleporter = tele02;
+        MapGridList[0][indd3, indd4].GetComponent<Teleporter>().TargetTeleporter = tele01;
     }
 
     private void ConnectMap()
@@ -229,7 +234,8 @@ public class GameManager : MonoBehaviourPunCallbacks
             foreach (GameObject item in MapGridList[i])
             {
                 //Connect Dimension In and Out
-                if (item.tag == "DimensionIn") {
+                if (item.tag == "DimensionIn")
+                {
                     int dimension = item.GetComponent<DimensionIn>().ID;
                     foreach (GameObject insideItem in MapGridList[dimension])
                     {
@@ -240,13 +246,16 @@ public class GameManager : MonoBehaviourPunCallbacks
                             if (dir == "Left")
                             {
                                 item.GetComponent<DimensionIn>().exitLeft = insideItem;
-                            } else if (dir == "Top")
+                            }
+                            else if (dir == "Top")
                             {
                                 item.GetComponent<DimensionIn>().exitTop = insideItem;
-                            } else if (dir == "Bottom")
+                            }
+                            else if (dir == "Bottom")
                             {
                                 item.GetComponent<DimensionIn>().exitBottom = insideItem;
-                            } else
+                            }
+                            else
                             {
                                 item.GetComponent<DimensionIn>().exitRight = insideItem;
                             }
@@ -317,13 +326,16 @@ public class GameManager : MonoBehaviourPunCallbacks
             Camera playerCamera = GetPlayer().transform.Find("Camera").gameObject.GetComponent<Camera>();
             Camera worldCamera = GameObject.Find("Main Camera").GetComponent<Camera>();
 
-            if(!IsCameraTargetPlayer){
+            if (!IsCameraTargetPlayer)
+            {
                 worldCamera.enabled = false;
                 playerCamera.enabled = true;
-                
+
                 canvasComponent.worldCamera = playerCamera;
                 IsCameraTargetPlayer = true;
-            } else {
+            }
+            else
+            {
                 worldCamera.enabled = true;
                 playerCamera.enabled = false;
 
