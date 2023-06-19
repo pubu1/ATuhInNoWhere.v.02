@@ -287,6 +287,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1975744295453074911, guid: 41e9063fc9702694586e18daa632b82d, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1975744295885896713, guid: 41e9063fc9702694586e18daa632b82d, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -1
+      objectReference: {fileID: 0}
     - target: {fileID: 1975744296105548691, guid: 41e9063fc9702694586e18daa632b82d, type: 3}
       propertyPath: m_RootOrder
       value: 3
@@ -338,6 +346,10 @@ PrefabInstance:
     - target: {fileID: 1975744296105548694, guid: 41e9063fc9702694586e18daa632b82d, type: 3}
       propertyPath: m_Name
       value: ATuh-body
+      objectReference: {fileID: 0}
+    - target: {fileID: 1975744296105548694, guid: 41e9063fc9702694586e18daa632b82d, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1975744296105548695, guid: 41e9063fc9702694586e18daa632b82d, type: 3}
       propertyPath: dashDuration

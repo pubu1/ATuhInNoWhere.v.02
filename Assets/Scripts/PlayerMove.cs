@@ -43,17 +43,19 @@ public class PlayerMove : MonoBehaviour
         CheckLeft();
         CheckRight();
         CheckDown();
-        if (Input.GetKeyDown(KeyCode.LeftArrow) && !isLeft && isMove)
+        if (Input.GetKeyDown(KeyCode.LeftArrow) && !isRight && isMove)
         {
 
             startPosition = rb.position;
             targetPosition = startPosition + new Vector2(-moveX, 0f);
+            this.transform.localScale = new Vector3(-0.5f, 0.5f, 0.5f);
             StartCoroutine(Move());
         }
         else if (Input.GetKeyDown(KeyCode.RightArrow) && !isRight && isMove)
         {
             startPosition = rb.position;
             targetPosition = startPosition + new Vector2(moveX, 0f);
+            this.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
             StartCoroutine(Move());
         }
         else if (Input.GetKeyDown(KeyCode.UpArrow) && !isTop && isMove)
