@@ -401,11 +401,11 @@ public class GameManager : MonoBehaviourPunCallbacks
         PlayGridList = MapGridList;
         if (PlayerM != null)
         {
-            PlayerM.GetComponent<Player>().enabled = true;
+            PlayerM.GetComponent<Step>().enabled = true;
         }
         else
         {
-            PlayerF.GetComponent<Player>().enabled = true;
+            PlayerF.GetComponent<Step>().enabled = true;
         }
         Debug.Log("Player M in GM: " + PlayerM);
         Debug.Log("Player F in GM: " + PlayerF);
