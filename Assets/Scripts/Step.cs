@@ -271,18 +271,14 @@ public class Step : MonoBehaviour
         }
         else if (type == "Wire" && !playerScript.IsNotPickWire || playerScript.IsAtSocket)
         {
-            if (!view.IsMine || view.IsMine)
-            {
-                Wire w = new Wire();
-                w.Start();
-                w.GenerateWire(playerScript, previousMove);
+            Wire w = new Wire();
+            w.Start();
+            w.GenerateWire(playerScript, previousMove);
 
 
-                GameObject wire = w.GetWire();
-                Vector2 wirePosition = new Vector2(wire.transform.position.x, wire.transform.position.y);
-                gameManager.WireMap[wirePosition] = wire.GetComponent<Wire>();
-            }
-
+            GameObject wire = w.GetWire();
+            Vector2 wirePosition = new Vector2(wire.transform.position.x, wire.transform.position.y);
+            gameManager.WireMap[wirePosition] = wire.GetComponent<Wire>();
         }
         else if (type == "Dimension" && !playerScript.IsNotPickWire)
         {
@@ -328,32 +324,32 @@ public class Step : MonoBehaviour
         }
         else if (gameManager.PlayGridList[currentMap][xCurrent, yCurrent].tag == "DoorButton")
         {
-            int tempCurrentMap = (int)targetPosition.x / 100;
+            int tempTargetMap = (int)targetPosition.x / 100;
             int tempXTarget = (int)(targetPosition.x % 100);
             int tempYTarget = (int)(targetPosition.y);
             DoorButton button = gameManager.PlayGridList[currentMap][xCurrent, yCurrent].GetComponent<DoorButton>();
-            button.CheckCurrentStep(playerScript, gameManager.PlayGridList[tempCurrentMap][tempXTarget, tempYTarget], gameManager.WireMap);
+            button.CheckCurrentStep(playerScript, gameManager.PlayGridList[tempTargetMap][tempXTarget, tempYTarget], gameManager.WireMap);
         }
         else if (gameManager.PlayGridList[currentMap][xCurrent, yCurrent].tag == "Teleporter")
         {
             Teleporter teleporter = gameManager.PlayGridList[currentMap][xCurrent, yCurrent].GetComponent<Teleporter>();
 
             Vector3 tempTargetPosition = teleporter.GetNextPositionInside(playerScript);
-            int tempCurrentMap = (int)tempTargetPosition.x / 100;
+            int tempTargetMap = (int)tempTargetPosition.x / 100;
             int tempXTarget = (int)(tempTargetPosition.x % 100);
             int tempYTarget = (int)(tempTargetPosition.y);
 
-            totalCheck = teleporter.CheckNextStepInside(playerScript, gameManager.PlayGridList[tempCurrentMap][tempXTarget, tempYTarget], gameManager.WireMap);
+            totalCheck = teleporter.CheckNextStepInside(playerScript, gameManager.PlayGridList[tempTargetMap][tempXTarget, tempYTarget], gameManager.WireMap);
 
             if (totalCheck)
             {
                 if (teleporter.IsTeleport(tempTargetPosition))
                 {
-                    playerScript.CurrentPosition = playerScript.transform.position;
+                    playerScript.CurrentPosition = playerScript.transform.position;                   
                     playerScript.TargetPosition = tempTargetPosition;
                     playerScript.transform.position = tempTargetPosition;
 
-                    tempCurrentMap = (int)playerScript.TargetPosition.x / 100;
+                    tempTargetMap = (int)playerScript.TargetPosition.x / 100;
                     xCurrent = (int)(playerScript.CurrentPosition.x % 100);
                     yCurrent = (int)(playerScript.CurrentPosition.y);
                     xTarget = (int)(playerScript.TargetPosition.x % 100);
@@ -368,13 +364,13 @@ public class Step : MonoBehaviour
                         GenerateWire(currentMap, xCurrent, yCurrent, "Wire", null);
                     }
 
-                    if (gameManager.PlayGridList[tempCurrentMap][xTarget, yTarget].tag == "Socket")
+                    if (gameManager.PlayGridList[tempTargetMap][xTarget, yTarget].tag == "Socket")
                     {
-                        Socket socket = gameManager.PlayGridList[tempCurrentMap][xTarget, yTarget].GetComponent<Socket>();
+                        Socket socket = gameManager.PlayGridList[tempTargetMap][xTarget, yTarget].GetComponent<Socket>();
                         if (socket.CheckSocketEndPoint(playerScript))
                         {
                             socket.ChangePlayerAttrEndPoint(playerScript);
-                            GenerateWire(tempCurrentMap, xCurrent, yCurrent, "Wire", null);
+                            GenerateWire(tempTargetMap, xCurrent, yCurrent, "Wire", null);
                             gameManager.Score++;
                         }
                         else if (socket.CheckSocketStartPoint(playerScript))
@@ -388,11 +384,99 @@ public class Step : MonoBehaviour
             }
         }
 
+        if (gameManager.PlayGridList[currentMap][xTarget, yTarget].tag == "DimensionIn")
+        {
+            DimensionIn dIn = gameManager.MapGridList[currentMap][xTarget, yTarget].GetComponent<DimensionIn>();
+            GameObject dOut = dIn.GetDimensionOut(playerScript);
+
+            Vector3 tempTargetPosition = dIn.GetNextPosition(playerScript);
+            int tempTargetMap = (int)tempTargetPosition.x / 100;
+            int tempXTarget = (int)(tempTargetPosition.x % 100);
+            int tempYTarget = (int)(tempTargetPosition.y);
+
+            totalCheck = dIn.CheckNextStep(playerScript, gameManager.PlayGridList[tempTargetMap][tempXTarget, tempYTarget], gameManager.WireMap);
+
+            if (totalCheck)
+            {
+                playerScript.CurrentPosition = playerScript.transform.position;
+                playerScript.TempTargetPosition = tempTargetPosition;
+                playerScript.TargetPosition = tempTargetPosition;
+                playerScript.transform.position = new Vector3(dOut.transform.position.x, dOut.transform.position.y, playerScript.DefaultZAxis);
+
+                GameObject mainCamera = GameObject.Find("Main Camera");
+                mainCamera.transform.position = playerScript.TargetPosition;
+
+                xCurrent = (int)(playerScript.CurrentPosition.x % 100);
+                yCurrent = (int)(playerScript.CurrentPosition.y);
+                xTarget = (int)(playerScript.TargetPosition.x % 100);
+                yTarget = (int)(playerScript.TargetPosition.y);
+
+                if (gameManager.PlayGridList[currentMap][xCurrent, yCurrent].tag == "Bridge")
+                {
+                    GenerateWire(currentMap, xCurrent, yCurrent, "Bridge", null);
+                }
+                else
+                {
+                    GenerateWire(currentMap, xCurrent, yCurrent, "Wire", null);
+                }
+
+                SetPreviousMove(tempNextKey);
+                currentMap = tempTargetMap;
+            } else{
+                return false;
+            }
+        }
+        else if (gameManager.PlayGridList[currentMap][xTarget, yTarget].tag == "DimensionOut")
+        {
+            DimensionOut dOut = gameManager.MapGridList[currentMap][xTarget, yTarget].GetComponent<DimensionOut>();
+
+            Vector3 tempTargetPosition = dOut.GetNextPosition(playerScript);
+            int tempTargetMap = (int)tempTargetPosition.x / 100;
+            int tempXTarget = (int)(tempTargetPosition.x % 100);
+            int tempYTarget = (int)(tempTargetPosition.y);
+
+            totalCheck = dOut.CheckNextStep(playerScript, gameManager.PlayGridList[tempTargetMap][tempXTarget, tempYTarget], gameManager.WireMap);
+
+            if (totalCheck)
+            {
+                playerScript.CurrentPosition = playerScript.transform.position;
+                playerScript.TempTargetPosition = tempTargetPosition;
+                playerScript.TargetPosition = tempTargetPosition;
+                playerScript.transform.position = new Vector3(dOut.BaseDimension.transform.position.x, dOut.BaseDimension.transform.position.y, playerScript.DefaultZAxis);
+
+                GameObject mainCamera = GameObject.Find("Main Camera");
+                mainCamera.transform.position = playerScript.TargetPosition;
+
+                tempTargetMap = (int)playerScript.TargetPosition.x / 100;
+                xCurrent = (int)(playerScript.CurrentPosition.x % 100);
+                yCurrent = (int)(playerScript.CurrentPosition.y);
+                xTarget = (int)(playerScript.TargetPosition.x % 100);
+                yTarget = (int)(playerScript.TargetPosition.y);
+
+
+                if (gameManager.PlayGridList[currentMap][xCurrent, yCurrent].tag == "Bridge")
+                {
+                    GenerateWire(currentMap, xCurrent, yCurrent, "Bridge", null);
+                }
+                else
+                {
+                    GenerateWire(currentMap, xCurrent, yCurrent, "Wire", null);
+                }
+
+                currentMap = tempTargetMap;
+                GenerateWire(0, 0, 0, "Dimension", dOut.gameObject);
+                SetPreviousMove(tempNextKey);
+            }
+            else{
+                return false;
+            }
+        }
+
         //check target posotion
         if (gameManager.PlayGridList[currentMap][xTarget, yTarget].tag == "Bridge")
         {
             Bridge bridge = gameManager.MapGridList[currentMap][xTarget, yTarget].GetComponent<Bridge>();
-            totalCheck = bridge.CheckNextStep(bridge, playerScript);
+            totalCheck = bridge.CheckNextStep(playerScript);
             if (totalCheck)
             {
                 UpdateLocation();
@@ -438,129 +522,14 @@ public class Step : MonoBehaviour
             else if (socket.CheckSocketStartPoint(playerScript))
             {
                 totalCheck = true;
-                //socket.ChangePlayerAttrStartPoint(playerScript);
-                view.RPC("CallChangePlayerAttrStartPoint", RpcTarget.All, currentMap, xTarget, yTarget);
+                socket.ChangePlayerAttrStartPoint(playerScript);
+                //view.RPC("CallChangePlayerAttrStartPoint", RpcTarget.All, currentMap, xTarget, yTarget);
                 UpdateLocation();
             }
         }
         else if (gameManager.PlayGridList[currentMap][xTarget, yTarget].tag == "Wall")
         {
             totalCheck = false;
-        }
-        else if (gameManager.PlayGridList[currentMap][xTarget, yTarget].tag == "DimensionIn")
-        {
-            DimensionIn dIn = gameManager.MapGridList[currentMap][xTarget, yTarget].GetComponent<DimensionIn>();
-
-            Vector3 tempTargetPosition = dIn.GetNextPosition(playerScript);
-            int tempCurrentMap = (int)tempTargetPosition.x / 100;
-            int tempXTarget = (int)(tempTargetPosition.x % 100);
-            int tempYTarget = (int)(tempTargetPosition.y);
-
-            totalCheck = dIn.CheckNextStep(playerScript, gameManager.PlayGridList[tempCurrentMap][tempXTarget, tempYTarget], gameManager.WireMap);
-
-            if (totalCheck)
-            {
-                playerScript.CurrentPosition = playerScript.transform.position;
-                playerScript.TargetPosition = tempTargetPosition;
-                playerScript.transform.position = tempTargetPosition;
-
-                GameObject mainCamera = GameObject.Find("Main Camera");
-                mainCamera.transform.position = playerScript.TargetPosition;
-
-                tempCurrentMap = (int)playerScript.TargetPosition.x / 100;
-                xCurrent = (int)(playerScript.CurrentPosition.x % 100);
-                yCurrent = (int)(playerScript.CurrentPosition.y);
-                xTarget = (int)(playerScript.TargetPosition.x % 100);
-                yTarget = (int)(playerScript.TargetPosition.y);
-
-                if (gameManager.PlayGridList[currentMap][xCurrent, yCurrent].tag == "Bridge")
-                {
-                    GenerateWire(currentMap, xCurrent, yCurrent, "Bridge", null);
-                }
-                else
-                {
-                    GenerateWire(currentMap, xCurrent, yCurrent, "Wire", null);
-                }
-
-                if (gameManager.PlayGridList[tempCurrentMap][xTarget, yTarget].tag == "Socket")
-                {
-                    Socket socket = gameManager.PlayGridList[tempCurrentMap][xTarget, yTarget].GetComponent<Socket>();
-                    if (socket.CheckSocketEndPoint(playerScript))
-                    {
-                        socket.ChangePlayerAttrEndPoint(playerScript);
-                        GenerateWire(tempCurrentMap, xCurrent, yCurrent, "Wire", null);
-                        gameManager.Score++;
-                    }
-                    else if (socket.CheckSocketStartPoint(playerScript))
-                    {
-                        //socket.ChangePlayerAttrStartPoint(playerScript);
-                        //view.RPC("CallChangePlayerAttrStartPoint", RpcTarget.All, socket, playerScript);
-                    }
-                }
-                GameObject dOut = dIn.GetDimensionOut(playerScript);
-                GenerateWire(0, 0, 0, "Dimension", dOut);
-            }
-        }
-        else if (gameManager.PlayGridList[currentMap][xTarget, yTarget].tag == "DimensionOut")
-        {
-            DimensionOut dOut = gameManager.MapGridList[currentMap][xTarget, yTarget].GetComponent<DimensionOut>();
-
-            Vector3 tempTargetPosition = dOut.GetNextPosition(playerScript);
-            int tempCurrentMap = (int)tempTargetPosition.x / 100;
-            int tempXTarget = (int)(tempTargetPosition.x % 100);
-            int tempYTarget = (int)(tempTargetPosition.y);
-
-            totalCheck = dOut.CheckNextStep(playerScript, gameManager.PlayGridList[tempCurrentMap][tempXTarget, tempYTarget], gameManager.WireMap);
-
-            if (totalCheck)
-            {
-                playerScript.CurrentPosition = playerScript.transform.position;
-                playerScript.TargetPosition = tempTargetPosition;
-                playerScript.transform.position = tempTargetPosition;
-
-                GameObject mainCamera = GameObject.Find("Main Camera");
-                mainCamera.transform.position = playerScript.TargetPosition;
-
-                tempCurrentMap = (int)playerScript.TargetPosition.x / 100;
-                xCurrent = (int)(playerScript.CurrentPosition.x % 100);
-                yCurrent = (int)(playerScript.CurrentPosition.y);
-                xTarget = (int)(playerScript.TargetPosition.x % 100);
-                yTarget = (int)(playerScript.TargetPosition.y);
-
-
-                if (gameManager.PlayGridList[currentMap][xCurrent, yCurrent].tag == "Bridge")
-                {
-                    GenerateWire(currentMap, xCurrent, yCurrent, "Bridge", null);
-                }
-                else
-                {
-                    GenerateWire(currentMap, xCurrent, yCurrent, "Wire", null);
-                }
-
-                if (gameManager.PlayGridList[tempCurrentMap][xTarget, yTarget].tag == "Socket")
-                {
-                    Socket socket = gameManager.PlayGridList[tempCurrentMap][xTarget, yTarget].GetComponent<Socket>();
-                    if (socket.CheckSocketEndPoint(playerScript))
-                    {
-                        socket.ChangePlayerAttrEndPoint(playerScript);
-                        GenerateWire(tempCurrentMap, xCurrent, yCurrent, "Wire", null);
-                        gameManager.Score++;
-                    }
-                    else if (socket.CheckSocketStartPoint(playerScript))
-                    {
-                        //socket.ChangePlayerAttrStartPoint(playerScript);
-                        //view.RPC("CallChangePlayerAttrStartPoint", RpcTarget.All, socket, playerScript);
-                    }
-                }
-                else if (gameManager.PlayGridList[tempCurrentMap][xTarget, yTarget].tag == "Bridge")
-                {
-                    Bridge bridge = gameManager.PlayGridList[tempCurrentMap][xTarget, yTarget].GetComponent<Bridge>();
-                    bool changePlayerDefaultZAxis = bridge.CheckNextStep(bridge, playerScript);
-                    this.transform.position = new Vector3(this.transform.position.x, this.transform.position.y, playerScript.DefaultZAxis);
-                }
-
-                GenerateWire(0, 0, 0, "Dimension", dOut.gameObject);
-            }
         }
         else if (gameManager.PlayGridList[currentMap][xTarget, yTarget].tag == "DoorButton")
         {
@@ -572,6 +541,19 @@ public class Step : MonoBehaviour
             {
                 UpdateLocation();
                 GenerateWire(currentMap, xCurrent, yCurrent, "Wire", null);
+            }
+        }
+        else if (gameManager.PlayGridList[currentMap][xTarget, yTarget].tag == "EscButton")
+        {
+            EscButton button = gameManager.MapGridList[currentMap][xTarget, yTarget].GetComponent<EscButton>();
+            button.IsActive = true;
+
+            totalCheck = button.CheckNextStep(playerScript);
+            if (totalCheck)
+            {          
+                UpdateLocation();
+                GenerateWire(currentMap, xCurrent, yCurrent, "Wire", null);     
+                if(!playerScript.IsNotPickWire) button.HasPipeOn = true;          
             }
         }
         else if (gameManager.PlayGridList[currentMap][xTarget, yTarget].tag == "Ice")
@@ -610,7 +592,7 @@ public class Step : MonoBehaviour
             Teleporter teleporter = gameManager.PlayGridList[currentMap][xTarget, yTarget].GetComponent<Teleporter>();
 
             Vector3 tempTargetPosition = teleporter.GetNextPositionOutside(playerScript);
-            int tempCurrentMap = (int)tempTargetPosition.x / 100;
+            int tempTargetMap = (int)tempTargetPosition.x / 100;
             int tempXTarget = (int)(tempTargetPosition.x % 100);
             int tempYTarget = (int)(tempTargetPosition.y);
 
@@ -624,7 +606,7 @@ public class Step : MonoBehaviour
                     playerScript.TargetPosition = tempTargetPosition;
                     playerScript.transform.position = tempTargetPosition;
 
-                    tempCurrentMap = (int)playerScript.TargetPosition.x / 100;
+                    tempTargetMap = (int)playerScript.TargetPosition.x / 100;
                     xCurrent = (int)(playerScript.CurrentPosition.x % 100);
                     yCurrent = (int)(playerScript.CurrentPosition.y);
                     xTarget = (int)(playerScript.TargetPosition.x % 100);
@@ -639,13 +621,13 @@ public class Step : MonoBehaviour
                         GenerateWire(currentMap, xCurrent, yCurrent, "Wire", null);
                     }
 
-                    if (gameManager.PlayGridList[tempCurrentMap][xTarget, yTarget].tag == "Socket")
+                    if (gameManager.PlayGridList[tempTargetMap][xTarget, yTarget].tag == "Socket")
                     {
-                        Socket socket = gameManager.PlayGridList[tempCurrentMap][xTarget, yTarget].GetComponent<Socket>();
+                        Socket socket = gameManager.PlayGridList[tempTargetMap][xTarget, yTarget].GetComponent<Socket>();
                         if (socket.CheckSocketEndPoint(playerScript))
                         {
                             socket.ChangePlayerAttrEndPoint(playerScript);
-                            GenerateWire(tempCurrentMap, xCurrent, yCurrent, "Wire", null);
+                            GenerateWire(tempTargetMap, xCurrent, yCurrent, "Wire", null);
                             gameManager.Score++;
                         }
                         else if (socket.CheckSocketStartPoint(playerScript))

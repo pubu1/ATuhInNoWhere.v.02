@@ -49,6 +49,10 @@ public class GameManager : MonoBehaviourPunCallbacks
     private int SocketAmount = 0;
     private bool IsCameraTargetPlayer{get; set;}
 
+    /*Daviz*/
+    GameObject btn;
+    GameObject esc;
+
     public void Start()
     {
             inputManager = new InputManager();
@@ -183,6 +187,21 @@ public class GameManager : MonoBehaviourPunCallbacks
                         grid[x, y] = instantiatedPrefab;
 
                     }
+                    else if (item.Contains("Bridge"))
+                    {
+                        string direction = item.Split(':')[1];
+                        item = "Bridge";
+
+                        GameObject instantiatedPrefab = InstantiatePrefab(item, x + offset, y);
+                        if(direction == "H"){
+                            instantiatedPrefab.GetComponent<Bridge>().Direction = "Horizontal";
+                        } else{
+                            instantiatedPrefab.GetComponent<Bridge>().Direction = "Vertical";
+                            instantiatedPrefab.GetComponent<Bridge>().RenderSprite();
+                        }
+                        
+                        grid[x, y] = instantiatedPrefab;
+                    }
                     else if (item.Contains("Dimension"))
                     {
                         string[] dimension = item.Split(':');
@@ -215,13 +234,40 @@ public class GameManager : MonoBehaviourPunCallbacks
                         instantiatedPrefab.GetComponent<Door>().ID = doorID;
                         grid[x, y] = instantiatedPrefab;
                     }
+                    else if (item.Contains("EscButton"))
+                    {
+                        item = "EscButton";
+
+                        GameObject instantiatedPrefab = InstantiatePrefab(item, x + offset, y);
+                        instantiatedPrefab.GetComponent<EscButton>().Start();
+                        
+                        btn=instantiatedPrefab;
+                        
+                        grid[x, y] = instantiatedPrefab;
+                    }
                     else if (item.Contains("Escalator"))
                     {
                         string direction = item.Split(':')[1];
                         item = "Escalator";
 
                         GameObject instantiatedPrefab = InstantiatePrefab(item, x + offset, y);
-                        instantiatedPrefab.GetComponent<Escalator>().Direction = direction;
+                     
+                        if(direction == "U"){
+                            instantiatedPrefab.GetComponent<Escalator>().Direction = "Up";
+                        } else if(direction == "D"){
+                            instantiatedPrefab.GetComponent<Escalator>().Direction = "Down";
+                        } else if(direction == "L"){
+                            instantiatedPrefab.GetComponent<Escalator>().Direction = "Left";
+                        } else if(direction == "R"){
+                            instantiatedPrefab.GetComponent<Escalator>().Direction = "Right";
+                        }
+
+                        instantiatedPrefab.GetComponent<Escalator>().Start();
+                        instantiatedPrefab.GetComponent<Escalator>().RenderSprite();
+                        
+                        esc=instantiatedPrefab;
+                        esc.GetComponent<Escalator>().button = btn.GetComponent<EscButton>();
+                        
                         grid[x, y] = instantiatedPrefab;
                     }
                     else

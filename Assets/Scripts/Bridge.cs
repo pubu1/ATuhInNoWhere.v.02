@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Bridge : MonoBehaviour
 {
-    private string bridgeType;
+    public string Direction { get; set; }
     public bool HasWireOnBridge { get; set; }
     public bool HasWireUnderBridge { get; set; }
     public bool HasPlayerOnBridge {get; set; }
@@ -17,7 +17,6 @@ public class Bridge : MonoBehaviour
         HasWireUnderBridge = false;
         HasPlayerOnBridge = false;
         HasPlayerUnderBridge = false;
-        bridgeType = "Horizontal";
         color = new ChangeColor();
     }
 
@@ -29,26 +28,25 @@ public class Bridge : MonoBehaviour
         }
     }
 
-    public string GetBridgeType()
-    {
-        return bridgeType.Trim();
-    }
-
     public bool IsVertical()
     {
-        return bridgeType == "Vertical";
+        return Direction == "Vertical";
     }
     public bool IsHorizontal()
     {
-        return bridgeType == "Horizontal";
+        return Direction == "Horizontal";
     }
-
-    public bool CheckNextStep(Bridge bridge, Player player)
+    public void RenderSprite(){
+        if(IsVertical()){
+            this.transform.Rotate(0f,0f,90f);
+        }
+    }
+    public bool CheckNextStep(Player player)
     {
         bool isOnBridge = false;
 
-        if ((bridge.IsHorizontal() && (player.TempNextKey == "Left" || player.TempNextKey == "Right"))
-        || (bridge.IsVertical() && (player.TempNextKey == "Up" || player.TempNextKey == "Down")))
+        if ((this.IsHorizontal() && (player.TempNextKey == "Left" || player.TempNextKey == "Right"))
+        || (this.IsVertical() && (player.TempNextKey == "Up" || player.TempNextKey == "Down")))
             isOnBridge = true;
 
         if (isOnBridge)

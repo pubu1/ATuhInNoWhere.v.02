@@ -143,6 +143,9 @@ public class DimensionIn : MonoBehaviour
         && nextStepObject.GetComponent<Socket>().IsConnect == false){
             totalCheck = false;
         }
+        else if(nextStepObject.tag == "Bridge" && !nextStepObject.GetComponent<Bridge>().CheckNextStep(player)){
+            totalCheck = false;
+        }
         else if(nextStepObject.tag == "Wall"){
             totalCheck = false;
         }

@@ -1,16 +1,8 @@
-3
+1
 6 9
 Wall Wall Wall Wall Wall Wall Wall Wall Wall
-Wall Escalator:Down Escalator:Left Escalator:Left Escalator:Left Escalator:Left Ground Ground Wall
-Wall Escalator:Right Escalator:Down Escalator:Right Escalator:Down Escalator:Right Ground PlayerM:0 Wall
-Wall Escalator:Down Escalator:Left Escalator:Up Escalator:Down Escalator:Up Ground Ground Wall
-Wall Escalator:Right DimensionIn:1 Escalator:Up Escalator:Right DimensionIn:2 Ground Ground Wall
+Wall EscButton Ground Socket_Red Ground Ground Ground Ground Wall
+Wall PlayerM:0 Escalator:R Escalator:R Ground Ground Ground Ground Wall
+Wall Socket_Red Escalator:R Escalator:R Ground Ground Ground Ground Wall
+Wall Ground Ground Ground Ground Ground Ground Ground Wall
 Wall Wall Wall Wall Wall Wall Wall Wall Wall
-3 6
-Wall Wall Wall Wall Wall Wall
-DimensionOut:Left Ground Ground Ground Ground DimensionOut:Right
-Wall Wall Wall Wall Wall Wall
-3 6
-Wall Wall Wall Wall DimensionOut:Top Wall
-DimensionOut:Left Ground Ground Ground Escalator:Up Wall
-Wall Wall Wall Wall Wall Wall

@@ -11,6 +11,7 @@ TagManager:
   - Escalator
   - Wire
   - DimensionIn
+  - EscButton
   layers:
   - Default
   - TransparentFX
