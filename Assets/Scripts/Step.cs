@@ -52,8 +52,8 @@ public class Step : MonoBehaviour
         Debug.Log("Photon View ID: " + photonViewID);
         if (view.IsMine)
         {
-            if (photonViewID == 1) player = gameManager.PlayerM;
-            else player = gameManager.PlayerF;
+            if (photonViewID == 1) player = GameManager.PlayerM;
+            else player = GameManager.PlayerF;
 
             Debug.Log(player);
             playerScript = player.GetComponent<Player>();
@@ -92,12 +92,12 @@ public class Step : MonoBehaviour
         Debug.Log("Socket found: " + socket);
         Player targetP = playerScript;
         if (photonTargetID != photonViewID) {
-            Debug.Log(gameManager.PlayerM);
-            Debug.Log( gameManager.PlayerM.transform.position);
-            Debug.Log(gameManager.PlayerF);
-            Debug.Log( gameManager.PlayerF.transform.position);
-            if (photonTargetID == 1) targetP = gameManager.PlayerM.GetComponent<Player>();
-            else targetP = gameManager.PlayerF.GetComponent<Player>();
+            Debug.Log(GameManager.PlayerM);
+            Debug.Log( GameManager.PlayerM.transform.position);
+            Debug.Log(GameManager.PlayerF);
+            Debug.Log( GameManager.PlayerF.transform.position);
+            if (photonTargetID == 1) targetP = GameManager.PlayerM.GetComponent<Player>();
+            else targetP = GameManager.PlayerF.GetComponent<Player>();
         }   
         socket.ChangePlayerAttrStartPoint(targetP);
     }
