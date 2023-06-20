@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class ScreenIdentifier : MonoBehaviour
 {
+    //Pu Bu
     public string targetScreenName;
 
     private void OnTriggerEnter2D(Collider2D other)
