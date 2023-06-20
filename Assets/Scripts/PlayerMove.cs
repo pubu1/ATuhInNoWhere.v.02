@@ -11,10 +11,8 @@ public class PlayerMove : MonoBehaviour
     public int moveSpeed = 5;
     public bool isMove = true;
 
-    //private bool isGrounded =false;
     [SerializeField] Transform checkTop;
-    [SerializeField] Transform checkLeft;
-    [SerializeField] Transform checkRight;
+    [SerializeField] Transform checkFront;
     [SerializeField] Transform checkDown;
 
     [SerializeField] LayerMask brickLayer;
@@ -33,7 +31,6 @@ public class PlayerMove : MonoBehaviour
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        // inputManager = new InputManager();
     }
 
     void Update()
@@ -44,7 +41,6 @@ public class PlayerMove : MonoBehaviour
         CheckDown();
         if (Input.GetKeyDown(KeyCode.LeftArrow) && !isLeft && isMove)
         {
-
             startPosition = rb.position;
             targetPosition = startPosition + new Vector2(-moveX, 0f);
             this.transform.localScale = new Vector3(-0.5f, 0.5f, 0.5f);
@@ -106,9 +102,10 @@ public class PlayerMove : MonoBehaviour
     void CheckFront()
     {
         isRight = false;
-        Collider2D[] colliders = Physics2D.OverlapCircleAll(checkRight.position, 0.2f, brickLayer);
+        isLeft = false;
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(checkFront.position, 0.2f, brickLayer);
         if (colliders.Length > 0)
-            if (transform.localScale.x == -0.5)
+            if (transform.localScale.x == -0.5f)
             {
                 isLeft = true;
                 isRight = false;
@@ -130,10 +127,14 @@ public class PlayerMove : MonoBehaviour
     public void LoadSceneByName(string sceneName)
     {
         InputManager.fileName = sceneName + ".txt";
-        Debug.Log(sceneName);
-        Debug.Log(sceneName + ".txt");
-
-        SceneManager.LoadScene("Game");
+        if (sceneName == "PlayMode" || sceneName == "Map")
+        {
+            SceneManager.LoadScene(sceneName);
+        }
+        else
+        {
+            SceneManager.LoadScene("Game");
+        }
 
     }
 
