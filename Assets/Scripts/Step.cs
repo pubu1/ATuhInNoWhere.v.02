@@ -6,9 +6,9 @@ using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class Step : MonoBehaviour
+public class Step : MonoBehaviourPun
 {
-    private GameManager gameManager;
+    private static GameManager gameManager;
     [SerializeField] private float moveSteps = 1.0f;
     [SerializeField] private float moveSpeed = 5.0f;
     private GameObject player;
@@ -42,7 +42,7 @@ public class Step : MonoBehaviour
     {
         photonViewID = PhotonNetwork.LocalPlayer.ActorNumber;
         gameManager = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameManager>();
-        if (gameManager.PlayGridList != null)
+        if (gameManager.PlayGridList.Count != 0)
         {
             Debug.Log("I found Game PlayGridList");
         } else
@@ -79,27 +79,31 @@ public class Step : MonoBehaviour
     [PunRPC]
     void CallChangePlayerAttrStartPoint(int currentMap, int xTarget, int yTarget, int photonTargetID)
     {
-        // Debug.Log("map grid: " + gameManager.PlayGridList);
-        // Socket socket = gameManager.PlayGridList[currentMap][xTarget, yTarget].GetComponent<Socket>();
-        // //socket.ChangePlayerAttrStartPoint(playerScript);
-        // Debug.Log("Socket found: " + socket + " - " + socket.transform.position);
-        ChangePlayerAttrStartPoint(currentMap, xTarget, yTarget, photonTargetID);
-    }
-
-    private void ChangePlayerAttrStartPoint(int currentMap, int xTarget, int yTarget, int photonTargetID)
-    {
         Socket socket = gameManager.PlayGridList[currentMap][xTarget, yTarget].GetComponent<Socket>();
-        Debug.Log("Socket found: " + socket);
+        //socket.ChangePlayerAttrStartPoint(playerScript);
         Player targetP = playerScript;
-        if (photonTargetID != photonViewID) {
-            Debug.Log(gameManager.PlayerM);
-            Debug.Log( gameManager.PlayerM.transform.position);
-            Debug.Log(gameManager.PlayerF);
-            Debug.Log( gameManager.PlayerF.transform.position);
+        if (photonTargetID != photonViewID)
+        {
             if (photonTargetID == 1) targetP = gameManager.PlayerM.GetComponent<Player>();
             else targetP = gameManager.PlayerF.GetComponent<Player>();
-        }   
+        }
         socket.ChangePlayerAttrStartPoint(targetP);
+        //Debug.Log("Socket found: " + socket + " - " + socket.transform.position);
+    }
+
+    [PunRPC]
+    void CallChangePlayerAttrEndPoint(int currentMap, int xTarget, int yTarget, int photonTargetID)
+    {
+        Socket socket = gameManager.PlayGridList[currentMap][xTarget, yTarget].GetComponent<Socket>();
+        //socket.ChangePlayerAttrStartPoint(playerScript);
+        Player targetP = playerScript;
+        if (photonTargetID != photonViewID)
+        {
+            if (photonTargetID == 1) targetP = gameManager.PlayerM.GetComponent<Player>();
+            else targetP = gameManager.PlayerF.GetComponent<Player>();
+        }
+        socket.ChangePlayerAttrEndPoint(targetP);
+        //Debug.Log("Socket found: " + socket + " - " + socket.transform.position);
     }
 
     private void Update()
@@ -237,18 +241,6 @@ public class Step : MonoBehaviour
         }
     }
 
-    /*private void CheckPipeEffect(){
-        if(activatePipeEffect){
-            List<GameObject> pipeObjects = pipes.Where(p => p.name == "Pipe" + playerScript.HandleWireColor).ToList();
-
-            foreach(GameObject pipe in pipeObjects){
-                pipe.GetComponent<ChangeColor>().StartPipeEffect(pipe, playerScript.HandleWireColor);
-            }
-
-            activatePipeEffect = false;
-        }
-    }*/
-
     private bool CanStepToPosition(Vector2 currentPosition, Vector2 targetPosition, string tempNextKey)
     {
         bool totalCheck = true;
@@ -317,7 +309,8 @@ public class Step : MonoBehaviour
                         Socket socket = gameManager.PlayGridList[tempCurrentMap][xTarget, yTarget].GetComponent<Socket>();
                         if (socket.CheckSocketEndPoint(playerScript))
                         {
-                            socket.ChangePlayerAttrEndPoint(playerScript);
+                            //socket.ChangePlayerAttrEndPoint(playerScript);
+                            view.RPC("CallChangePlayerAttrEndPoint", RpcTarget.All, currentMap, xTarget, yTarget, photonViewID);
                             GenerateWire(tempCurrentMap, xCurrent, yCurrent, "Wire", null);
                             gameManager.Score++;
                         }
@@ -375,7 +368,8 @@ public class Step : MonoBehaviour
                 {
                     GenerateWire(currentMap, xCurrent, yCurrent, "Wire", null);
                 }
-                socket.ChangePlayerAttrEndPoint(playerScript);
+                //socket.ChangePlayerAttrEndPoint(playerScript);
+                view.RPC("CallChangePlayerAttrEndPoint", RpcTarget.All, currentMap, xTarget, yTarget, photonViewID);
                 GenerateWire(currentMap, xTarget, yTarget, "Wire", null);
                 gameManager.Score++;
             }
@@ -431,14 +425,15 @@ public class Step : MonoBehaviour
                     Socket socket = gameManager.PlayGridList[tempCurrentMap][xTarget, yTarget].GetComponent<Socket>();
                     if (socket.CheckSocketEndPoint(playerScript))
                     {
-                        socket.ChangePlayerAttrEndPoint(playerScript);
+                        //socket.ChangePlayerAttrEndPoint(playerScript);
+                        view.RPC("CallChangePlayerAttrEndPoint", RpcTarget.All, currentMap, xTarget, yTarget, photonViewID);
                         GenerateWire(tempCurrentMap, xCurrent, yCurrent, "Wire", null);
                         gameManager.Score++;
                     }
                     else if (socket.CheckSocketStartPoint(playerScript))
                     {
                         //socket.ChangePlayerAttrStartPoint(playerScript);
-                        //view.RPC("CallChangePlayerAttrStartPoint", RpcTarget.All, socket, playerScript);
+                        view.RPC("CallChangePlayerAttrStartPoint", RpcTarget.All, currentMap, xTarget, yTarget, photonViewID);
                     }
                 }
                 GameObject dOut = dIn.GetDimensionOut(playerScript);
@@ -486,14 +481,15 @@ public class Step : MonoBehaviour
                     Socket socket = gameManager.PlayGridList[tempCurrentMap][xTarget, yTarget].GetComponent<Socket>();
                     if (socket.CheckSocketEndPoint(playerScript))
                     {
-                        socket.ChangePlayerAttrEndPoint(playerScript);
+                        //socket.ChangePlayerAttrEndPoint(playerScript);
+                        view.RPC("CallChangePlayerAttrEndPoint", RpcTarget.All, currentMap, xTarget, yTarget, photonViewID);
                         GenerateWire(tempCurrentMap, xCurrent, yCurrent, "Wire", null);
                         gameManager.Score++;
                     }
                     else if (socket.CheckSocketStartPoint(playerScript))
                     {
                         //socket.ChangePlayerAttrStartPoint(playerScript);
-                        //view.RPC("CallChangePlayerAttrStartPoint", RpcTarget.All, socket, playerScript);
+                        view.RPC("CallChangePlayerAttrStartPoint", RpcTarget.All, currentMap, xTarget, yTarget, photonViewID);
                     }
                 }
                 else if (gameManager.PlayGridList[tempCurrentMap][xTarget, yTarget].tag == "Bridge")
@@ -588,14 +584,15 @@ public class Step : MonoBehaviour
                         Socket socket = gameManager.PlayGridList[tempCurrentMap][xTarget, yTarget].GetComponent<Socket>();
                         if (socket.CheckSocketEndPoint(playerScript))
                         {
-                            socket.ChangePlayerAttrEndPoint(playerScript);
+                            //socket.ChangePlayerAttrEndPoint(playerScript);
+                            view.RPC("CallChangePlayerAttrEndPoint", RpcTarget.All, currentMap, xTarget, yTarget, photonViewID);
                             GenerateWire(tempCurrentMap, xCurrent, yCurrent, "Wire", null);
                             gameManager.Score++;
                         }
                         else if (socket.CheckSocketStartPoint(playerScript))
                         {
                             //socket.ChangePlayerAttrStartPoint(playerScript);
-                            //view.RPC("CallChangePlayerAttrStartPoint", RpcTarget.All, socket, playerScript);
+                            view.RPC("CallChangePlayerAttrStartPoint", RpcTarget.All, currentMap, xTarget, yTarget, photonViewID);
                         }
                     }
                 }
