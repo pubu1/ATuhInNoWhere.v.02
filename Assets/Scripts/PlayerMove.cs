@@ -8,11 +8,11 @@ public class PlayerMove : MonoBehaviour
 
     public int moveX = 1;
     public int moveY = 1;
+    public int moveSpeed = 5;
+    public bool isMove = true;
 
-    //private bool isGrounded =false;
     [SerializeField] Transform checkTop;
-    [SerializeField] Transform checkLeft;
-    [SerializeField] Transform checkRight;
+    [SerializeField] Transform checkFront;
     [SerializeField] Transform checkDown;
 
     [SerializeField] LayerMask brickLayer;
@@ -25,34 +25,72 @@ public class PlayerMove : MonoBehaviour
     [SerializeField]
     private bool isDown;
 
-    private void Update()
+    private Rigidbody2D rb;
+    private Vector2 targetPosition;
+    private Vector2 startPosition;
+    private void Start()
     {
-        CheckTop();
-        CheckLeft();
-        CheckRight();
-        CheckDown();
-        if (Input.GetKeyDown(KeyCode.LeftArrow)&& !isLeft)
-        {
-            transform.Translate(new Vector3(-moveX, 0, 0));
-
-        }
-        else if (Input.GetKeyDown(KeyCode.RightArrow) && !isRight)
-        {
-
-            transform.Translate(new Vector3(moveX, 0, 0));
-        }
-        else if (Input.GetKeyDown(KeyCode.UpArrow) && !isTop)
-        {
-
-            transform.Translate(new Vector3(0, moveY, 0));
-        }
-        else if (Input.GetKeyDown(KeyCode.DownArrow) && !isDown)
-        {
-
-            transform.Translate(new Vector3(0, -moveY, 0));
-        }
-      
+        rb = GetComponent<Rigidbody2D>();
     }
+
+    void Update()
+    {
+        float moveInput = Input.GetAxis("Horizontal");
+        CheckTop();
+        CheckFront();
+        CheckDown();
+        if (Input.GetKeyDown(KeyCode.LeftArrow) && !isLeft && isMove)
+        {
+            startPosition = rb.position;
+            targetPosition = startPosition + new Vector2(-moveX, 0f);
+            this.transform.localScale = new Vector3(-0.5f, 0.5f, 0.5f);
+            StartCoroutine(Move());
+        }
+        else if (Input.GetKeyDown(KeyCode.RightArrow) && !isRight && isMove)
+        {
+            startPosition = rb.position;
+            targetPosition = startPosition + new Vector2(moveX, 0f);
+            this.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
+            StartCoroutine(Move());
+        }
+        else if (Input.GetKeyDown(KeyCode.UpArrow) && !isTop && isMove)
+        {
+            startPosition = rb.position;
+            targetPosition = startPosition + new Vector2(0f, moveY);
+            StartCoroutine(Move());
+        }
+        else if (Input.GetKeyDown(KeyCode.DownArrow) && !isDown && isMove)
+        {
+            startPosition = rb.position;
+            targetPosition = startPosition + new Vector2(0f, -moveY);
+            StartCoroutine(Move());
+        }
+
+    }
+    private IEnumerator Move()
+    {
+        isMove = false;
+        // Calculate the distance to dash
+        float distanceToMove = Vector2.Distance(startPosition, targetPosition);
+
+        // Calculate the time it will take to complete the dash
+        float moveTime = distanceToMove / moveSpeed;
+        Debug.Log(moveTime);
+        float elapsedTime = 0f;
+
+        while (elapsedTime < moveTime)
+        {
+            // Move the player towards the target position
+            rb.position = Vector2.Lerp(startPosition, targetPosition, elapsedTime / moveTime);
+
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+        // Snap to the target position to ensure accuracy
+        rb.position = targetPosition;
+        isMove = true;
+    }
+
     void CheckTop()
     {
         isTop = false;
@@ -60,19 +98,24 @@ public class PlayerMove : MonoBehaviour
         if (colliders.Length > 0)
             isTop = true;
     }
-    void CheckLeft()
-    {
-        isLeft = false;
-        Collider2D[] colliders = Physics2D.OverlapCircleAll(checkLeft.position, 0.2f, brickLayer);
-        if (colliders.Length > 0)
-            isLeft = true;
-    }
-    void CheckRight()
+
+    void CheckFront()
     {
         isRight = false;
-        Collider2D[] colliders = Physics2D.OverlapCircleAll(checkRight.position, 0.2f, brickLayer);
+        isLeft = false;
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(checkFront.position, 0.2f, brickLayer);
         if (colliders.Length > 0)
-            isRight = true;
+            if (transform.localScale.x == -0.5f)
+            {
+                isLeft = true;
+                isRight = false;
+            }
+            else
+            {
+                isLeft = false;
+                isRight = true;
+            }
+
     }
     void CheckDown()
     {
@@ -81,28 +124,18 @@ public class PlayerMove : MonoBehaviour
         if (colliders.Length > 0)
             isDown = true;
     }
-    //private void OnCollisionEnter2D(Collision2D collision)
-    //{
-    //    if (collision.collider.tag == "Player")
-    //    {
-    //        Debug.Log("true");
-    //        SceneManager.LoadScene("New");
-    //    }
-    //}
-    private void OnTriggerEnter2D(Collider2D collision)
+    public void LoadSceneByName(string sceneName)
     {
-        if (collision.CompareTag("SingleMode"))
+        InputManager.fileName = sceneName + ".txt";
+        if (sceneName == "PlayMode" || sceneName == "Map")
         {
-            Debug.Log("Single");
-            
-            SceneManager.LoadScene("Map");
+            SceneManager.LoadScene(sceneName);
         }
-        else if (collision.CompareTag("CoopMode"))
+        else
         {
-            Debug.Log("Coop");
-            
-           SceneManager.LoadScene("Lobby");
+            SceneManager.LoadScene("Game");
         }
+
     }
 
 }
