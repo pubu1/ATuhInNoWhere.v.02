@@ -140,7 +140,6 @@ public class Step : MonoBehaviourPun
         // }
     }
 
-
     private void Update()
     {
         if (view.IsMine && player != null)
@@ -195,35 +194,35 @@ public class Step : MonoBehaviourPun
                 }
                 this.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
             }
-            // else if (isStepOnIce && enableMove)
-            // {
-            //     playerScript.TempCurrentPosition = new Vector2(transform.position.x, transform.position.y);
-            //     if (playerScript.PreviousMove == "Left")
-            //     {
-            //         playerScript.TempTargetPosition = new Vector2(transform.position.x - moveSteps, transform.position.y);
-            //     }
-            //     else if (playerScript.PreviousMove == "Right")
-            //     {
-            //         playerScript.TempTargetPosition = new Vector2(transform.position.x + moveSteps, transform.position.y);
-            //     }
-            //     else if (playerScript.PreviousMove == "Up")
-            //     {
-            //         playerScript.TempTargetPosition = new Vector2(transform.position.x, transform.position.y + moveSteps);
-            //     }
-            //     else if (playerScript.PreviousMove == "Down")
-            //     {
-            //         playerScript.TempTargetPosition = new Vector2(transform.position.x, transform.position.y - moveSteps);
-            //     }
+            else if (isStepOnIce && enableMove)
+            {
+                playerScript.TempCurrentPosition = new Vector2(transform.position.x, transform.position.y);
+                if (playerScript.PreviousMove == "Left")
+                {
+                    playerScript.TempTargetPosition = new Vector2(transform.position.x - moveSteps, transform.position.y);
+                }
+                else if (playerScript.PreviousMove == "Right")
+                {
+                    playerScript.TempTargetPosition = new Vector2(transform.position.x + moveSteps, transform.position.y);
+                }
+                else if (playerScript.PreviousMove == "Up")
+                {
+                    playerScript.TempTargetPosition = new Vector2(transform.position.x, transform.position.y + moveSteps);
+                }
+                else if (playerScript.PreviousMove == "Down")
+                {
+                    playerScript.TempTargetPosition = new Vector2(transform.position.x, transform.position.y - moveSteps);
+                }
 
-            //     if (CanStepToPosition(playerScript.TempCurrentPosition, playerScript.TempTargetPosition, playerScript.PreviousMove))
-            //     {
-            //         //playerScript.PreviousMove = playerScript.PreviousMove;
-            //     }
-            //     else
-            //     {
-            //         StopStepOnIce();
-            //     }
-            // }
+                if (CanStepToPosition(playerScript.TempCurrentPosition, playerScript.TempTargetPosition, playerScript.PreviousMove))
+                {
+                    //playerScript.PreviousMove = playerScript.PreviousMove;
+                }
+                else
+                {
+                    StopStepOnIce();
+                }
+            }
             StepMove();
         }
     }
