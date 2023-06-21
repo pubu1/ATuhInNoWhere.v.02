@@ -27,10 +27,12 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
     [SerializeField]
     private TMP_Text errorText; // error text to display if the room exist or not
 
+    [SerializeField]
+    private TMP_Text errorChoosePanelTxt; // error text to display if the room exist or not
+
     [Header("Event System")]
     [SerializeField]
     private EventSystem eventSystem;
-
     [SerializeField]
     private GameObject choosePanelButton;
     [SerializeField]
@@ -61,11 +63,13 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
         currSelectButton = choosePanelButton.GetComponent<Button>();
 
         // display player name
-        playerName.text = PlayerPrefs.GetString("Nickname");
+        playerName.text = "";
 
         //lock the cursor 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+        errorChoosePanelTxt.text = null;
     }
 
     private void Update()
@@ -121,19 +125,30 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
     // Create a room with maximum 2 player
     public void CreateRoom()
     {
-        roomOptions.MaxPlayers = 2;
-        string roomNum = roomRandom(); // after random a room code
-        Debug.Log("Creating room: " + roomNum); 
-        PhotonNetwork.CreateRoom(roomNum, roomOptions, TypedLobby.Default); // enter the room
+        if (PhotonNetwork.IsConnectedAndReady)
+        {
+            roomOptions.MaxPlayers = 2;
+            string roomNum = roomRandom(); // after random a room code
+            Debug.Log("Creating room: " + roomNum);
+            PhotonNetwork.CreateRoom(roomNum, roomOptions, TypedLobby.Default); // enter the room
+        } else
+        {
+            errorChoosePanelTxt.text = "There are some errors with the server!";
+        }
+        
     }
 
     // Click join to open the canvas enter the room code
     public void OnClickJoinRoom()
     {
+        // set size of btn to default
+        currSelectButton = GetCurrentlySelectedButton();
+        RectTransform rectTransform = currSelectButton.GetComponent<RectTransform>();
+        rectTransform.localScale = defaultScale;
+
         optionSelectScreen.SetActive(false);
         joinRoomScreen.SetActive(true);
         eventSystem.SetSelectedGameObject(joinPanelButton);
-        currSelectButton = joinPanelButton.GetComponent<Button>();
     }
 
     // enter the lobby_dual after create a room successfully
@@ -149,7 +164,7 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
 
         if (PhotonNetwork.IsConnectedAndReady)
         {
-            PhotonNetwork.JoinRoom(roomEnter);
+                
             /*CheckExisted();
             if (existedRoom)
             {
@@ -169,7 +184,7 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
 
     }
 
-    /*private void CheckExisted()
+    private void CheckExisted()
     {
         foreach (RoomItem roomItem in roomItems)
         {
@@ -184,29 +199,51 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
                 Debug.Log(existedRoom);
             }
         }
-    }*/
+    }
 
-    /*public override void OnRoomListUpdate(List<RoomInfo> roomList)
+    public override void OnRoomListUpdate(List<RoomInfo> roomList)
     {
         UpdateRoomList(roomList);
     }
 
     private void UpdateRoomList(List<RoomInfo> roomList)
     {
-        foreach (RoomItem roomItem in roomItems) {
-            roomItems.Remove(roomItem);
-        }
-        roomItems.Clear();
-
-        foreach (RoomInfo roomInfo in roomList)
+        if (roomItems.Count > 0)
         {
-            RoomItem newRoom = new RoomItem();
-            newRoom.name = roomInfo.Name;
-            roomItems.Add(newRoom);
-            Debug.Log(newRoom.name);
+            // Clear the existing room items
+            foreach (RoomItem roomItem in roomItems)
+            {
+                Destroy(roomItem.gameObject);
+            }
+            roomItems.Clear();
+        }
+        else
+        {
+            Debug.Log("roomItem nothing");
         }
 
-    }*/
+        if (roomList != null)
+        {
+            // Create new room items based on the room list
+            foreach (RoomInfo roomInfo in roomList)
+            {
+                // Create a new room item using a prefab or instantiate it dynamically
+                RoomItem newRoom = Instantiate(roomItem, transform);
+
+                // Set the room item's properties based on the room info
+                newRoom.name = roomInfo.Name;
+
+                // Add the room item to the list
+                roomItems.Add(newRoom);
+
+                Debug.Log(newRoom.name);
+            }
+        } else
+        {
+            Debug.Log("there's nothing");
+        }
+
+    }
 
 
     // this is for choosing number for the room code to enter 

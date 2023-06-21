@@ -135,6 +135,7 @@ GameObject:
   - component: {fileID: 189558628}
   - component: {fileID: 189558627}
   - component: {fileID: 189558630}
+  - component: {fileID: 189558631}
   m_Layer: 0
   m_Name: SingleMode
   m_TagString: SingleMode
@@ -265,7 +266,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 189558626}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1caea74d30b80924ebb5be09788d93d6, type: 3}
+  m_Script: {fileID: 11500000, guid: e44c214779c3e204d82d7a63753c7ff9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   targetScreenName: PlayMode
@@ -468,6 +469,7 @@ GameObject:
   - component: {fileID: 863224258}
   - component: {fileID: 863224257}
   - component: {fileID: 863224260}
+  - component: {fileID: 863224261}
   m_Layer: 0
   m_Name: CoopMode
   m_TagString: CoopMode
@@ -589,6 +591,19 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &863224261
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 863224256}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e44c214779c3e204d82d7a63753c7ff9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetScreenName: Map
 --- !u!1 &1041818433
 GameObject:
   m_ObjectHideFlags: 0
