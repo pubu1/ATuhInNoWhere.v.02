@@ -9,6 +9,8 @@ using UnityEngine;
 public class Step : MonoBehaviourPun
 {
     private static GameManager gameManager;
+    private static GameObject wireSpawner;
+    
     [SerializeField] private float moveSteps = 1.0f;
     [SerializeField] private float moveSpeed = 5.0f;
     private GameObject player;
@@ -32,6 +34,8 @@ public class Step : MonoBehaviourPun
     // Start is called before the first frame update
     void Start()
     {
+        wireSpawner = GameObject.Find("WireSpawner");
+        Debug.Log(wireSpawner + " is found!");
         photonViewID = PhotonNetwork.LocalPlayer.ActorNumber;
         gameManager = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameManager>();
         Debug.Log("Photon View ID: " + photonViewID);
@@ -202,20 +206,18 @@ public class Step : MonoBehaviourPun
         Debug.Log("TargetP-------: " + targetP);
         if (type == "Bridge" && !targetP.IsNotPickWire)
         {
-            Wire w = new Wire();
-            w.Start();
-            w.wireZAxis = gameManager.PlayGridList[mapIndex][xAxis, yAxis].GetComponent<Bridge>().GetZAxisWire(playerScript.PreviousMove);
-            w.GenerateWire(targetP);
+            // Wire w = new Wire();
+            // w.Start();
+            // w.wireZAxis = gameManager.PlayGridList[mapIndex][xAxis, yAxis].GetComponent<Bridge>().GetZAxisWire(playerScript.PreviousMove);
+            // w.GenerateWire(targetP);
         }
         else if (type == "Wire" && !targetP.IsNotPickWire || targetP.IsAtSocket)
         {
-            Wire w = new Wire();
-            w.Start();
-            w.GenerateWire(targetP);
+            GameObject w = wireSpawner.GetComponent<Wire>().GenerateWire(targetP);
+            Debug.Log(w + " is found wire!");
 
             Vector2 wirePosition = new Vector2(w.transform.position.x, w.transform.position.y);
             gameManager.WireMap[wirePosition] = true;
-
         }
         // else if (type == "Dimension" && !playerScript.IsNotPickWire)
         // {
