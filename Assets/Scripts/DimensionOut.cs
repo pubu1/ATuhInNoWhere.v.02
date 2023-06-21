@@ -30,7 +30,7 @@ public class DimensionOut : MonoBehaviour
         return exitPosition;
     }
 
-    public bool CheckNextStep(Player player, GameObject nextStepObject, Dictionary<Vector2,Wire> wireMap){
+    public bool CheckNextStep(Player player, GameObject nextStepObject, Dictionary<Vector2,bool> wireMap){
         bool totalCheck = true;
         if(wireMap.ContainsKey(GetNextPosition(player)) && !player.IsNotPickWire){
             totalCheck = false;

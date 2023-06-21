@@ -213,9 +213,8 @@ public class Step : MonoBehaviourPun
             w.Start();
             w.GenerateWire(targetP);
 
-            GameObject wire = w.GetWire();
-            Vector2 wirePosition = new Vector2(wire.transform.position.x, wire.transform.position.y);
-            gameManager.WireMap[wirePosition] = wire.GetComponent<Wire>();
+            Vector2 wirePosition = new Vector2(w.transform.position.x, w.transform.position.y);
+            gameManager.WireMap[wirePosition] = true;
 
         }
         // else if (type == "Dimension" && !playerScript.IsNotPickWire)

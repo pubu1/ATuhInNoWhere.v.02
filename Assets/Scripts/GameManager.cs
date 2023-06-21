@@ -45,7 +45,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     public List<GameObject[,]> PlayGridList { get; set; }
 
     private Dictionary<int, GameObject> doorButtonList;
-    public Dictionary<Vector2, Wire> WireMap { get; set; }
+    public Dictionary<Vector2, bool> WireMap { get; set; }
 
     // private Dictionary<Vector2, Socket> pointType;
 
@@ -184,7 +184,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     private void InitializeMap()
     {
-        WireMap = new Dictionary<Vector2, Wire>();
+        WireMap = new Dictionary<Vector2,bool>();
         MapGridList = new List<GameObject[,]>();
         int offset = 0;
         int currentMap = 0;

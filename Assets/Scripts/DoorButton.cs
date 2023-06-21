@@ -35,7 +35,7 @@ public class DoorButton : MonoBehaviour
         }
     }
 
-    public void CheckCurrentStep(Player player, GameObject nextStepObject, Dictionary<Vector2,Wire> wireMap){
+    public void CheckCurrentStep(Player player, GameObject nextStepObject, Dictionary<Vector2, bool> wireMap){
         bool totalCheck = true;
         if(wireMap.ContainsKey(nextStepObject.transform.position) && !player.IsNotPickWire){
             totalCheck = false;

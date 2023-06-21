@@ -133,7 +133,7 @@ public class DimensionIn : MonoBehaviour
         return null;
     }
 
-    public bool CheckNextStep(Player player, GameObject nextStepObject, Dictionary<Vector2,Wire> wireMap){
+    public bool CheckNextStep(Player player, GameObject nextStepObject, Dictionary<Vector2,bool> wireMap){
         bool totalCheck = true;
         if(wireMap.ContainsKey(this.GetNextPosition(player)) && !player.IsNotPickWire){
             totalCheck = false;

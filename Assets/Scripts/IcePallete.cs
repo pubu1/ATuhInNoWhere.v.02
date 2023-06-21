@@ -8,7 +8,7 @@ public class IcePallete : MonoBehaviour
 
     }
 
-    public bool CheckNextStep(Player player, Dictionary<Vector2,Wire> wireMap){
+    public bool CheckNextStep(Player player, Dictionary<Vector2,bool> wireMap){
         if(wireMap.ContainsKey(player.TempTargetPosition) && !player.IsNotPickWire){
             return false;
         }
