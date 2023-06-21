@@ -283,14 +283,16 @@ public class Step : MonoBehaviourPun
                 targetP.TargetPosition = targetP.TempTargetPosition;
             }
         }
-        // playerScript.CurrentPosition = this.transform.position;
-        // playerScript.TargetPosition = playerScript.TempTargetPosition;
-        currentMap = (int)playerScript.CurrentPosition.x / 100;
-        xCurrent = (int)(playerScript.CurrentPosition.x % 100);
-        yCurrent = (int)(playerScript.CurrentPosition.y);
-        xTarget = (int)(playerScript.TargetPosition.x % 100);
-        yTarget = (int)(playerScript.TargetPosition.y);
-
+        if (view.IsMine)
+        {
+            playerScript.CurrentPosition = this.transform.position;
+            playerScript.TargetPosition = playerScript.TempTargetPosition;
+            currentMap = (int)playerScript.CurrentPosition.x / 100;
+            xCurrent = (int)(playerScript.CurrentPosition.x % 100);
+            yCurrent = (int)(playerScript.CurrentPosition.y);
+            xTarget = (int)(playerScript.TargetPosition.x % 100);
+            yTarget = (int)(playerScript.TargetPosition.y);
+        }
     }
 
     private bool CanStepToPosition(Vector2 currentPosition, Vector2 targetPosition, string tempNextKey)
