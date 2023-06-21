@@ -27,10 +27,17 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
     [SerializeField]
     private TMP_Text errorText; // error text to display if the room exist or not
 
+    // use for display the error text to be flicker
+    public float flickerDuration = 2f;
+    public float flickerInterval = 0.05f;
+    private bool isFlickering = false;
+
+    [SerializeField]
+    private TMP_Text errorChoosePanelTxt; // error text to display if the room exist or not
+
     [Header("Event System")]
     [SerializeField]
     private EventSystem eventSystem;
-
     [SerializeField]
     private GameObject choosePanelButton;
     [SerializeField]
@@ -42,11 +49,6 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
     [SerializeField]
     private TMP_Text playerName;
 
-    [Header("Room List")]
-    private RoomItem roomItem = new RoomItem();
-    private List<RoomItem> roomItems = new List<RoomItem>();
-    private bool existedRoom = false;
-
     [Header("Scale Selected Button")]
     private Button currSelectButton;
     private Vector2 selectedScale = new Vector2(1.2f, 1.2f);
@@ -54,18 +56,20 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
 
     private void Start()
     {
-        roomItems.Clear();
+        StopFlickering(); // refresh the flickering
 
         PhotonNetwork.JoinLobby(); // auto join lobby as the scene load
         eventSystem.firstSelectedGameObject = choosePanelButton;
         currSelectButton = choosePanelButton.GetComponent<Button>();
 
         // display player name
-        playerName.text = PlayerPrefs.GetString("Nickname");
+        playerName.text = "";
 
         //lock the cursor 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+        errorChoosePanelTxt.text = null;
     }
 
     private void Update()
@@ -121,19 +125,31 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
     // Create a room with maximum 2 player
     public void CreateRoom()
     {
-        roomOptions.MaxPlayers = 2;
-        string roomNum = roomRandom(); // after random a room code
-        Debug.Log("Creating room: " + roomNum); 
-        PhotonNetwork.CreateRoom(roomNum, roomOptions, TypedLobby.Default); // enter the room
+        if (PhotonNetwork.IsConnectedAndReady)
+        {
+            roomOptions.MaxPlayers = 2;
+            roomOptions.IsOpen = true;
+            string roomNum = roomRandom(); // after random a room code
+            Debug.Log("Creating room: " + roomNum);
+            PhotonNetwork.CreateRoom(roomNum, roomOptions, TypedLobby.Default); // enter the room
+        } else
+        {
+            errorChoosePanelTxt.text = "There are some errors with the server!";
+        }
+        
     }
 
     // Click join to open the canvas enter the room code
     public void OnClickJoinRoom()
     {
+        // set size of btn to default
+        currSelectButton = GetCurrentlySelectedButton();
+        RectTransform rectTransform = currSelectButton.GetComponent<RectTransform>();
+        rectTransform.localScale = defaultScale;
+
         optionSelectScreen.SetActive(false);
         joinRoomScreen.SetActive(true);
         eventSystem.SetSelectedGameObject(joinPanelButton);
-        currSelectButton = joinPanelButton.GetComponent<Button>();
     }
 
     // enter the lobby_dual after create a room successfully
@@ -149,64 +165,35 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
 
         if (PhotonNetwork.IsConnectedAndReady)
         {
-            PhotonNetwork.JoinRoom(roomEnter);
-            /*CheckExisted();
-            if (existedRoom)
+            if (string.IsNullOrEmpty(roomEnter) || roomEnter.Trim().Length < 4)
             {
-                // Room exists, join the room
-                PhotonNetwork.JoinRoom(roomEnter);
+                DisplayErrorText("Please enter a valid room with 4 digits.");
             }
-            else
+            else 
             {
-                // Room doesn't exist, show an error message
-                errorText.text = "The room does not exist!";
-            }*/
+                PhotonNetwork.JoinRoom(roomEnter);
+            }   
         }
         else
         {
-            errorText.text = "Not connected to the server!";
+            DisplayErrorText("Not connected to the server!");
         }
 
     }
 
-    /*private void CheckExisted()
+    // Call if enter a room fail
+    public override void OnJoinRoomFailed(short returnCode, string message)
     {
-        foreach (RoomItem roomItem in roomItems)
+        if (returnCode == Photon.Realtime.ErrorCode.GameDoesNotExist)
         {
-            if (roomItem.roomName.Equals(roomNameJoin.text))
-            {
-                existedRoom = true;
-                Debug.Log(existedRoom);
-            }
-            else
-            {
-                existedRoom = false;
-                Debug.Log(existedRoom);
-            }
+            DisplayErrorText("The room does not exist!");
         }
-    }*/
-
-    /*public override void OnRoomListUpdate(List<RoomInfo> roomList)
-    {
-        UpdateRoomList(roomList);
+        else
+        {
+            // Handle other join room failure cases
+            DisplayErrorText("Failed to join the room: " + message);
+        }
     }
-
-    private void UpdateRoomList(List<RoomInfo> roomList)
-    {
-        foreach (RoomItem roomItem in roomItems) {
-            roomItems.Remove(roomItem);
-        }
-        roomItems.Clear();
-
-        foreach (RoomInfo roomInfo in roomList)
-        {
-            RoomItem newRoom = new RoomItem();
-            newRoom.name = roomInfo.Name;
-            roomItems.Add(newRoom);
-            Debug.Log(newRoom.name);
-        }
-
-    }*/
 
 
     // this is for choosing number for the room code to enter 
@@ -232,12 +219,62 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
         }
     }
 
+    // return the chooseOptionPanel
     public void OnClickBackPanel()
     {
+        // refresh data
+        roomNameJoin.text = "";
+        errorText.text = "";
+
+        // change scene
         optionSelectScreen.SetActive(true);
         joinRoomScreen.SetActive(false);
+
+        // set the zoom btn
         eventSystem.SetSelectedGameObject(choosePanelButton);
         currSelectButton = choosePanelButton.GetComponent<Button>();
+    }
+
+
+    // fuction for the flicker of error text
+    public void DisplayErrorText(string errorMessage)
+    {
+        errorText.text = errorMessage;
+
+        if (!isFlickering)
+        {
+            StartFlickering();
+        }
+    }
+
+    private void StartFlickering()
+    {
+        isFlickering = true;
+        StartCoroutine(FlickerCoroutine());
+    }
+
+    private IEnumerator FlickerCoroutine()
+    {
+        float elapsed = 0f;
+
+        while (elapsed < flickerDuration)
+        {
+            errorText.enabled = !errorText.enabled;
+            yield return new WaitForSeconds(flickerInterval);
+            elapsed += flickerInterval;
+        }
+
+        errorText.enabled = true; // Ensure the error text is visible after flickering stops
+        errorText.text = ""; // set it back to null when the flicker stop
+        isFlickering = false;
+    }
+
+    // call in start to refresh 
+    public void StopFlickering()
+    {
+        StopAllCoroutines();
+        errorText.enabled = true; // Ensure the error text is permanently visible
+        isFlickering = false;
     }
 
 }
