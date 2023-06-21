@@ -51,6 +51,9 @@ MonoBehaviour:
   - GenerateGame
   - CallChangePlayerAttrEndPoint
   - GenerateWire
+  - SetPreviousMove
+  - SetTempTargetMove
+  - UpdateLocation
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
