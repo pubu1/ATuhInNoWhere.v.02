@@ -1431,7 +1431,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 263608520}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1196674027}
+        m_TargetAssemblyTypeName: FirebaseAuthenticaton, Assembly-CSharp
+        m_MethodName: Register
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &263608520
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2081,7 +2093,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 398904325}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 63fb0c1151ad7c340b48541904dfeb19, type: 3}
   m_Name: 
@@ -4285,7 +4297,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1092986644}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1196674027}
+        m_TargetAssemblyTypeName: FirebaseAuthenticaton, Assembly-CSharp
+        m_MethodName: Login
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1092986644
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4696,7 +4720,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1187554279}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ae0b7c13d51ed0b468c1857c40432c88, type: 3}
   m_Name: 
@@ -4709,6 +4733,59 @@ MonoBehaviour:
   errorPopup: {fileID: 2036610758}
   registerPanel: {fileID: 1187554279}
   loginPanel: {fileID: 398904325}
+--- !u!1 &1196674026
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1196674028}
+  - component: {fileID: 1196674027}
+  m_Layer: 0
+  m_Name: AuthenManage
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1196674027
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1196674026}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1c802f89531310c4382595f59092afd1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  loginPanel: {fileID: 398904325}
+  RegisterPanel: {fileID: 1187554279}
+  dependencyStatus: 0
+  emailLoginField: {fileID: 965056234}
+  passwordLoginField: {fileID: 548011528}
+  nameRegisterField: {fileID: 1595922883}
+  emailRegisterField: {fileID: 342521105}
+  passwordRegisterField: {fileID: 1917263345}
+  confirmPasswordRegisterField: {fileID: 1435246438}
+--- !u!4 &1196674028
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1196674026}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.9380908, y: -0.339166, z: 53.403763}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 8
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1208243918
 GameObject:
   m_ObjectHideFlags: 0
