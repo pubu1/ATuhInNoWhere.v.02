@@ -28,6 +28,7 @@ public class Wire : MonoBehaviour
     public GameObject GenerateWire(Player player)
     {
         GameObject wire = null;
+        Debug.Log("Temp key: " + player.TempNextKey);
         if (player.TempNextKey == "Right")
         {
             if (player.IsAtSocket && !player.IsNotPickWire)
@@ -141,6 +142,7 @@ public class Wire : MonoBehaviour
                 }
             }
         }
+        if (wire == null) Debug.Log("Can not render wire!");
         return wire;
     }
 
@@ -163,10 +165,6 @@ public class Wire : MonoBehaviour
 
         transform.position = new Vector3(renderPosition.x, renderPosition.y, wireZAxis);
 
-        return wireClone;
-    }
-
-    public GameObject GetWire(){
         return wireClone;
     }
 }

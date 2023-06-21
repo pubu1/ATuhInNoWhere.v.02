@@ -9,7 +9,7 @@ using UnityEngine;
 public class Step : MonoBehaviourPun
 {
     private static GameManager gameManager;
-    private static GameObject wireSpawner;
+    private static Wire wireSpawner;
     
     [SerializeField] private float moveSteps = 1.0f;
     [SerializeField] private float moveSpeed = 5.0f;
@@ -34,7 +34,7 @@ public class Step : MonoBehaviourPun
     // Start is called before the first frame update
     void Start()
     {
-        wireSpawner = GameObject.Find("WireSpawner");
+        wireSpawner = GameObject.Find("WireSpawner").GetComponent<Wire>();
         Debug.Log(wireSpawner + " is found!");
         photonViewID = PhotonNetwork.LocalPlayer.ActorNumber;
         gameManager = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameManager>();
@@ -91,6 +91,42 @@ public class Step : MonoBehaviourPun
         socket.ChangePlayerAttrEndPoint(targetP);
         //Debug.Log("Socket found: " + socket + " - " + socket.transform.position);
     }
+
+    [PunRPC]
+    private void GenerateWire(int mapIndex, int xAxis, int yAxis, string type, int photonTargetID)
+    {
+        Player targetP = playerScript;
+        if (photonTargetID != photonViewID)
+        {
+            if (photonTargetID == 1) targetP = gameManager.PlayerM.GetComponent<Player>();
+            else targetP = gameManager.PlayerF.GetComponent<Player>();
+        }
+        Debug.Log("TargetP-------: " + targetP);
+        if (type == "Bridge" && !targetP.IsNotPickWire)
+        {
+            // Wire w = new Wire();
+            // w.Start();
+            // w.wireZAxis = gameManager.PlayGridList[mapIndex][xAxis, yAxis].GetComponent<Bridge>().GetZAxisWire(playerScript.PreviousMove);
+            // w.GenerateWire(targetP);
+        }
+        else if (type == "Wire" && !targetP.IsNotPickWire || targetP.IsAtSocket)
+        {
+            Debug.Log("I found wirespawner: " + wireSpawner);
+            GameObject w = wireSpawner.GenerateWire(targetP);
+            Debug.Log(w + " is found wire!");
+
+            Vector2 wirePosition = new Vector2(w.transform.position.x, w.transform.position.y);
+            gameManager.WireMap[wirePosition] = true;
+        }
+        // else if (type == "Dimension" && !playerScript.IsNotPickWire)
+        // {
+        //     int wireRotation = (playerScript.TempNextKey == "Up" || playerScript.TempNextKey == "Down") ? 1 : 0;
+        //     Wire w = new Wire();
+        //     w.Start();
+        //     w.RenderWire(obj.transform.position, 0, wireRotation, playerScript.HandleWireColor);
+        // }
+    }
+
 
     private void Update()
     {
@@ -192,40 +228,6 @@ public class Step : MonoBehaviourPun
         yCurrent = (int)(playerScript.CurrentPosition.y);
         xTarget = (int)(playerScript.TargetPosition.x % 100);
         yTarget = (int)(playerScript.TargetPosition.y);
-    }
-
-    [PunRPC]
-    private void GenerateWire(int mapIndex, int xAxis, int yAxis, string type, int photonTargetID)
-    {
-        Player targetP = playerScript;
-        if (photonTargetID != photonViewID)
-        {
-            if (photonTargetID == 1) targetP = gameManager.PlayerM.GetComponent<Player>();
-            else targetP = gameManager.PlayerF.GetComponent<Player>();
-        }
-        Debug.Log("TargetP-------: " + targetP);
-        if (type == "Bridge" && !targetP.IsNotPickWire)
-        {
-            // Wire w = new Wire();
-            // w.Start();
-            // w.wireZAxis = gameManager.PlayGridList[mapIndex][xAxis, yAxis].GetComponent<Bridge>().GetZAxisWire(playerScript.PreviousMove);
-            // w.GenerateWire(targetP);
-        }
-        else if (type == "Wire" && !targetP.IsNotPickWire || targetP.IsAtSocket)
-        {
-            GameObject w = wireSpawner.GetComponent<Wire>().GenerateWire(targetP);
-            Debug.Log(w + " is found wire!");
-
-            Vector2 wirePosition = new Vector2(w.transform.position.x, w.transform.position.y);
-            gameManager.WireMap[wirePosition] = true;
-        }
-        // else if (type == "Dimension" && !playerScript.IsNotPickWire)
-        // {
-        //     int wireRotation = (playerScript.TempNextKey == "Up" || playerScript.TempNextKey == "Down") ? 1 : 0;
-        //     Wire w = new Wire();
-        //     w.Start();
-        //     w.RenderWire(obj.transform.position, 0, wireRotation, playerScript.HandleWireColor);
-        // }
     }
 
     private bool CanStepToPosition(Vector2 currentPosition, Vector2 targetPosition, string tempNextKey)
