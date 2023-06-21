@@ -157,9 +157,8 @@ public class Step : MonoBehaviourPun
 
             if (!isStepOnIce && Input.GetKeyDown(KeyCode.UpArrow) && enableMove && !isPauseGame)
             {
-                playerScript.TempCurrentPosition = new Vector2(transform.position.x, transform.position.y);
-                playerScript.TempTargetPosition = new Vector2(transform.position.x, transform.position.y + moveSteps);
-                playerScript.TempNextKey = "Up";
+                view.RPC("SetTempTargetMove", RpcTarget.All, photonViewID, "Up");
+                
                 if (CanStepToPosition(playerScript.TempCurrentPosition, playerScript.TempTargetPosition, playerScript.TempNextKey))
                 {
                     //playerScript.PreviousMove = "Up";
@@ -168,9 +167,7 @@ public class Step : MonoBehaviourPun
             }
             else if (!isStepOnIce && Input.GetKeyDown(KeyCode.DownArrow) && enableMove && !isPauseGame)
             {
-                playerScript.TempCurrentPosition = new Vector2(transform.position.x, transform.position.y);
-                playerScript.TempTargetPosition = new Vector2(transform.position.x, transform.position.y - moveSteps);
-                playerScript.TempNextKey = "Down";
+                view.RPC("SetTempTargetMove", RpcTarget.All, photonViewID, "Down");
                 if (CanStepToPosition(playerScript.TempCurrentPosition, playerScript.TempTargetPosition, playerScript.TempNextKey))
                 {
                     //playerScript.PreviousMove = "Down";
@@ -179,9 +176,7 @@ public class Step : MonoBehaviourPun
             }
             else if (!isStepOnIce && Input.GetKeyDown(KeyCode.LeftArrow) && enableMove && !isPauseGame)
             {
-                playerScript.TempCurrentPosition = new Vector2(transform.position.x, transform.position.y);
-                playerScript.TempTargetPosition = new Vector2(transform.position.x - moveSteps, transform.position.y);
-                playerScript.TempNextKey = "Left";
+                view.RPC("SetTempTargetMove", RpcTarget.All, photonViewID, "Left");
                 if (CanStepToPosition(playerScript.TempCurrentPosition, playerScript.TempTargetPosition, playerScript.TempNextKey))
                 {
                     //playerScript.PreviousMove = "Left";
@@ -191,9 +186,7 @@ public class Step : MonoBehaviourPun
             }
             else if (!isStepOnIce && Input.GetKeyDown(KeyCode.RightArrow) && enableMove && !isPauseGame)
             {
-                playerScript.TempCurrentPosition = new Vector2(transform.position.x, transform.position.y);
-                playerScript.TempTargetPosition = new Vector2(transform.position.x + moveSteps, transform.position.y);
-                playerScript.TempNextKey = "Right";
+                view.RPC("SetTempTargetMove", RpcTarget.All, photonViewID, "Right");
                 if (CanStepToPosition(playerScript.TempCurrentPosition, playerScript.TempTargetPosition, playerScript.TempNextKey))
                 {
                     //playerScript.PreviousMove = "Right";
@@ -231,6 +224,34 @@ public class Step : MonoBehaviourPun
                 }
             }
             StepMove();
+        }
+    }
+
+    [PunRPC]
+    private void SetTempTargetMove(int photonTargetID, string tempNextKey){
+        Player targetP = playerScript;
+        if (photonTargetID != photonViewID)
+        {
+            if (photonTargetID == 1) targetP = gameManager.PlayerM.GetComponent<Player>();
+            else targetP = gameManager.PlayerF.GetComponent<Player>();
+        }
+        
+        if(tempNextKey == "Up"){
+            targetP.TempCurrentPosition = new Vector2(transform.position.x, transform.position.y);
+            targetP.TempTargetPosition = new Vector2(transform.position.x, transform.position.y + moveSteps);
+            targetP.TempNextKey = "Up";
+        } else if(tempNextKey == "Left"){
+            targetP.TempCurrentPosition = new Vector2(transform.position.x, transform.position.y);
+            targetP.TempTargetPosition = new Vector2(transform.position.x - moveSteps, transform.position.y);
+            targetP.TempNextKey = "Left";
+        }else if(tempNextKey == "Down"){
+            targetP.TempCurrentPosition = new Vector2(transform.position.x, transform.position.y);
+            targetP.TempTargetPosition = new Vector2(transform.position.x, transform.position.y - moveSteps);
+            targetP.TempNextKey = "Down";
+        }else if(tempNextKey == "Right"){
+            targetP.TempCurrentPosition = new Vector2(transform.position.x, transform.position.y);
+            targetP.TempTargetPosition = new Vector2(transform.position.x + moveSteps, transform.position.y);
+            targetP.TempNextKey = "Right";
         }
     }
 
