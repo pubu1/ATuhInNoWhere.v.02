@@ -4771,6 +4771,7 @@ MonoBehaviour:
   emailRegisterField: {fileID: 342521105}
   passwordRegisterField: {fileID: 1917263345}
   confirmPasswordRegisterField: {fileID: 1435246438}
+  errorPopup: {fileID: 2036610758}
 --- !u!4 &1196674028
 Transform:
   m_ObjectHideFlags: 0

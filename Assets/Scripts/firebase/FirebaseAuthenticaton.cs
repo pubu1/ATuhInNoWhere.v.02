@@ -30,11 +30,13 @@ public class FirebaseAuthenticaton : MonoBehaviour
     public TMP_InputField emailRegisterField;
     public TMP_InputField passwordRegisterField;
     public TMP_InputField confirmPasswordRegisterField;
+    public ErrorPopup errorPopup;
+
 
     private void Start()
     {
-        loginPanel.SetActive(false);
-        RegisterPanel.SetActive(true);
+        //loginPanel.SetActive(false);
+        //RegisterPanel.SetActive(true);
     }
 
     private void Awake()
@@ -110,18 +112,23 @@ public class FirebaseAuthenticaton : MonoBehaviour
             {
                 case AuthError.InvalidEmail:
                     failedMessage += "Email is invalid";
+                    errorPopup.ShowPopup("Email is invalid! ");
                     break;
                 case AuthError.WrongPassword:
                     failedMessage += "Wrong Password";
+                    errorPopup.ShowPopup("Wrong Password! ");
                     break;
                 case AuthError.MissingEmail:
                     failedMessage += "Email is missing";
+                    errorPopup.ShowPopup("Email is missing! ");
                     break;
                 case AuthError.MissingPassword:
                     failedMessage += "Password is missing";
+                    errorPopup.ShowPopup("Password is missing! ");
                     break;
                 default:
                     failedMessage = "Login Failed";
+                    errorPopup.ShowPopup("Login Failed! ");
                     break;
             }
 
@@ -147,14 +154,20 @@ public class FirebaseAuthenticaton : MonoBehaviour
         if (name == "")
         {
             Debug.LogError("User Name is empty");
+            errorPopup.ShowPopup("User Name is empty! ");
+
         }
         else if (email == "")
         {
-            Debug.LogError("email field is empty");
+            Debug.LogError("Email field is empty");
+            errorPopup.ShowPopup("Email field is empty! ");
+
         }
         else if (passwordRegisterField.text != confirmPasswordRegisterField.text)
         {
             Debug.LogError("Password does not match");
+            errorPopup.ShowPopup("Password does not match! ");
+
         }
         else
         {
@@ -174,18 +187,23 @@ public class FirebaseAuthenticaton : MonoBehaviour
                 {
                     case AuthError.InvalidEmail:
                         failedMessage += "Email is invalid";
+                        errorPopup.ShowPopup("Email is invalid! ");
                         break;
                     case AuthError.WrongPassword:
                         failedMessage += "Wrong Password";
+                        errorPopup.ShowPopup("Wrong Password! ");
                         break;
                     case AuthError.MissingEmail:
                         failedMessage += "Email is missing";
+                        errorPopup.ShowPopup("Email is missing! ");
                         break;
                     case AuthError.MissingPassword:
                         failedMessage += "Password is missing";
+                        errorPopup.ShowPopup("Password is missing! ");
                         break;
                     default:
-                        failedMessage = "Registration Failed";
+                        failedMessage = "Login Failed";
+                        errorPopup.ShowPopup("Login Failed! ");
                         break;
                 }
 
@@ -218,18 +236,23 @@ public class FirebaseAuthenticaton : MonoBehaviour
                     {
                         case AuthError.InvalidEmail:
                             failedMessage += "Email is invalid";
+                            errorPopup.ShowPopup("Email is invalid! ");
                             break;
                         case AuthError.WrongPassword:
                             failedMessage += "Wrong Password";
+                            errorPopup.ShowPopup("Wrong Password! ");
                             break;
                         case AuthError.MissingEmail:
                             failedMessage += "Email is missing";
+                            errorPopup.ShowPopup("Email is missing! ");
                             break;
                         case AuthError.MissingPassword:
                             failedMessage += "Password is missing";
+                            errorPopup.ShowPopup("Password is missing! ");
                             break;
                         default:
-                            failedMessage = "Profile update Failed";
+                            failedMessage = "Login Failed";
+                            errorPopup.ShowPopup("Login Failed! ");
                             break;
                     }
 
@@ -238,8 +261,8 @@ public class FirebaseAuthenticaton : MonoBehaviour
                 else
                 {
                     Debug.Log("Registration Sucessful Welcome " + user.DisplayName);
-                    loginPanel.SetActive(true);
                     RegisterPanel.SetActive(false);
+                    loginPanel.SetActive(true);
                 }
             }
         }
