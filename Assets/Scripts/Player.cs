@@ -14,7 +14,7 @@ public class Player : MonoBehaviour
     public Vector2 TempTargetPosition{get; set;}
 
     public string TempNextKey{get; set;}
-
+    public string PreviousMove{get; set;}
     public float DefaultZAxis{get; set;}
 
     public bool IsAtSocket{get; set;}
@@ -30,6 +30,7 @@ public class Player : MonoBehaviour
         TempTargetPosition = this.transform.position;
         DefaultZAxis = 6f;
         TempNextKey = "";
+        PreviousMove = "";
     }
 
     // Update is called once per frame

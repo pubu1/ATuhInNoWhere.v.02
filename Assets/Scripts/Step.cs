@@ -13,17 +13,8 @@ public class Step : MonoBehaviourPun
     [SerializeField] private float moveSpeed = 5.0f;
     private GameObject player;
     private Player playerScript, otherPlayerScript;
-    //[SerializeField] private GameObject body;
     private bool enableMove = true;
     private bool isPauseGame = false;
-    private Vector2 entranceDimensionPosition;
-    private List<string> path;
-    private List<GameObject> pipes;
-    private GameObject[,] grid;  // 2D grid for storing game objects
-    private static float gridCellSize = 1.0f;
-    int gridWidth = 5; // specify the grid width based on your game's requirements */;
-    int gridHeight = 6; //specify the grid height based on your game's requirements */;
-    private string previousMove;
     private bool activatePipeEffect = false;
     private bool isStepOnIce = false;
 
@@ -32,6 +23,7 @@ public class Step : MonoBehaviourPun
     int yCurrent;
     int xTarget;
     int yTarget;
+
     [SerializeField]
     private PhotonView view;
 
@@ -42,23 +34,13 @@ public class Step : MonoBehaviourPun
     {
         photonViewID = PhotonNetwork.LocalPlayer.ActorNumber;
         gameManager = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameManager>();
-        if (gameManager.PlayGridList.Count != 0)
-        {
-            Debug.Log("I found Game PlayGridList");
-        } else
-        {
-            Debug.Log("Cannot find Game PlayGridList");
-        }
         Debug.Log("Photon View ID: " + photonViewID);
         if (view.IsMine)
         {
             if (photonViewID == 1) player = gameManager.PlayerM;
             else player = gameManager.PlayerF;
-
-            Debug.Log(player);
             playerScript = player.GetComponent<Player>();
             playerScript.HandleWireColor = "Default";
-            previousMove = "";
 
             currentMap = (int)playerScript.CurrentPosition.x / 100;
             xCurrent = (int)(playerScript.CurrentPosition.x % 100);
@@ -128,7 +110,7 @@ public class Step : MonoBehaviourPun
                 playerScript.TempNextKey = "Up";
                 if (CanStepToPosition(playerScript.TempCurrentPosition, playerScript.TempTargetPosition, playerScript.TempNextKey))
                 {
-                    SetPreviousMove("Up");
+                    playerScript.PreviousMove = "Up";
                 }
             }
             else if (!isStepOnIce && Input.GetKeyDown(KeyCode.DownArrow) && enableMove && !isPauseGame)
@@ -138,7 +120,7 @@ public class Step : MonoBehaviourPun
                 playerScript.TempNextKey = "Down";
                 if (CanStepToPosition(playerScript.TempCurrentPosition, playerScript.TempTargetPosition, playerScript.TempNextKey))
                 {
-                    SetPreviousMove("Down");
+                    playerScript.PreviousMove = "Down";
                 }
             }
             else if (!isStepOnIce && Input.GetKeyDown(KeyCode.LeftArrow) && enableMove && !isPauseGame)
@@ -148,7 +130,7 @@ public class Step : MonoBehaviourPun
                 playerScript.TempNextKey = "Left";
                 if (CanStepToPosition(playerScript.TempCurrentPosition, playerScript.TempTargetPosition, playerScript.TempNextKey))
                 {
-                    SetPreviousMove("Left");
+                    playerScript.PreviousMove = "Left";
                 }
                 this.transform.localScale = new Vector3(-0.5f, 0.5f, 0.5f);
             }
@@ -159,33 +141,33 @@ public class Step : MonoBehaviourPun
                 playerScript.TempNextKey = "Right";
                 if (CanStepToPosition(playerScript.TempCurrentPosition, playerScript.TempTargetPosition, playerScript.TempNextKey))
                 {
-                    SetPreviousMove("Right");
+                    playerScript.PreviousMove = "Right";
                 }
                 this.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
             }
             else if (isStepOnIce && enableMove)
             {
                 playerScript.TempCurrentPosition = new Vector2(transform.position.x, transform.position.y);
-                if (GetPreviousMove() == "Left")
+                if (playerScript.PreviousMove == "Left")
                 {
                     playerScript.TempTargetPosition = new Vector2(transform.position.x - moveSteps, transform.position.y);
                 }
-                else if (GetPreviousMove() == "Right")
+                else if (playerScript.PreviousMove == "Right")
                 {
                     playerScript.TempTargetPosition = new Vector2(transform.position.x + moveSteps, transform.position.y);
                 }
-                else if (GetPreviousMove() == "Up")
+                else if (playerScript.PreviousMove == "Up")
                 {
                     playerScript.TempTargetPosition = new Vector2(transform.position.x, transform.position.y + moveSteps);
                 }
-                else if (GetPreviousMove() == "Down")
+                else if (playerScript.PreviousMove == "Down")
                 {
                     playerScript.TempTargetPosition = new Vector2(transform.position.x, transform.position.y - moveSteps);
                 }
 
-                if (CanStepToPosition(playerScript.TempCurrentPosition, playerScript.TempTargetPosition, GetPreviousMove()))
+                if (CanStepToPosition(playerScript.TempCurrentPosition, playerScript.TempTargetPosition, playerScript.PreviousMove))
                 {
-                    SetPreviousMove(GetPreviousMove());
+                    playerScript.PreviousMove = playerScript.PreviousMove;
                 }
                 else
                 {
@@ -208,37 +190,40 @@ public class Step : MonoBehaviourPun
         yTarget = (int)(playerScript.TargetPosition.y);
     }
 
-    private void GenerateWire(int mapIndex, int xAxis, int yAxis, string type, GameObject obj)
+    [PunRPC]
+    private void GenerateWire(int mapIndex, int xAxis, int yAxis, string type, int photonTargetID)
     {
-        if (type == "Bridge" && !playerScript.IsNotPickWire)
+        Player targetP = playerScript;
+        if (photonTargetID != photonViewID)
+        {
+            if (photonTargetID == 1) targetP = gameManager.PlayerM.GetComponent<Player>();
+            else targetP = gameManager.PlayerF.GetComponent<Player>();
+        }
+        if (type == "Bridge" && !targetP.IsNotPickWire)
         {
             Wire w = new Wire();
             w.Start();
-            w.wireZAxis = gameManager.PlayGridList[mapIndex][xAxis, yAxis].GetComponent<Bridge>().GetZAxisWire(previousMove);
-            w.GenerateWire(playerScript, previousMove);
+            w.wireZAxis = gameManager.PlayGridList[mapIndex][xAxis, yAxis].GetComponent<Bridge>().GetZAxisWire(playerScript.PreviousMove);
+            w.GenerateWire(targetP, playerScript.PreviousMove);
         }
-        else if (type == "Wire" && !playerScript.IsNotPickWire || playerScript.IsAtSocket)
+        else if (type == "Wire" && !targetP.IsNotPickWire || targetP.IsAtSocket)
         {
-            if (!view.IsMine || view.IsMine)
-            {
-                Wire w = new Wire();
-                w.Start();
-                w.GenerateWire(playerScript, previousMove);
-
-
-                GameObject wire = w.GetWire();
-                Vector2 wirePosition = new Vector2(wire.transform.position.x, wire.transform.position.y);
-                gameManager.WireMap[wirePosition] = wire.GetComponent<Wire>();
-            }
-
-        }
-        else if (type == "Dimension" && !playerScript.IsNotPickWire)
-        {
-            int wireRotation = (playerScript.TempNextKey == "Up" || playerScript.TempNextKey == "Down") ? 1 : 0;
             Wire w = new Wire();
             w.Start();
-            w.RenderWire(obj.transform.position, 0, wireRotation, playerScript.HandleWireColor);
+            w.GenerateWire(targetP, playerScript.PreviousMove);
+
+            GameObject wire = w.GetWire();
+            Vector2 wirePosition = new Vector2(wire.transform.position.x, wire.transform.position.y);
+            gameManager.WireMap[wirePosition] = wire.GetComponent<Wire>();
+
         }
+        // else if (type == "Dimension" && !playerScript.IsNotPickWire)
+        // {
+        //     int wireRotation = (playerScript.TempNextKey == "Up" || playerScript.TempNextKey == "Down") ? 1 : 0;
+        //     Wire w = new Wire();
+        //     w.Start();
+        //     w.RenderWire(obj.transform.position, 0, wireRotation, playerScript.HandleWireColor);
+        // }
     }
 
     private bool CanStepToPosition(Vector2 currentPosition, Vector2 targetPosition, string tempNextKey)
@@ -256,7 +241,7 @@ public class Step : MonoBehaviourPun
         if (gameManager.PlayGridList[currentMap][xCurrent, yCurrent].tag == "Bridge")
         {
             Bridge bridge = gameManager.PlayGridList[currentMap][xCurrent, yCurrent].GetComponent<Bridge>();
-            totalCheck = bridge.CheckCurrentStep(bridge, playerScript, GetPreviousMove());
+            totalCheck = bridge.CheckCurrentStep(bridge, playerScript, playerScript.PreviousMove);
             if (!totalCheck)
             {
                 return false;
@@ -297,11 +282,13 @@ public class Step : MonoBehaviourPun
 
                     if (gameManager.PlayGridList[currentMap][xCurrent, yCurrent].tag == "Bridge")
                     {
-                        GenerateWire(currentMap, xCurrent, yCurrent, "Bridge", null);
+                        //GenerateWire(currentMap, xCurrent, yCurrent, "Bridge", null);
+                        view.RPC("GenerateWire", RpcTarget.All, currentMap, xTarget, yTarget, "Bridge", photonViewID);
                     }
                     else
                     {
-                        GenerateWire(currentMap, xCurrent, yCurrent, "Wire", null);
+                        //GenerateWire(currentMap, xCurrent, yCurrent, "Wire", null);
+                        view.RPC("GenerateWire", RpcTarget.All, currentMap, xTarget, yTarget, "Wire", photonViewID);
                     }
 
                     if (gameManager.PlayGridList[tempCurrentMap][xTarget, yTarget].tag == "Socket")
@@ -311,7 +298,8 @@ public class Step : MonoBehaviourPun
                         {
                             //socket.ChangePlayerAttrEndPoint(playerScript);
                             view.RPC("CallChangePlayerAttrEndPoint", RpcTarget.All, currentMap, xTarget, yTarget, photonViewID);
-                            GenerateWire(tempCurrentMap, xCurrent, yCurrent, "Wire", null);
+                            //GenerateWire(tempCurrentMap, xCurrent, yCurrent, "Wire", null);
+                            view.RPC("GenerateWire", RpcTarget.All, tempCurrentMap, xTarget, yTarget, "Wire", photonViewID);
                             gameManager.Score++;
                         }
                         else if (socket.CheckSocketStartPoint(playerScript))
@@ -335,11 +323,13 @@ public class Step : MonoBehaviourPun
                 UpdateLocation();
                 if (gameManager.PlayGridList[currentMap][xCurrent, yCurrent].tag == "Bridge")
                 {
-                    GenerateWire(currentMap, xCurrent, yCurrent, "Bridge", null);
+                    //GenerateWire(currentMap, xCurrent, yCurrent, "Bridge", null);
+                    view.RPC("GenerateWire", RpcTarget.All, currentMap, xTarget, yTarget, "Bridge", photonViewID);
                 }
                 else
                 {
-                    GenerateWire(currentMap, xCurrent, yCurrent, "Wire", null);
+                    //GenerateWire(currentMap, xCurrent, yCurrent, "Wire", null);
+                    view.RPC("GenerateWire", RpcTarget.All, currentMap, xTarget, yTarget, "Wire", photonViewID);
                 }
 
                 this.transform.position = new Vector3(this.transform.position.x, this.transform.position.y, playerScript.DefaultZAxis);
@@ -362,15 +352,18 @@ public class Step : MonoBehaviourPun
                 UpdateLocation();
                 if (gameManager.PlayGridList[currentMap][xCurrent, yCurrent].tag == "Bridge")
                 {
-                    GenerateWire(currentMap, xCurrent, yCurrent, "Bridge", null);
+                    //GenerateWire(currentMap, xCurrent, yCurrent, "Bridge", null);
+                    view.RPC("GenerateWire", RpcTarget.All, currentMap, xTarget, yTarget, "Bridge", photonViewID);
                 }
                 else
                 {
-                    GenerateWire(currentMap, xCurrent, yCurrent, "Wire", null);
+                    //GenerateWire(currentMap, xCurrent, yCurrent, "Wire", null);
+                    view.RPC("GenerateWire", RpcTarget.All, currentMap, xTarget, yTarget, "Wire", photonViewID);
                 }
                 //socket.ChangePlayerAttrEndPoint(playerScript);
                 view.RPC("CallChangePlayerAttrEndPoint", RpcTarget.All, currentMap, xTarget, yTarget, photonViewID);
-                GenerateWire(currentMap, xTarget, yTarget, "Wire", null);
+                //GenerateWire(currentMap, xTarget, yTarget, "Wire", null);
+                view.RPC("GenerateWire", RpcTarget.All, currentMap, xTarget, yTarget, "Wire", photonViewID);
                 gameManager.Score++;
             }
             else if (socket.CheckSocketStartPoint(playerScript))
@@ -413,11 +406,13 @@ public class Step : MonoBehaviourPun
 
                 if (gameManager.PlayGridList[currentMap][xCurrent, yCurrent].tag == "Bridge")
                 {
-                    GenerateWire(currentMap, xCurrent, yCurrent, "Bridge", null);
+                    //GenerateWire(currentMap, xCurrent, yCurrent, "Bridge", null);
+                    view.RPC("GenerateWire", RpcTarget.All, currentMap, xTarget, yTarget, "Bridge", photonViewID);
                 }
                 else
                 {
-                    GenerateWire(currentMap, xCurrent, yCurrent, "Wire", null);
+                    // GenerateWire(currentMap, xCurrent, yCurrent, "Wire", null);
+                    view.RPC("GenerateWire", RpcTarget.All, currentMap, xTarget, yTarget, "Wire", photonViewID);
                 }
 
                 if (gameManager.PlayGridList[tempCurrentMap][xTarget, yTarget].tag == "Socket")
@@ -427,7 +422,8 @@ public class Step : MonoBehaviourPun
                     {
                         //socket.ChangePlayerAttrEndPoint(playerScript);
                         view.RPC("CallChangePlayerAttrEndPoint", RpcTarget.All, currentMap, xTarget, yTarget, photonViewID);
-                        GenerateWire(tempCurrentMap, xCurrent, yCurrent, "Wire", null);
+                        //GenerateWire(tempCurrentMap, xCurrent, yCurrent, "Wire", null);
+                        view.RPC("GenerateWire", RpcTarget.All, tempCurrentMap, xTarget, yTarget, "Wire", photonViewID);
                         gameManager.Score++;
                     }
                     else if (socket.CheckSocketStartPoint(playerScript))
@@ -437,7 +433,8 @@ public class Step : MonoBehaviourPun
                     }
                 }
                 GameObject dOut = dIn.GetDimensionOut(playerScript);
-                GenerateWire(0, 0, 0, "Dimension", dOut);
+                //GenerateWire(0, 0, 0, "Dimension", dOut);
+                //view.RPC("GenerateWire", RpcTarget.All, 0, 0, 0, "Dimension", dOut);
             }
         }
         else if (gameManager.PlayGridList[currentMap][xTarget, yTarget].tag == "DimensionOut")
@@ -469,11 +466,13 @@ public class Step : MonoBehaviourPun
 
                 if (gameManager.PlayGridList[currentMap][xCurrent, yCurrent].tag == "Bridge")
                 {
-                    GenerateWire(currentMap, xCurrent, yCurrent, "Bridge", null);
+                    //GenerateWire(currentMap, xCurrent, yCurrent, "Bridge", null);
+                    view.RPC("GenerateWire", RpcTarget.All, currentMap, xCurrent, yCurrent, "Bridge", photonViewID);
                 }
                 else
                 {
-                    GenerateWire(currentMap, xCurrent, yCurrent, "Wire", null);
+                    //GenerateWire(currentMap, xCurrent, yCurrent, "Wire", null);
+                    view.RPC("GenerateWire", RpcTarget.All, currentMap, xCurrent, yCurrent, "Wire", photonViewID);
                 }
 
                 if (gameManager.PlayGridList[tempCurrentMap][xTarget, yTarget].tag == "Socket")
@@ -483,7 +482,8 @@ public class Step : MonoBehaviourPun
                     {
                         //socket.ChangePlayerAttrEndPoint(playerScript);
                         view.RPC("CallChangePlayerAttrEndPoint", RpcTarget.All, currentMap, xTarget, yTarget, photonViewID);
-                        GenerateWire(tempCurrentMap, xCurrent, yCurrent, "Wire", null);
+                        //GenerateWire(tempCurrentMap, xCurrent, yCurrent, "Wire", null);
+                        view.RPC("GenerateWire", RpcTarget.All, tempCurrentMap, xCurrent, yCurrent, "Wire", photonViewID);
                         gameManager.Score++;
                     }
                     else if (socket.CheckSocketStartPoint(playerScript))
@@ -499,7 +499,8 @@ public class Step : MonoBehaviourPun
                     this.transform.position = new Vector3(this.transform.position.x, this.transform.position.y, playerScript.DefaultZAxis);
                 }
 
-                GenerateWire(0, 0, 0, "Dimension", dOut.gameObject);
+                //GenerateWire(0, 0, 0, "Dimension", dOut.gameObject);
+                //view.RPC("GenerateWire", RpcTarget.All, 0, 0, 0, "Dimension", dOut.gameObject);
             }
         }
         else if (gameManager.PlayGridList[currentMap][xTarget, yTarget].tag == "DoorButton")
@@ -511,7 +512,8 @@ public class Step : MonoBehaviourPun
             if (totalCheck)
             {
                 UpdateLocation();
-                GenerateWire(currentMap, xCurrent, yCurrent, "Wire", null);
+                //GenerateWire(currentMap, xCurrent, yCurrent, "Wire", null);
+                view.RPC("GenerateWire", RpcTarget.All, currentMap, xCurrent, yCurrent, "Wire", photonViewID);
             }
         }
         else if (gameManager.PlayGridList[currentMap][xTarget, yTarget].tag == "Ice")
@@ -524,7 +526,8 @@ public class Step : MonoBehaviourPun
                 moveSpeed = 7f;
                 isStepOnIce = true;
                 UpdateLocation();
-                GenerateWire(currentMap, xCurrent, yCurrent, "Wire", null);
+                //GenerateWire(currentMap, xCurrent, yCurrent, "Wire", null);
+                view.RPC("GenerateWire", RpcTarget.All, currentMap, xCurrent, yCurrent, "Wire", photonViewID);
             }
         }
         else if (gameManager.PlayGridList[currentMap][xTarget, yTarget].tag == "DoorButton")
@@ -532,7 +535,8 @@ public class Step : MonoBehaviourPun
             DoorButton button = gameManager.PlayGridList[currentMap][xTarget, yTarget].GetComponent<DoorButton>();
             button.IsActive = true;
             UpdateLocation();
-            GenerateWire(currentMap, xCurrent, yCurrent, "Wire", null);
+            //GenerateWire(currentMap, xCurrent, yCurrent, "Wire", null);
+            view.RPC("GenerateWire", RpcTarget.All, currentMap, xCurrent, yCurrent, "Wire", photonViewID);
         }
         else if (gameManager.PlayGridList[currentMap][xTarget, yTarget].tag == "Door")
         {
@@ -542,7 +546,8 @@ public class Step : MonoBehaviourPun
             if (totalCheck)
             {
                 UpdateLocation();
-                GenerateWire(currentMap, xCurrent, yCurrent, "Wire", null);
+                //GenerateWire(currentMap, xCurrent, yCurrent, "Wire", null);
+                view.RPC("GenerateWire", RpcTarget.All, currentMap, xCurrent, yCurrent, "Wire", photonViewID);
             }
         }
         else if (gameManager.PlayGridList[currentMap][xTarget, yTarget].tag == "Teleporter")
@@ -572,11 +577,13 @@ public class Step : MonoBehaviourPun
 
                     if (gameManager.PlayGridList[currentMap][xCurrent, yCurrent].tag == "Bridge")
                     {
-                        GenerateWire(currentMap, xCurrent, yCurrent, "Bridge", null);
+                        //GenerateWire(currentMap, xCurrent, yCurrent, "Bridge", null);
+                        view.RPC("GenerateWire", RpcTarget.All, currentMap, xCurrent, yCurrent, "Bridge", photonViewID);
                     }
                     else
                     {
-                        GenerateWire(currentMap, xCurrent, yCurrent, "Wire", null);
+                        //GenerateWire(currentMap, xCurrent, yCurrent, "Wire", null);
+                        view.RPC("GenerateWire", RpcTarget.All, currentMap, xCurrent, yCurrent, "Wire", photonViewID);
                     }
 
                     if (gameManager.PlayGridList[tempCurrentMap][xTarget, yTarget].tag == "Socket")
@@ -586,7 +593,8 @@ public class Step : MonoBehaviourPun
                         {
                             //socket.ChangePlayerAttrEndPoint(playerScript);
                             view.RPC("CallChangePlayerAttrEndPoint", RpcTarget.All, currentMap, xTarget, yTarget, photonViewID);
-                            GenerateWire(tempCurrentMap, xCurrent, yCurrent, "Wire", null);
+                            //GenerateWire(tempCurrentMap, xCurrent, yCurrent, "Wire", null);
+                            view.RPC("GenerateWire", RpcTarget.All, tempCurrentMap, xCurrent, yCurrent, "Wire", photonViewID);
                             gameManager.Score++;
                         }
                         else if (socket.CheckSocketStartPoint(playerScript))
@@ -601,11 +609,13 @@ public class Step : MonoBehaviourPun
                     UpdateLocation();
                     if (gameManager.PlayGridList[currentMap][xCurrent, yCurrent].tag == "Bridge")
                     {
-                        GenerateWire(currentMap, xCurrent, yCurrent, "Bridge", null);
+                        //GenerateWire(currentMap, xCurrent, yCurrent, "Bridge", null);
+                        view.RPC("GenerateWire", RpcTarget.All, currentMap, xCurrent, yCurrent, "Bridge", photonViewID);
                     }
                     else
                     {
-                        GenerateWire(currentMap, xCurrent, yCurrent, "Wire", null);
+                        //GenerateWire(currentMap, xCurrent, yCurrent, "Wire", null);
+                        view.RPC("GenerateWire", RpcTarget.All, currentMap, xCurrent, yCurrent, "Wire", photonViewID);
                     }
                 }
             }
@@ -621,11 +631,13 @@ public class Step : MonoBehaviourPun
                 UpdateLocation();
                 if (gameManager.PlayGridList[currentMap][xCurrent, yCurrent].tag == "Bridge")
                 {
-                    GenerateWire(currentMap, xCurrent, yCurrent, "Bridge", null);
+                    //GenerateWire(currentMap, xCurrent, yCurrent, "Bridge", null);
+                    view.RPC("GenerateWire", RpcTarget.All, currentMap, xCurrent, yCurrent, "Bridge", photonViewID);
                 }
                 else
                 {
-                    GenerateWire(currentMap, xCurrent, yCurrent, "Wire", null);
+                    //GenerateWire(currentMap, xCurrent, yCurrent, "Wire", null);
+                    view.RPC("GenerateWire", RpcTarget.All, currentMap, xCurrent, yCurrent, "Wire", photonViewID);
                 }
             }
         }
@@ -635,7 +647,7 @@ public class Step : MonoBehaviourPun
             if (gameManager.PlayGridList[currentMap][xCurrent, yCurrent].tag == "Bridge")
             {
                 Bridge bridge = gameManager.PlayGridList[currentMap][xCurrent, yCurrent].GetComponent<Bridge>();
-                bridge.CheckOpacity(playerScript, GetPreviousMove());
+                bridge.CheckOpacity(playerScript, playerScript.PreviousMove);
             }
         }
         return totalCheck;
@@ -652,16 +664,6 @@ public class Step : MonoBehaviourPun
         {
             enableMove = true;
         }
-    }
-
-    private string GetPreviousMove()
-    {
-        return previousMove;
-    }
-
-    private void SetPreviousMove(string move)
-    {
-        previousMove = move;
     }
 
     private void StopStepOnIce()

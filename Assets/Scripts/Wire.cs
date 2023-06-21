@@ -21,7 +21,7 @@ public class Wire : MonoBehaviour
         wireSprites[0] = Resources.Load<Sprite>("Sprites/Wire/straight");
         wireSprites[1] = Resources.Load<Sprite>("Sprites/Wire/curve");
         wireSprites[2] = Resources.Load<Sprite>("Sprites/Wire/cap");
-        GameManager gameManager = new GameManager();   
+        GameManager gameManager = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameManager>();
         wireInstance = gameManager.GetPrefabByName("Wire");
     }
 
@@ -145,8 +145,8 @@ public class Wire : MonoBehaviour
     public void RenderWire(Vector2 renderPosition, int pipeTypeIndex, int wireRotationIndex, string handleWireColor)
     {
         // Optionally, you can specify a position and rotation for the instance
-        //wireClone = Instantiate(wireInstance, renderPosition, Quaternion.identity);
-        wireClone = PhotonNetwork.Instantiate(wireInstance.name, renderPosition, Quaternion.identity);
+        wireClone = Instantiate(wireInstance, renderPosition, Quaternion.identity);
+        //wireClone = PhotonNetwork.Instantiate(wireInstance.name, renderPosition, Quaternion.identity);
         wireClone.name = "Wire" + handleWireColor;
 
         SpriteRenderer spriteRenderer = wireClone.GetComponent<SpriteRenderer>();
