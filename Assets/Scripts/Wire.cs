@@ -25,7 +25,7 @@ public class Wire : MonoBehaviour
         wireInstance = gameManager.GetPrefabByName("Wire");
     }
 
-    public void GenerateWire(Player player, string previousMove)
+    public void GenerateWire(Player player)
     {
         if (player.TempNextKey == "Right")
         {
@@ -41,15 +41,15 @@ public class Wire : MonoBehaviour
             }
             else
             {
-                if (previousMove == "Right")
+                if (player.PreviousMove == "Right")
                 {
                     RenderWire(player.CurrentPosition, 0, 0, player.HandleWireColor);
                 }
-                else if (previousMove == "Down")
+                else if (player.PreviousMove == "Down")
                 {
                     RenderWire(player.CurrentPosition, 1, 0, player.HandleWireColor);
                 }
-                else if (previousMove == "Up")
+                else if (player.PreviousMove == "Up")
                 {
                     RenderWire(player.CurrentPosition, 1, 3, player.HandleWireColor);
                 }
@@ -70,15 +70,15 @@ public class Wire : MonoBehaviour
             }
             else
             {
-                if (previousMove == "Left")
+                if (player.PreviousMove == "Left")
                 {
                     RenderWire(player.CurrentPosition, 0, 0, player.HandleWireColor);
                 }
-                else if (previousMove == "Down")
+                else if (player.PreviousMove == "Down")
                 {
                     RenderWire(player.CurrentPosition, 1, 1, player.HandleWireColor);
                 }
-                else if (previousMove == "Up")
+                else if (player.PreviousMove == "Up")
                 {
                     RenderWire(player.CurrentPosition, 1, 2, player.HandleWireColor);
                 }
@@ -98,15 +98,15 @@ public class Wire : MonoBehaviour
             }
             else
             {
-                if (previousMove == "Up")
+                if (player.PreviousMove == "Up")
                 {
                     RenderWire(player.CurrentPosition, 0, 1, player.HandleWireColor);
                 }
-                else if (previousMove == "Left")
+                else if (player.PreviousMove == "Left")
                 {
                     RenderWire(player.CurrentPosition, 1, 0, player.HandleWireColor);
                 }
-                else if (previousMove == "Right")
+                else if (player.PreviousMove == "Right")
                 {
                     RenderWire(player.CurrentPosition, 1, 1, player.HandleWireColor);
                 }
@@ -126,15 +126,15 @@ public class Wire : MonoBehaviour
             }
             else
             {
-                if (previousMove == "Down")
+                if (player.PreviousMove == "Down")
                 {
                     RenderWire(player.CurrentPosition, 0, 1, player.HandleWireColor);
                 }
-                else if (previousMove == "Left")
+                else if (player.PreviousMove == "Left")
                 {
                     RenderWire(player.CurrentPosition, 1, 3, player.HandleWireColor);
                 }
-                else if (previousMove == "Right")
+                else if (player.PreviousMove == "Right")
                 {
                     RenderWire(player.CurrentPosition, 1, 2, player.HandleWireColor);
                 }

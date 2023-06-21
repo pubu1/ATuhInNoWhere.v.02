@@ -199,18 +199,19 @@ public class Step : MonoBehaviourPun
             if (photonTargetID == 1) targetP = gameManager.PlayerM.GetComponent<Player>();
             else targetP = gameManager.PlayerF.GetComponent<Player>();
         }
+        Debug.Log("TargetP-------: " + targetP);
         if (type == "Bridge" && !targetP.IsNotPickWire)
         {
             Wire w = new Wire();
             w.Start();
             w.wireZAxis = gameManager.PlayGridList[mapIndex][xAxis, yAxis].GetComponent<Bridge>().GetZAxisWire(playerScript.PreviousMove);
-            w.GenerateWire(targetP, playerScript.PreviousMove);
+            w.GenerateWire(targetP);
         }
         else if (type == "Wire" && !targetP.IsNotPickWire || targetP.IsAtSocket)
         {
             Wire w = new Wire();
             w.Start();
-            w.GenerateWire(targetP, playerScript.PreviousMove);
+            w.GenerateWire(targetP);
 
             GameObject wire = w.GetWire();
             Vector2 wirePosition = new Vector2(wire.transform.position.x, wire.transform.position.y);
