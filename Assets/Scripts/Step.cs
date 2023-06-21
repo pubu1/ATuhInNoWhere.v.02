@@ -93,6 +93,17 @@ public class Step : MonoBehaviourPun
     }
 
     [PunRPC]
+    private void SetPreviousMove(int photonTargetID, string targetPreviousMove) {
+        Player targetP = playerScript;
+        if (photonTargetID != photonViewID)
+        {
+            if (photonTargetID == 1) targetP = gameManager.PlayerM.GetComponent<Player>();
+            else targetP = gameManager.PlayerF.GetComponent<Player>();
+        }
+        targetP.PreviousMove = targetPreviousMove;
+    }
+
+    [PunRPC]
     private void GenerateWire(int mapIndex, int xAxis, int yAxis, string type, int photonTargetID)
     {
         Player targetP = playerScript;
@@ -112,6 +123,7 @@ public class Step : MonoBehaviourPun
         else if (type == "Wire" && !targetP.IsNotPickWire || targetP.IsAtSocket)
         {
             Debug.Log("I found wirespawner: " + wireSpawner);
+            Debug.Log("TargetP-------: " + targetP.TempNextKey);
             GameObject w = wireSpawner.GenerateWire(targetP);
             Debug.Log(w + " is found wire!");
 
@@ -150,7 +162,8 @@ public class Step : MonoBehaviourPun
                 playerScript.TempNextKey = "Up";
                 if (CanStepToPosition(playerScript.TempCurrentPosition, playerScript.TempTargetPosition, playerScript.TempNextKey))
                 {
-                    playerScript.PreviousMove = "Up";
+                    //playerScript.PreviousMove = "Up";
+                    view.RPC("SetPreviousMove", RpcTarget.All, photonViewID, "Up");
                 }
             }
             else if (!isStepOnIce && Input.GetKeyDown(KeyCode.DownArrow) && enableMove && !isPauseGame)
@@ -160,7 +173,8 @@ public class Step : MonoBehaviourPun
                 playerScript.TempNextKey = "Down";
                 if (CanStepToPosition(playerScript.TempCurrentPosition, playerScript.TempTargetPosition, playerScript.TempNextKey))
                 {
-                    playerScript.PreviousMove = "Down";
+                    //playerScript.PreviousMove = "Down";
+                    view.RPC("SetPreviousMove", RpcTarget.All, photonViewID, "Down");
                 }
             }
             else if (!isStepOnIce && Input.GetKeyDown(KeyCode.LeftArrow) && enableMove && !isPauseGame)
@@ -170,7 +184,8 @@ public class Step : MonoBehaviourPun
                 playerScript.TempNextKey = "Left";
                 if (CanStepToPosition(playerScript.TempCurrentPosition, playerScript.TempTargetPosition, playerScript.TempNextKey))
                 {
-                    playerScript.PreviousMove = "Left";
+                    //playerScript.PreviousMove = "Left";
+                    view.RPC("SetPreviousMove", RpcTarget.All, photonViewID, "Left");
                 }
                 this.transform.localScale = new Vector3(-0.5f, 0.5f, 0.5f);
             }
@@ -181,7 +196,8 @@ public class Step : MonoBehaviourPun
                 playerScript.TempNextKey = "Right";
                 if (CanStepToPosition(playerScript.TempCurrentPosition, playerScript.TempTargetPosition, playerScript.TempNextKey))
                 {
-                    playerScript.PreviousMove = "Right";
+                    //playerScript.PreviousMove = "Right";
+                    view.RPC("SetPreviousMove", RpcTarget.All, photonViewID, "Right");
                 }
                 this.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
             }
@@ -207,7 +223,7 @@ public class Step : MonoBehaviourPun
 
                 if (CanStepToPosition(playerScript.TempCurrentPosition, playerScript.TempTargetPosition, playerScript.PreviousMove))
                 {
-                    playerScript.PreviousMove = playerScript.PreviousMove;
+                    //playerScript.PreviousMove = playerScript.PreviousMove;
                 }
                 else
                 {
