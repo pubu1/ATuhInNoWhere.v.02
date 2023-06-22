@@ -155,7 +155,7 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
     // enter the lobby_dual after create a room successfully
     public override void OnJoinedRoom()
     {
-        PhotonNetwork.LoadLevel("Lobby_Dual");
+        PhotonNetwork.LoadLevel("Game");
     }
 
     // after enter the text in canvas joinRoom, click enter to enter the room
