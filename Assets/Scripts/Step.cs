@@ -9,6 +9,8 @@ using UnityEngine;
 public class Step : MonoBehaviourPun
 {
     private static GameManager gameManager;
+    private static Wire wireSpawner;
+
     [SerializeField] private float moveSteps = 1.0f;
     [SerializeField] private float moveSpeed = 5.0f;
     private GameObject player;
@@ -32,6 +34,8 @@ public class Step : MonoBehaviourPun
     // Start is called before the first frame update
     void Start()
     {
+        wireSpawner = GameObject.Find("WireSpawner").GetComponent<Wire>();
+        Debug.Log(wireSpawner + " is found!");
         photonViewID = PhotonNetwork.LocalPlayer.ActorNumber;
         gameManager = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameManager>();
         Debug.Log("Photon View ID: " + photonViewID);
@@ -119,12 +123,12 @@ public class Step : MonoBehaviourPun
         }
         else if (type == "Wire" && !targetP.IsNotPickWire || targetP.IsAtSocket)
         {
-            Wire w = new Wire();
-            w.Start();
-            w.GenerateWire(targetP);
-            GameObject wire = w.GetWire();
+            Debug.Log("I found wirespawner: " + wireSpawner);
+            Debug.Log("TargetP-------: " + targetP.TempNextKey);
+            GameObject w = wireSpawner.GenerateWire(targetP);
+            Debug.Log(w + " is found wire!");
 
-            Vector2 wirePosition = new Vector2(wire.transform.position.x, wire.transform.position.y);
+            Vector2 wirePosition = new Vector2(w.transform.position.x, w.transform.position.y);
             gameManager.WireMap[wirePosition] = true;
         }
         // else if (type == "Dimension" && !playerScript.IsNotPickWire)
