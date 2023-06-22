@@ -142,7 +142,7 @@ public class Step : MonoBehaviourPun
 
     private void Update()
     {
-        if (view.IsMine && player != null)
+        if (view.IsMine || !PhotonNetwork.IsConnected)
         {
             //check player move
             if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.RightArrow))

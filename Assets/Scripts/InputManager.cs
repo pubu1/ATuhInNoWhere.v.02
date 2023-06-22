@@ -6,15 +6,19 @@ using UnityEngine;
 
 public class InputManager
 {
-    public string fileName = "input.txt";
+    public PlayerMove playerMove;
+    public static string fileName { get; set; }
+
     public string[,] inputMap;
     private List<string[,]> listMap;
 
     public List<string>[] listDimensionIn { get; set; }
     public List<int>[] ListDoor { get; set; }
 
+
     public List<string[,]> LoadGridFromFile()
     {
+        
         listMap = new List<string[,]>();
         string folderPath = Path.Combine(Application.dataPath, "..", "CustomMap");
         string filePath = Path.Combine(folderPath, fileName);
@@ -25,10 +29,10 @@ public class InputManager
         int mapCnt = int.Parse(lines[currentLineIndex++]);
         int btnCnt = 0;
 
-/*        foreach (string line in lines)
-        {
-            Debug.Log(line);
-        }*/
+        /*        foreach (string line in lines)
+                {
+                    Debug.Log(line);
+                }*/
         //read all Maps
         for (int _ = 0; _ < mapCnt; ++_)
         {
@@ -86,11 +90,12 @@ public class InputManager
                 {
                     int dimensionIn = int.Parse(description[0]);
                     string direction = description[1];
-/*                    int x = int.Parse(description[2]);
-                    int y = int.Parse(description[3]);
-                    direction += " " + x + " " + y;*/
+                    /*                    int x = int.Parse(description[2]);
+                                        int y = int.Parse(description[3]);
+                                        direction += " " + x + " " + y;*/
                     listDimensionIn[dimensionIn].Add(direction);
-                } else if (attribute == "DoorButton")
+                }
+                else if (attribute == "DoorButton")
                 {
                     int btn = int.Parse(description[0]);
                     int door = int.Parse(description[1]);

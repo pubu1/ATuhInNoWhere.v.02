@@ -66,13 +66,11 @@ public class GameManager : MonoBehaviourPunCallbacks
         IsCameraTargetPlayer = false;
         inputList = inputManager.LoadGridFromFile();
         prefabList = FindAllPrefabs();
-        // if (PhotonNetwork.IsConnected)
+        //Remember to check Single Player
+        // if (PhotonNetwork.IsConnected || !PhotonNetwork.IsConnected)
         // {
-        //     if (PhotonNetwork.CurrentRoom.PlayerCount == 2)
-        //     {
-        //         //InitializeMap();
-        //         view.RPC("InitializeMapRPC", RpcTarget.All);
-        //     }
+        //     InitializeMap();
+        //     ConnectMap();
         // }
     }
 
@@ -93,21 +91,6 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     }
 
-    // [PunRPC]
-    // public void SetPlayerM(int playerID, int x, int y)
-    // {
-    //     GameObject instantiatedPrefab = InstantiatePlayerM(playerID, x, y);
-    //     instantiatedPrefab.GetComponent<Player>().ID = playerID;
-    //     PlayerM = instantiatedPrefab;
-    // }
-
-    // [PunRPC]
-    // public void SetPlayerF(int playerID, int x, int y)
-    // {
-    //     GameObject instantiatedPrefab = InstantiatePlayerF(playerID, x, y);
-    //     instantiatedPrefab.GetComponent<Player>().ID = playerID;
-    //     PlayerF = instantiatedPrefab;
-    // }
     [PunRPC]
     public void SetPlayerM(int playerID, int x, int y)
     {
@@ -147,13 +130,6 @@ public class GameManager : MonoBehaviourPunCallbacks
         Quaternion rotation = prefab.transform.rotation;
         float z = prefab.transform.position.z;
         GameObject instantiatedPrefab = Instantiate(prefab, new Vector3(x, y, z), rotation) as GameObject;
-        /*Daviz*/
-        // GameObject instantiatedPrefab;
-        // if(prefabName == "Socket"){
-        //     instantiatedPrefab = PhotonNetwork.Instantiate(prefabName, new Vector3(x, y, z), rotation) as GameObject;
-        // } else{
-        //     instantiatedPrefab = Instantiate(prefab, new Vector3(x, y, z), rotation) as GameObject;
-        // }
         return instantiatedPrefab;
     }
 
