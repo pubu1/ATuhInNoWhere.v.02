@@ -291,7 +291,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9199669422492558596, guid: 48b6f52badfea1549bc2b9e11cb3f52f, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -2
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 9199669422492558596, guid: 48b6f52badfea1549bc2b9e11cb3f52f, type: 3}
       propertyPath: m_LocalRotation.w
@@ -324,6 +324,10 @@ PrefabInstance:
     - target: {fileID: 9199669422492558597, guid: 48b6f52badfea1549bc2b9e11cb3f52f, type: 3}
       propertyPath: m_Name
       value: Atuh2
+      objectReference: {fileID: 0}
+    - target: {fileID: 9199669422789126807, guid: 48b6f52badfea1549bc2b9e11cb3f52f, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 48b6f52badfea1549bc2b9e11cb3f52f, type: 3}
@@ -448,7 +452,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 425639780}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
