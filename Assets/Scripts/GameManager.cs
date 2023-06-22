@@ -64,7 +64,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         doorButtonList = new Dictionary<int, GameObject>();
         Score = 0;
         IsCameraTargetPlayer = false;
-        inputList = inputManager.LoadGridFromFile("input.txt");
+        inputList = inputManager.LoadGridFromFile();
         prefabList = FindAllPrefabs();
         //Remember to check Single Player
         // if (PhotonNetwork.IsConnected || !PhotonNetwork.IsConnected)
