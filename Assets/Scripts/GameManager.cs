@@ -64,7 +64,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         doorButtonList = new Dictionary<int, GameObject>();
         Score = 0;
         IsCameraTargetPlayer = false;
-        inputList = inputManager.LoadGridFromFile();
+        inputList = inputManager.LoadGridFromFile("input.txt");
         prefabList = FindAllPrefabs();
         //Remember to check Single Player
         // if (PhotonNetwork.IsConnected || !PhotonNetwork.IsConnected)
@@ -345,8 +345,6 @@ public class GameManager : MonoBehaviourPunCallbacks
         {
             PlayerF.GetComponent<Step>().enabled = true;
         }
-        Debug.Log("Player M in GM: " + PlayerM);
-        Debug.Log("Player F in GM: " + PlayerF);
     }
 
     public List<string> GetPath() { return path; }

@@ -7,7 +7,6 @@ using UnityEngine;
 public class InputManager
 {
     public PlayerMove playerMove;
-    public static string fileName { get; set; }
 
     public string[,] inputMap;
     private List<string[,]> listMap;
@@ -16,9 +15,8 @@ public class InputManager
     public List<int>[] ListDoor { get; set; }
 
 
-    public List<string[,]> LoadGridFromFile()
+    public List<string[,]> LoadGridFromFile(string fileName)
     {
-        
         listMap = new List<string[,]>();
         string folderPath = Path.Combine(Application.dataPath, "..", "CustomMap");
         string filePath = Path.Combine(folderPath, fileName);
