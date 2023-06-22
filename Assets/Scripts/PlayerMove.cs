@@ -67,28 +67,23 @@ public class PlayerMove : MonoBehaviour
 
     }
     private IEnumerator Move()
+{
+    isMove = false;
+    float distanceToMove = Vector2.Distance(startPosition, targetPosition);
+    float moveTime = distanceToMove / moveSpeed;
+    float elapsedTime = 0f;
+
+    while (elapsedTime < moveTime)
     {
-        isMove = false;
-        // Calculate the distance to dash
-        float distanceToMove = Vector2.Distance(startPosition, targetPosition);
+        this.transform.position = Vector2.MoveTowards(this.transform.position, targetPosition, moveSpeed*Time.deltaTime);
 
-        // Calculate the time it will take to complete the dash
-        float moveTime = distanceToMove / moveSpeed;
-        Debug.Log(moveTime);
-        float elapsedTime = 0f;
-
-        while (elapsedTime < moveTime)
-        {
-            // Move the player towards the target position
-            rb.position = Vector2.Lerp(startPosition, targetPosition, elapsedTime / moveTime);
-
-            elapsedTime += Time.deltaTime;
-            yield return null;
-        }
-        // Snap to the target position to ensure accuracy
-        rb.position = targetPosition;
-        isMove = true;
+        elapsedTime += Time.deltaTime;
+        yield return null;
     }
+
+    rb.position = targetPosition;
+    isMove = true;
+}
 
     void CheckTop()
     {
