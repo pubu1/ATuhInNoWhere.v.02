@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1014310740393",
+    "project_id": "community-945be",
+    "storage_bucket": "community-945be.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1014310740393:android:8fe9adf52d0896d960a4b8",
+        "android_client_info": {
+          "package_name": "com.AtuhCompany.ATuh"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1014310740393-njadaplm1748kh456hh6rna44fmc6s61.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBvCIHp09Q6m6CTST1H8IN9wm01TaUQP-Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1014310740393-njadaplm1748kh456hh6rna44fmc6s61.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
