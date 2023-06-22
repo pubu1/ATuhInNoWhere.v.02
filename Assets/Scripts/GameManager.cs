@@ -238,7 +238,7 @@ public class GameManager : MonoBehaviourPunCallbacks
                     }
                     else if (item.Contains("Bridge"))
                     {
-                        string direction = item.Split(':')[1];
+                        string direction = item.Split('_')[1];
                         item = "Bridge";
 
                         GameObject instantiatedPrefab = InstantiatePrefab(item, x + offset, y);
