@@ -19,6 +19,7 @@ public class Step : MonoBehaviourPun
     private bool isPauseGame = false;
     private bool activatePipeEffect = false;
     private bool isStepOnIce = false;
+    private bool isStepOnEscalator = false;
 
     int currentMap;
     int xCurrent;
@@ -142,7 +143,7 @@ public class Step : MonoBehaviourPun
 
     private void Update()
     {
-        if (view.IsMine || !PhotonNetwork.IsConnected)
+        if (view.IsMine && player != null)
         {
             //check player move
             if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.RightArrow))
@@ -193,6 +194,27 @@ public class Step : MonoBehaviourPun
                     view.RPC("SetPreviousMove", RpcTarget.All, photonViewID, "Right");
                 }
                 this.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
+            }
+            else if (isStepOnEscalator && enableMove)
+            {
+                playerScript.TempCurrentPosition = new Vector2(transform.position.x, transform.position.y);
+
+                if (gameManager.PlayGridList[currentMap][xTarget, yTarget].tag == "Escalator")
+                {
+                    Escalator escalator = gameManager.PlayGridList[currentMap][xTarget, yTarget].GetComponent<Escalator>();
+                    playerScript.TempTargetPosition = escalator.GetNextPosition(playerScript);
+                    playerScript.TempNextKey = escalator.Direction;
+                }
+                else
+                {
+                    StopStepOnEscalator();
+                    return;
+                }
+
+                if (CanStepToPosition(playerScript.TempCurrentPosition, playerScript.TempTargetPosition, playerScript.PreviousMove))
+                {
+                    view.RPC("SetPreviousMove", RpcTarget.All, photonViewID, playerScript.TempNextKey);
+                }
             }
             else if (isStepOnIce && enableMove)
             {
@@ -385,7 +407,7 @@ public class Step : MonoBehaviourPun
         if (gameManager.PlayGridList[currentMap][xTarget, yTarget].tag == "Bridge")
         {
             Bridge bridge = gameManager.PlayGridList[currentMap][xTarget, yTarget].GetComponent<Bridge>();
-            totalCheck = bridge.CheckNextStep(bridge, playerScript);
+            totalCheck = bridge.CheckNextStep(playerScript);
             if (totalCheck)
             {
                 view.RPC("UpdateLocation", RpcTarget.All, photonViewID);
@@ -563,7 +585,7 @@ public class Step : MonoBehaviourPun
                 else if (gameManager.PlayGridList[tempCurrentMap][xTarget, yTarget].tag == "Bridge")
                 {
                     Bridge bridge = gameManager.PlayGridList[tempCurrentMap][xTarget, yTarget].GetComponent<Bridge>();
-                    bool changePlayerDefaultZAxis = bridge.CheckNextStep(bridge, playerScript);
+                    bool changePlayerDefaultZAxis = bridge.CheckNextStep(playerScript);
                     this.transform.position = new Vector3(this.transform.position.x, this.transform.position.y, playerScript.DefaultZAxis);
                 }
 
@@ -738,5 +760,14 @@ public class Step : MonoBehaviourPun
     {
         isStepOnIce = false;
         moveSpeed = 5f;
+    }
+
+    private void StopStepOnEscalator()
+    {
+        isStepOnEscalator = false;
+        if (isStepOnIce)
+            moveSpeed = 7f;
+        else
+            moveSpeed = 5f;
     }
 }

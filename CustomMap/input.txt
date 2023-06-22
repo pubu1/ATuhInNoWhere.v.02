@@ -1,4 +1,4 @@
-3
+1
 6 9
 Wall Wall Wall Wall Wall Wall Wall Wall Wall
 Wall Ground Ground Ground PlayerF:1 Ground Socket_Yellow Ground Wall
