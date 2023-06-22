@@ -140,7 +140,7 @@ public class FirebaseAuthenticaton : MonoBehaviour
 
             Debug.LogFormat("{0} You Are Successfully Logged In", user.DisplayName);
 
-            UnityEngine.SceneManagement.SceneManager.LoadScene("Loading");
+            UnityEngine.SceneManagement.SceneManager.LoadScene("PlayMode");
         }
     }
 

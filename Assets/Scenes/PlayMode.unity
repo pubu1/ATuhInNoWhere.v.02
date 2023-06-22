@@ -266,10 +266,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 189558626}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e44c214779c3e204d82d7a63753c7ff9, type: 3}
+  m_Script: {fileID: 11500000, guid: 3f1892e309eef7841b3c087d44ca3056, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetScreenName: PlayMode
+  targetScreenName: Map
 --- !u!1001 &364804271
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -600,10 +600,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 863224256}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e44c214779c3e204d82d7a63753c7ff9, type: 3}
+  m_Script: {fileID: 11500000, guid: 3f1892e309eef7841b3c087d44ca3056, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetScreenName: Map
+  targetScreenName: Loading
 --- !u!1 &1041818433
 GameObject:
   m_ObjectHideFlags: 0

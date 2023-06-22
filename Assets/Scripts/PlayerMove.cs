@@ -126,7 +126,7 @@ public class PlayerMove : MonoBehaviour
     public void LoadSceneByName(string sceneName)
     {
         InputManager.fileName = sceneName + ".txt";
-        if (sceneName == "PlayMode" || sceneName == "Map")
+        if (sceneName == "Loading" || sceneName == "Map")
         {
             SceneManager.LoadScene(sceneName);
         }
