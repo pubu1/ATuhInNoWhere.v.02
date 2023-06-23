@@ -1,14 +1,13 @@
 using TMPro;
-using System.Text;
 using Random = System.Random;
 using Photon.Pun;
 using Photon.Realtime;
 using ExitGames.Client.Photon;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 
 
 public class ChangeRoom : MonoBehaviourPunCallbacks
@@ -139,6 +138,12 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
         
     }
 
+    // enter the lobby_dual after create a room successfully
+    public override void OnJoinedRoom()
+    {
+        PhotonNetwork.LoadLevel("Game");
+    }
+
     // Click join to open the canvas enter the room code
     public void OnClickJoinRoom()
     {
@@ -150,12 +155,6 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
         optionSelectScreen.SetActive(false);
         joinRoomScreen.SetActive(true);
         eventSystem.SetSelectedGameObject(joinPanelButton);
-    }
-
-    // enter the lobby_dual after create a room successfully
-    public override void OnJoinedRoom()
-    {
-        PhotonNetwork.LoadLevel("Game");
     }
 
     // after enter the text in canvas joinRoom, click enter to enter the room
@@ -217,6 +216,11 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
             // Remove the last character from the text
             roomNameJoin.text = currentText.Substring(0, 0);
         }
+    }
+
+    public void OnBacModeScene()
+    {
+        SceneManager.LoadScene("PlayMode");
     }
 
     // return the chooseOptionPanel
