@@ -5,68 +5,29 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 0
-    path: 
-    guid: 00000000000000000000000000000000
-  - enabled: 0
-    path: Assets/Scenes/MainMenu.unity
-    guid: 0175e82583ea69e48b2da902f21c617b
-  - enabled: 0
-    path: 
-    guid: 00000000000000000000000000000000
-  - enabled: 0
-    path: 
-    guid: 00000000000000000000000000000000
-  - enabled: 0
-    path: 
-    guid: 00000000000000000000000000000000
-  - enabled: 0
-    path: 
-    guid: 00000000000000000000000000000000
-  - enabled: 0
-    path: 
-    guid: 00000000000000000000000000000000
-  - enabled: 0
-    path: 
-    guid: 00000000000000000000000000000000
-  - enabled: 0
-    path: 
-    guid: 00000000000000000000000000000000
-  - enabled: 0
-    path: 
-    guid: 00000000000000000000000000000000
-  - enabled: 0
-    path: 
-    guid: 00000000000000000000000000000000
-  - enabled: 0
-    path: 
-    guid: 00000000000000000000000000000000
-  - enabled: 0
-    path: 
-    guid: 00000000000000000000000000000000
-  - enabled: 0
-    path: 
-    guid: 00000000000000000000000000000000
   - enabled: 1
-    path: Assets/Scenes/Loading.unity
-    guid: 05f09e110c855334daeccd3c8da41f38
-  - enabled: 1
-    path: Assets/Scenes/Lobby.unity
-    guid: 6ef0c4e560013534eb0a8503703769f6
-  - enabled: 1
-    path: Assets/Scenes/Game.unity
-    guid: c8bc91634a50d5d438c23817cc91d6de
+    path: Assets/Scenes/Login.unity
+    guid: 6d0c9aef31e783344aaaffd0559ff737
   - enabled: 1
     path: Assets/Scenes/PlayMode.unity
     guid: 89b34736c8207fd41b2b0a48754680bd
   - enabled: 1
+    path: Assets/Scenes/Loading.unity
+    guid: 05f09e110c855334daeccd3c8da41f38
+  - enabled: 1
     path: Assets/Scenes/Map.unity
     guid: 7626c5502f7677645a7c59b01492d291
-  - enabled: 0
-    path: 
-    guid: 00000000000000000000000000000000
+  - enabled: 1
+    path: Assets/Scenes/Lobby.unity
+    guid: 6ef0c4e560013534eb0a8503703769f6
   - enabled: 1
     path: Assets/Scenes/Lobby_Dual.unity
     guid: 4540cfd6652c02343bd45d6fcc4e7d53
+  - enabled: 1
+    path: Assets/Scenes/LoadScreen.unity
+    guid: c77638f4caf65ca47ab926968709c539
+  - enabled: 1
+    path: Assets/Scenes/Game.unity
+    guid: c8bc91634a50d5d438c23817cc91d6de
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: a74a75c3603291e4893a41163f4ca66c, type: 2}
