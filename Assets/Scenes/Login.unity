@@ -1710,7 +1710,7 @@ GameObject:
   - component: {fileID: 342521103}
   - component: {fileID: 342521105}
   m_Layer: 5
-  m_Name: Username
+  m_Name: Email
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2098,9 +2098,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 63fb0c1151ad7c340b48541904dfeb19, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  pvCache: {fileID: 0}
   usernameInput: {fileID: 965056234}
   passwordInput: {fileID: 548011528}
   loginButton: {fileID: 1092986643}
+  connectedToMaster: 0
   errorPopup: {fileID: 2036610758}
 --- !u!1 &418253778
 GameObject:
@@ -3761,7 +3763,7 @@ GameObject:
   - component: {fileID: 965056235}
   - component: {fileID: 965056234}
   m_Layer: 5
-  m_Name: Username
+  m_Name: Email
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4623,7 +4625,6 @@ GameObject:
   - component: {fileID: 1187554283}
   - component: {fileID: 1187554282}
   - component: {fileID: 1187554281}
-  - component: {fileID: 1187554285}
   m_Layer: 5
   m_Name: RegisterUI
   m_TagString: Untagged
@@ -4713,26 +4714,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
---- !u!114 &1187554285
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1187554279}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ae0b7c13d51ed0b468c1857c40432c88, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  usernameInput: {fileID: 342521105}
-  nicknameInput: {fileID: 1595922883}
-  passwordInput: {fileID: 1917263345}
-  confirmPasswordInput: {fileID: 1435246438}
-  registerButton: {fileID: 263608519}
-  errorPopup: {fileID: 2036610758}
-  registerPanel: {fileID: 1187554279}
-  loginPanel: {fileID: 398904325}
 --- !u!1 &1196674026
 GameObject:
   m_ObjectHideFlags: 0
@@ -4950,7 +4931,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Username:'
+  m_text: 'Email:'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 5e312871ffa2f734ea6a44dea5dcf3ad, type: 2}
   m_sharedMaterial: {fileID: 5470026232906179221, guid: 5e312871ffa2f734ea6a44dea5dcf3ad, type: 2}
@@ -5396,7 +5377,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Username:'
+  m_text: 'Email:'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 5e312871ffa2f734ea6a44dea5dcf3ad, type: 2}
   m_sharedMaterial: {fileID: 5470026232906179221, guid: 5e312871ffa2f734ea6a44dea5dcf3ad, type: 2}
