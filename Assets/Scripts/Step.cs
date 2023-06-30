@@ -2,6 +2,7 @@ using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -294,13 +295,13 @@ public class Step : MonoBehaviourPun
             if (photonTargetID == 1)
             {
                 targetP = gameManager.PlayerM.GetComponent<Player>();
-                targetP.CurrentPosition = gameManager.PlayerM.transform.position;
+                targetP.CurrentPosition = new Vector2((float)Math.Round(gameManager.PlayerM.transform.position.x), (float)Math.Round(gameManager.PlayerM.transform.position.y));
                 targetP.TargetPosition = targetP.TempTargetPosition;
             }
             else
             {
                 targetP = gameManager.PlayerF.GetComponent<Player>();
-                targetP.CurrentPosition = gameManager.PlayerF.transform.position;
+                targetP.CurrentPosition = new Vector2((float)Math.Round(gameManager.PlayerF.transform.position.x), (float)Math.Round(gameManager.PlayerF.transform.position.y));
                 targetP.TargetPosition = targetP.TempTargetPosition;
             }
         }
