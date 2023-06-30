@@ -70,6 +70,7 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
         Cursor.visible = false;*/
 
         errorChoosePanelTxt.text = null;
+        roomNameJoin.onValueChanged.AddListener(ValidateInput);
     }
 
     private void Update()
@@ -176,6 +177,34 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
             DisplayErrorText("Not connected to the server!");
         }
 
+    }
+
+    private bool IsValidCharacter(char character)
+    {
+        return character >= '1' && character <= '4';
+    }
+
+    private void ValidateInput(string input)
+    {
+        if (!string.IsNullOrEmpty(input))
+        {
+            if (input.Length > 4)
+            {
+                DisplayErrorText("Please enter a valid room with 4 digits.");
+                roomNameJoin.text = "";
+                return;
+            }
+
+            foreach (char character in input)
+            {
+                if (!IsValidCharacter(character))
+                {
+                    DisplayErrorText("Invalid room number! Please enter a number from 1 to 4.");
+                    roomNameJoin.text = "";
+                    return;
+                }
+            }
+        }
     }
 
     // Call if enter a room fail
