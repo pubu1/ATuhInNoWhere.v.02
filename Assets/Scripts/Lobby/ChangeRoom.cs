@@ -8,7 +8,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
-
+using Firebase;
+using Firebase.Auth;
 
 public class ChangeRoom : MonoBehaviourPunCallbacks
 {
@@ -65,8 +66,8 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
         playerName.text = "";
 
         //lock the cursor 
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        /*Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;*/
 
         errorChoosePanelTxt.text = null;
     }
@@ -75,8 +76,7 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
     {
         if (currSelectButton != null)
         {
-            RectTransform rectTransform = currSelectButton.GetComponent<RectTransform>();
-            rectTransform.localScale = defaultScale;
+            ScaleButton(currSelectButton, defaultScale);
         }
 
         // Update currently selected button
@@ -85,8 +85,7 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
         // Scale the currently selected button
         if (currSelectButton != null)
         {
-            RectTransform rectTransform = currSelectButton.GetComponent<RectTransform>();
-            rectTransform.localScale = selectedScale;
+            ScaleButton(currSelectButton, selectedScale);
         }
     }
 
@@ -149,8 +148,7 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
     {
         // set size of btn to default
         currSelectButton = GetCurrentlySelectedButton();
-        RectTransform rectTransform = currSelectButton.GetComponent<RectTransform>();
-        rectTransform.localScale = defaultScale;
+        ScaleButton(currSelectButton, defaultScale);
 
         optionSelectScreen.SetActive(false);
         joinRoomScreen.SetActive(true);
@@ -279,6 +277,13 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
         StopAllCoroutines();
         errorText.enabled = true; // Ensure the error text is permanently visible
         isFlickering = false;
+    }
+
+    // scale the button
+    private void ScaleButton(Button button, Vector2 scale)
+    {
+        RectTransform rectTransform = button.GetComponent<RectTransform>();
+        rectTransform.localScale = scale;
     }
 
 }
