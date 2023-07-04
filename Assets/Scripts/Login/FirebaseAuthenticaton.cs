@@ -147,6 +147,20 @@ public class FirebaseAuthenticaton : MonoBehaviour
         }
     }
 
+    //Logout Method
+    public void LogOut()
+    {
+        if (auth != null && user != null)
+        {
+            auth.SignOut();
+            //isLoggedIn = false;
+            Debug.Log("Logged out {0}" + user.UserId);
+
+            UnityEngine.SceneManagement.SceneManager.LoadScene("LoginScreen");
+
+        }
+    }
+
     public void Register()
     {
         StartCoroutine(RegisterAsync(nameRegisterField.text, emailRegisterField.text, passwordRegisterField.text, confirmPasswordRegisterField.text));

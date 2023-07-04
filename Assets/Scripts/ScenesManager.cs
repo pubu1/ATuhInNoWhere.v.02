@@ -5,12 +5,14 @@ using UnityEngine.SceneManagement;
 
 public class ScenesManager : MonoBehaviour
 {
+    private FirebaseAuthenticaton authenticaton; 
     public void MoveToScene(int sceneID){
         SceneManager.LoadScene(sceneID);
     }
 
     public void QuitGame() {
         //UnityEditor.EditorApplication.isPlaying = false;
+        authenticaton.LogOut();
         Application.Quit();
     }
 
