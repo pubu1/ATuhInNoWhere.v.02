@@ -316,7 +316,7 @@ public class Step : MonoBehaviourPun
     }
 
     [PunRPC]
-    private void DimensionOutUpdateLocation(int tempTargetPositionX, int tempTargetPositionY, int photonTargetID){
+    private void DimensionOutUpdateLocation(float tempTargetPositionX, float tempTargetPositionY, int photonTargetID){
         Player targetP = playerScript;
         if (photonTargetID != photonViewID)
         {
@@ -362,7 +362,7 @@ public class Step : MonoBehaviourPun
     }
 
     [PunRPC]
-    private void DimensionInUpdateLocation(int tempTargetPositionX, int tempTargetPositionY, int photonTargetID){
+    private void DimensionInUpdateLocation(float tempTargetPositionX, float tempTargetPositionY, int photonTargetID){
         Player targetP = playerScript;
         if (photonTargetID != photonViewID)
         {
