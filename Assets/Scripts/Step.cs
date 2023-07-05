@@ -316,7 +316,7 @@ public class Step : MonoBehaviourPun
     }
 
     [PunRPC]
-    private void DimensionOutUpdateLocation(float tempTargetPositionX, float tempTargetPositionY, int photonTargetID){
+    private void DimensionOutUpdateLocation(float tempTargetPositionX, float tempTargetPositionY, float objX, float objY, int photonTargetID){
         Player targetP = playerScript;
         if (photonTargetID != photonViewID)
         {
@@ -326,7 +326,7 @@ public class Step : MonoBehaviourPun
                 targetP.CurrentPosition = new Vector2((float)Math.Round(gameManager.PlayerM.transform.position.x), (float)Math.Round(gameManager.PlayerM.transform.position.y));
                 targetP.TargetPosition = new Vector2(tempTargetPositionX, tempTargetPositionY);
                 targetP.TempTargetPosition = new Vector2(tempTargetPositionX, tempTargetPositionY);
-                targetP.transform.position = new Vector3(tempTargetPositionX, tempTargetPositionY, targetP.DefaultZAxis);
+                targetP.transform.position = new Vector3(objX, objY, targetP.DefaultZAxis);
             }
             else
             {
@@ -334,14 +334,15 @@ public class Step : MonoBehaviourPun
                 targetP.CurrentPosition = new Vector2((float)Math.Round(gameManager.PlayerF.transform.position.x), (float)Math.Round(gameManager.PlayerF.transform.position.y));
                 targetP.TargetPosition = new Vector2(tempTargetPositionX, tempTargetPositionY);
                 targetP.TempTargetPosition = new Vector2(tempTargetPositionX, tempTargetPositionY);
-                targetP.transform.position = new Vector3(tempTargetPositionX, tempTargetPositionY, targetP.DefaultZAxis);
+                targetP.transform.position = new Vector3(objX, objY, targetP.DefaultZAxis);
             }
         }
         if (view.IsMine)
         {
         playerScript.CurrentPosition = this.transform.position;
         playerScript.TempTargetPosition = new Vector2(tempTargetPositionX, tempTargetPositionY);
-        playerScript.TargetPosition = new Vector3(playerScript.TempTargetPosition.x, playerScript.TempTargetPosition.y, playerScript.DefaultZAxis);
+        playerScript.TargetPosition = new Vector2(tempTargetPositionX, tempTargetPositionY);
+        playerScript.transform.position = new Vector3(objX, objY, playerScript.DefaultZAxis);
 
         GameObject mainCamera = GameObject.Find("Main Camera");
         mainCamera.transform.position = playerScript.TargetPosition;
@@ -366,7 +367,7 @@ public class Step : MonoBehaviourPun
     }
 
     [PunRPC]
-    private void DimensionInUpdateLocation(float tempTargetPositionX, float tempTargetPositionY, int photonTargetID){
+    private void DimensionInUpdateLocation(float tempTargetPositionX, float tempTargetPositionY, float objX, float objY, int photonTargetID){
         Player targetP = playerScript;
         if (photonTargetID != photonViewID)
         {
@@ -376,7 +377,7 @@ public class Step : MonoBehaviourPun
                 targetP.CurrentPosition = new Vector2((float)Math.Round(gameManager.PlayerM.transform.position.x), (float)Math.Round(gameManager.PlayerM.transform.position.y));
                 targetP.TargetPosition = new Vector2(tempTargetPositionX, tempTargetPositionY);
                 targetP.TempTargetPosition = new Vector2(tempTargetPositionX, tempTargetPositionY);
-                targetP.transform.position = new Vector3(tempTargetPositionX, tempTargetPositionY, targetP.DefaultZAxis);
+                targetP.transform.position = new Vector3(objX, objY, targetP.DefaultZAxis);
             }
             else
             {
@@ -384,7 +385,7 @@ public class Step : MonoBehaviourPun
                 targetP.CurrentPosition = new Vector2((float)Math.Round(gameManager.PlayerF.transform.position.x), (float)Math.Round(gameManager.PlayerF.transform.position.y));
                 targetP.TargetPosition = new Vector2(tempTargetPositionX, tempTargetPositionY);
                 targetP.TempTargetPosition = new Vector2(tempTargetPositionX, tempTargetPositionY);
-                targetP.transform.position = new Vector3(tempTargetPositionX, tempTargetPositionY, targetP.DefaultZAxis);
+                targetP.transform.position = new Vector3(objX, objY, targetP.DefaultZAxis);
             }
         }
         if (view.IsMine)
@@ -396,7 +397,8 @@ public class Step : MonoBehaviourPun
 
             playerScript.CurrentPosition = this.transform.position;
             playerScript.TempTargetPosition = new Vector2(tempTargetPositionX, tempTargetPositionY);
-            playerScript.TargetPosition = new Vector3(playerScript.TempTargetPosition.x, playerScript.TempTargetPosition.y, playerScript.DefaultZAxis);
+            playerScript.TargetPosition = new Vector2(tempTargetPositionX, tempTargetPositionY);
+            playerScript.transform.position = new Vector3(objX, objY, playerScript.DefaultZAxis);
 
             GameObject mainCamera = GameObject.Find("Main Camera");
             mainCamera.transform.position = playerScript.TargetPosition;
@@ -522,7 +524,7 @@ public class Step : MonoBehaviourPun
 
             if (totalCheck)
             {
-                view.RPC("DimensionInUpdateLocation", RpcTarget.All, tempTargetPosition.x, tempTargetPosition.y, photonViewID);
+                view.RPC("DimensionInUpdateLocation", RpcTarget.All, tempTargetPosition.x, tempTargetPosition.y, dOut.transform.position.x, dOut.transform.position.y, photonViewID);
                 view.RPC("SetPreviousMove", RpcTarget.All, photonViewID, tempNextKey);
             } else{
                 return false;
@@ -531,6 +533,7 @@ public class Step : MonoBehaviourPun
         else if (gameManager.PlayGridList[currentMap][xTarget, yTarget].tag == "DimensionOut")
         {
             DimensionOut dOut = gameManager.MapGridList[currentMap][xTarget, yTarget].GetComponent<DimensionOut>();
+            DimensionIn dIn = dOut.BaseDimension;
             int objCurrentMap = currentMap;
             int objX = xTarget;
             int objY = yTarget;
@@ -544,7 +547,7 @@ public class Step : MonoBehaviourPun
 
             if (totalCheck)
             {           
-                view.RPC("DimensionOutUpdateLocation", RpcTarget.All, tempTargetPosition.x, tempTargetPosition.y, photonViewID);
+                view.RPC("DimensionOutUpdateLocation", RpcTarget.All, tempTargetPosition.x, tempTargetPosition.y, dIn.transform.position.x, dIn.transform.position.y, photonViewID);
 
                 view.RPC("GenerateWire", RpcTarget.All, objCurrentMap, objX, objY, "Dimension", photonViewID);
                 view.RPC("SetPreviousMove", RpcTarget.All, photonViewID, tempNextKey);    
