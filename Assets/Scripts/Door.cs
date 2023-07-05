@@ -10,7 +10,7 @@ public class Door : MonoBehaviour
 
     private string doorOpenDirection;
 
-    private bool isReverseDoor;
+    public bool isReverseDoor {get; set;}
 
     public bool IsActive{get; set;}  
 
