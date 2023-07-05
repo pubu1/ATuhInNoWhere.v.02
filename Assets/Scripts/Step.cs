@@ -115,31 +115,29 @@ public class Step : MonoBehaviourPun
             if (photonTargetID == 1) targetP = gameManager.PlayerM.GetComponent<Player>();
             else targetP = gameManager.PlayerF.GetComponent<Player>();
         }
-        Debug.Log("TargetP-------: " + targetP);
         if (type == "Bridge" && !targetP.IsNotPickWire)
         {
             // Wire w = new Wire();
             // w.Start();
             // w.wireZAxis = gameManager.PlayGridList[mapIndex][xAxis, yAxis].GetComponent<Bridge>().GetZAxisWire(playerScript.PreviousMove);
             // w.GenerateWire(targetP);
+
+            GameObject w = wireSpawner.GenerateWire(targetP);
+            w.GetComponent<Wire>().wireZAxis = gameManager.PlayGridList[mapIndex][xAxis, yAxis].GetComponent<Bridge>().GetZAxisWire(targetP.PreviousMove);
         }
         else if (type == "Wire" && !targetP.IsNotPickWire || targetP.IsAtSocket)
         {
-            Debug.Log("I found wirespawner: " + wireSpawner);
-            Debug.Log("TargetP-------: " + targetP.TempNextKey);
             GameObject w = wireSpawner.GenerateWire(targetP);
-            Debug.Log(w + " is found wire!");
-
             Vector2 wirePosition = new Vector2(w.transform.position.x, w.transform.position.y);
             gameManager.WireMap[wirePosition] = true;
         }
-        // else if (type == "Dimension" && !playerScript.IsNotPickWire)
-        // {
-        //     int wireRotation = (playerScript.TempNextKey == "Up" || playerScript.TempNextKey == "Down") ? 1 : 0;
-        //     Wire w = new Wire();
-        //     w.Start();
-        //     w.RenderWire(obj.transform.position, 0, wireRotation, playerScript.HandleWireColor);
-        // }
+        else if (type == "Dimension" && !playerScript.IsNotPickWire)
+        {
+            int wireRotation = (targetP.TempNextKey == "Up" || targetP.TempNextKey == "Down") ? 1 : 0;
+
+            Vector2 renderPosition = gameManager.PlayGridList[mapIndex][xAxis, yAxis].transform.position;
+            GameObject w = wireSpawner.RenderWire(renderPosition, 0, wireRotation, targetP.HandleWireColor);
+        }
     }
 
     private void Update()
@@ -449,6 +447,9 @@ public class Step : MonoBehaviourPun
         else if (gameManager.PlayGridList[currentMap][xTarget, yTarget].tag == "DimensionOut")
         {
             DimensionOut dOut = gameManager.MapGridList[currentMap][xTarget, yTarget].GetComponent<DimensionOut>();
+            int objCurrentMap = currentMap;
+            int objX = xTarget;
+            int objY = yTarget;
 
             Vector3 tempTargetPosition = dOut.GetNextPosition(playerScript);
             int tempTargetMap = (int)tempTargetPosition.x / 100;
@@ -484,7 +485,7 @@ public class Step : MonoBehaviourPun
                 }
 
                 currentMap = tempTargetMap;
-                //GenerateWire(0, 0, 0, "Dimension", dOut.gameObject);
+                view.RPC("GenerateWire", RpcTarget.All, objCurrentMap, objX, objY, "Dimension", photonViewID);
                 view.RPC("SetPreviousMove", RpcTarget.All, photonViewID, tempNextKey);
             }
             else{
