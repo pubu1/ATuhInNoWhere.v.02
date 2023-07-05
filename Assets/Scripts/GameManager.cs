@@ -57,6 +57,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     private bool IsCameraTargetPlayer { get; set; }
 
     private PhotonView view;
+    private bool singleMode;
     public void Start()
     {
         view = this.gameObject.GetComponent<PhotonView>();
@@ -66,6 +67,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         IsCameraTargetPlayer = false;
         inputList = inputManager.LoadGridFromFile();
         prefabList = FindAllPrefabs();
+        singleMode = !PhotonNetwork.IsConnected;
         //Remember to check Single Player
         // if (PhotonNetwork.IsConnected || !PhotonNetwork.IsConnected)
         // {
@@ -190,7 +192,7 @@ public class GameManager : MonoBehaviourPunCallbacks
                     GameObject groundObject = Instantiate(ground, new Vector3(x + offset, y, groundZ), groundRotate);
                     string item = randomMap[x, y];
                     GameObject prefab;
-
+                    if (item.Contains("Null")) continue;
                     if (item.Contains("Socket"))
                     {
                         string hexCode = item.Split("_")[1];
@@ -279,9 +281,12 @@ public class GameManager : MonoBehaviourPunCallbacks
                     }
                     else if (item.Contains("Door"))
                     {
+                        
                         int doorID = int.Parse(item.Split(':')[1]);
                         GameObject instantiatedPrefab = InstantiatePrefab(item.Split(':')[0], x + offset, y);
                         instantiatedPrefab.GetComponent<Door>().ID = doorID;
+                        if (item.Contains("Reverse"))
+                            instantiatedPrefab.GetComponent<Door>().isReverseDoor = true;
                         grid[x, y] = instantiatedPrefab;
                     }
                     // else if (item.Contains("EscButton"))
