@@ -131,7 +131,7 @@ public class Step : MonoBehaviourPun
             Vector2 wirePosition = new Vector2(w.transform.position.x, w.transform.position.y);
             gameManager.WireMap[wirePosition] = true;
         }
-        else if (type == "Dimension" && !playerScript.IsNotPickWire)
+        else if (type == "Dimension" && !targetP.IsNotPickWire)
         {
             int wireRotation = (targetP.TempNextKey == "Up" || targetP.TempNextKey == "Down") ? 1 : 0;
 
@@ -315,6 +315,104 @@ public class Step : MonoBehaviourPun
         }
     }
 
+    [PunRPC]
+    private void DimensionOutUpdateLocation(int tempTargetPositionX, int tempTargetPositionY, int photonTargetID){
+        Player targetP = playerScript;
+        if (photonTargetID != photonViewID)
+        {
+            if (photonTargetID == 1)
+            {
+                targetP = gameManager.PlayerM.GetComponent<Player>();
+                targetP.CurrentPosition = new Vector2((float)Math.Round(gameManager.PlayerM.transform.position.x), (float)Math.Round(gameManager.PlayerM.transform.position.y));
+                targetP.TargetPosition = new Vector2(tempTargetPositionX, tempTargetPositionY);
+                targetP.TempTargetPosition = new Vector2(tempTargetPositionX, tempTargetPositionY);
+                targetP.transform.position = new Vector3(tempTargetPositionX, tempTargetPositionY, targetP.DefaultZAxis);
+            }
+            else
+            {
+                targetP = gameManager.PlayerF.GetComponent<Player>();
+                targetP.CurrentPosition = new Vector2((float)Math.Round(gameManager.PlayerF.transform.position.x), (float)Math.Round(gameManager.PlayerF.transform.position.y));
+                targetP.TargetPosition = new Vector2(tempTargetPositionX, tempTargetPositionY);
+                targetP.TempTargetPosition = new Vector2(tempTargetPositionX, tempTargetPositionY);
+                targetP.transform.position = new Vector3(tempTargetPositionX, tempTargetPositionY, targetP.DefaultZAxis);
+            }
+        }
+        if (view.IsMine)
+        {
+        GameObject mainCamera = GameObject.Find("Main Camera");
+        mainCamera.transform.position = playerScript.TargetPosition;
+
+        int tempTargetMap = (int)playerScript.TargetPosition.x / 100;
+        xCurrent = (int)(playerScript.CurrentPosition.x % 100);
+        yCurrent = (int)(playerScript.CurrentPosition.y);
+        xTarget = (int)(playerScript.TargetPosition.x % 100);
+        yTarget = (int)(playerScript.TargetPosition.y);
+
+
+        if (gameManager.PlayGridList[currentMap][xCurrent, yCurrent].tag == "Bridge")
+        {
+            view.RPC("GenerateWire", RpcTarget.All, currentMap, xCurrent, yCurrent, "Bridge", photonViewID);
+        }
+        else
+        {
+            view.RPC("GenerateWire", RpcTarget.All, currentMap, xCurrent, yCurrent, "Wire", photonViewID);
+        }
+        currentMap = tempTargetMap;       
+        }       
+    }
+
+    [PunRPC]
+    private void DimensionInUpdateLocation(int tempTargetPositionX, int tempTargetPositionY, int photonTargetID){
+        Player targetP = playerScript;
+        if (photonTargetID != photonViewID)
+        {
+            if (photonTargetID == 1)
+            {
+                targetP = gameManager.PlayerM.GetComponent<Player>();
+                targetP.CurrentPosition = new Vector2((float)Math.Round(gameManager.PlayerM.transform.position.x), (float)Math.Round(gameManager.PlayerM.transform.position.y));
+                targetP.TargetPosition = new Vector2(tempTargetPositionX, tempTargetPositionY);
+                targetP.TempTargetPosition = new Vector2(tempTargetPositionX, tempTargetPositionY);
+                targetP.transform.position = new Vector3(tempTargetPositionX, tempTargetPositionY, targetP.DefaultZAxis);
+            }
+            else
+            {
+                targetP = gameManager.PlayerF.GetComponent<Player>();
+                targetP.CurrentPosition = new Vector2((float)Math.Round(gameManager.PlayerF.transform.position.x), (float)Math.Round(gameManager.PlayerF.transform.position.y));
+                targetP.TargetPosition = new Vector2(tempTargetPositionX, tempTargetPositionY);
+                targetP.TempTargetPosition = new Vector2(tempTargetPositionX, tempTargetPositionY);
+                targetP.transform.position = new Vector3(tempTargetPositionX, tempTargetPositionY, targetP.DefaultZAxis);
+            }
+        }
+        if (view.IsMine)
+        {
+            // playerScript.CurrentPosition = playerScript.transform.position;
+            // playerScript.TempTargetPosition = tempTargetPosition;
+            // playerScript.TargetPosition = tempTargetPosition;
+            // playerScript.transform.position = new Vector3(dOut.transform.position.x, dOut.transform.position.y, playerScript.DefaultZAxis);
+
+            GameObject mainCamera = GameObject.Find("Main Camera");
+            mainCamera.transform.position = playerScript.TargetPosition;
+
+            int tempTargetMap = (int)playerScript.TargetPosition.x / 100;
+            xCurrent = (int)(playerScript.CurrentPosition.x % 100);
+            yCurrent = (int)(playerScript.CurrentPosition.y);
+            xTarget = (int)(playerScript.TargetPosition.x % 100);
+            yTarget = (int)(playerScript.TargetPosition.y);
+    
+
+            if (gameManager.PlayGridList[currentMap][xCurrent, yCurrent].tag == "Bridge")
+            {
+                view.RPC("GenerateWire", RpcTarget.All, currentMap, xCurrent, yCurrent, "Bridge", photonViewID);
+            }
+            else
+            {
+                view.RPC("GenerateWire", RpcTarget.All, currentMap, xCurrent, yCurrent, "Wire", photonViewID);
+            }           
+            currentMap = tempTargetMap;
+        }
+
+    }
+
     private bool CanStepToPosition(Vector2 currentPosition, Vector2 targetPosition, string tempNextKey)
     {
         bool totalCheck = true;
@@ -416,30 +514,8 @@ public class Step : MonoBehaviourPun
 
             if (totalCheck)
             {
-                playerScript.CurrentPosition = playerScript.transform.position;
-                playerScript.TempTargetPosition = tempTargetPosition;
-                playerScript.TargetPosition = tempTargetPosition;
-                playerScript.transform.position = new Vector3(dOut.transform.position.x, dOut.transform.position.y, playerScript.DefaultZAxis);
-
-                GameObject mainCamera = GameObject.Find("Main Camera");
-                mainCamera.transform.position = playerScript.TargetPosition;
-
-                xCurrent = (int)(playerScript.CurrentPosition.x % 100);
-                yCurrent = (int)(playerScript.CurrentPosition.y);
-                xTarget = (int)(playerScript.TargetPosition.x % 100);
-                yTarget = (int)(playerScript.TargetPosition.y);
-
-                if (gameManager.PlayGridList[currentMap][xCurrent, yCurrent].tag == "Bridge")
-                {
-                    view.RPC("GenerateWire", RpcTarget.All, currentMap, xCurrent, yCurrent, "Bridge", photonViewID);
-                }
-                else
-                {
-                    view.RPC("GenerateWire", RpcTarget.All, currentMap, xCurrent, yCurrent, "Wire", photonViewID);
-                }
-
+                view.RPC("DimensionInUpdateLocation", RpcTarget.All, tempTargetPosition.x, tempTargetPosition.y, photonViewID);
                 view.RPC("SetPreviousMove", RpcTarget.All, photonViewID, tempNextKey);
-                currentMap = tempTargetMap;
             } else{
                 return false;
             }
@@ -459,34 +535,11 @@ public class Step : MonoBehaviourPun
             totalCheck = dOut.CheckNextStep(playerScript, gameManager.PlayGridList[tempTargetMap][tempXTarget, tempYTarget], gameManager.WireMap);
 
             if (totalCheck)
-            {
-                playerScript.CurrentPosition = playerScript.transform.position;
-                playerScript.TempTargetPosition = tempTargetPosition;
-                playerScript.TargetPosition = tempTargetPosition;
-                playerScript.transform.position = new Vector3(dOut.BaseDimension.transform.position.x, dOut.BaseDimension.transform.position.y, playerScript.DefaultZAxis);
+            {           
+                view.RPC("DimensionOutUpdateLocation", RpcTarget.All, tempTargetPosition.x, tempTargetPosition.y, photonViewID);
 
-                GameObject mainCamera = GameObject.Find("Main Camera");
-                mainCamera.transform.position = playerScript.TargetPosition;
-
-                tempTargetMap = (int)playerScript.TargetPosition.x / 100;
-                xCurrent = (int)(playerScript.CurrentPosition.x % 100);
-                yCurrent = (int)(playerScript.CurrentPosition.y);
-                xTarget = (int)(playerScript.TargetPosition.x % 100);
-                yTarget = (int)(playerScript.TargetPosition.y);
-
-
-                if (gameManager.PlayGridList[currentMap][xCurrent, yCurrent].tag == "Bridge")
-                {
-                    view.RPC("GenerateWire", RpcTarget.All, currentMap, xCurrent, yCurrent, "Bridge", photonViewID);
-                }
-                else
-                {
-                    view.RPC("GenerateWire", RpcTarget.All, currentMap, xCurrent, yCurrent, "Wire", photonViewID);
-                }
-
-                currentMap = tempTargetMap;
                 view.RPC("GenerateWire", RpcTarget.All, objCurrentMap, objX, objY, "Dimension", photonViewID);
-                view.RPC("SetPreviousMove", RpcTarget.All, photonViewID, tempNextKey);
+                view.RPC("SetPreviousMove", RpcTarget.All, photonViewID, tempNextKey);    
             }
             else{
                 return false;
