@@ -339,6 +339,9 @@ public class Step : MonoBehaviourPun
         }
         if (view.IsMine)
         {
+        playerScript.CurrentPosition = this.transform.position;
+        playerScript.TargetPosition = new Vector3(tempTargetPositionX, tempTargetPositionY, playerScript.DefaultZAxis);
+
         GameObject mainCamera = GameObject.Find("Main Camera");
         mainCamera.transform.position = playerScript.TargetPosition;
 
@@ -389,6 +392,9 @@ public class Step : MonoBehaviourPun
             // playerScript.TempTargetPosition = tempTargetPosition;
             // playerScript.TargetPosition = tempTargetPosition;
             // playerScript.transform.position = new Vector3(dOut.transform.position.x, dOut.transform.position.y, playerScript.DefaultZAxis);
+
+            playerScript.CurrentPosition = this.transform.position;
+            playerScript.TargetPosition = new Vector3(tempTargetPositionX, tempTargetPositionY, playerScript.DefaultZAxis);
 
             GameObject mainCamera = GameObject.Find("Main Camera");
             mainCamera.transform.position = playerScript.TargetPosition;
