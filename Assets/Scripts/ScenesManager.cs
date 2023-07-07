@@ -12,7 +12,8 @@ public class ScenesManager : MonoBehaviour
 
     public void QuitGame() {
         //UnityEditor.EditorApplication.isPlaying = false;
-        authenticaton.LogOut();
+        //authenticaton.LogOut();
+        Debug.Log("Exit the Game!");
         Application.Quit();
     }
 

@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using Firebase;
 using Firebase.Auth;
 using TMPro;
+using Firebase.Database;
 
 public class FirebaseAuthenticaton : MonoBehaviour
 {
@@ -16,6 +17,8 @@ public class FirebaseAuthenticaton : MonoBehaviour
     public DependencyStatus dependencyStatus;
     public FirebaseAuth auth;
     public FirebaseUser user;
+    public DatabaseReference DBreference;
+
 
     // Login Variables
     [Space]
@@ -57,13 +60,21 @@ public class FirebaseAuthenticaton : MonoBehaviour
         });
     }
 
+    //Clear the login feilds
+    public void ClearLoginFeilds()
+    {
+        emailLoginField.text = "";
+        passwordLoginField.text = "";
+    }
+
     void InitializeFirebase()
     {
         //Set the default instance object
         auth = FirebaseAuth.DefaultInstance;
 
-        auth.StateChanged += AuthStateChanged;
-        AuthStateChanged(this, null);
+        //auth.StateChanged += AuthStateChanged;
+        //AuthStateChanged(this, null);
+        DBreference = FirebaseDatabase.DefaultInstance.RootReference;
     }
 
     // Track state changes of the auth object.
@@ -89,6 +100,7 @@ public class FirebaseAuthenticaton : MonoBehaviour
 
     public void Login()
     {
+        //Call the login coroutine passing the email and password
         StartCoroutine(LoginAsync(emailLoginField.text, passwordLoginField.text));
     }
 
@@ -134,35 +146,37 @@ public class FirebaseAuthenticaton : MonoBehaviour
                     errorPopup.ShowPopup("Something was wrong... ");
                     break;
             }
-
             Debug.Log(failedMessage);
         }
         else
         {
+            // User is logged in now
             user = loginTask.Result.User;
 
             Debug.LogFormat("{0} You Are Successfully Logged In", user.DisplayName);
-
-            UnityEngine.SceneManagement.SceneManager.LoadScene("PlayMode");
+            
+            //UnityEngine.SceneManagement.SceneManager.LoadScene("PlayMode");
         }
     }
 
     //Logout Method
     public void LogOut()
     {
-        if (auth != null && user != null)
-        {
+       
             auth.SignOut();
             //isLoggedIn = false;
             Debug.Log("Logged out {0}" + user.UserId);
+            loginPanel.SetActive(true);
+            ClearLoginFeilds();
+            
+            //UnityEngine.SceneManagement.SceneManager.LoadScene("LoginScreen");
 
-            UnityEngine.SceneManagement.SceneManager.LoadScene("LoginScreen");
-
-        }
+        
     }
 
     public void Register()
     {
+        //Call the register coroutine passing the email and password
         StartCoroutine(RegisterAsync(nameRegisterField.text, emailRegisterField.text, passwordRegisterField.text, confirmPasswordRegisterField.text));
     }
 

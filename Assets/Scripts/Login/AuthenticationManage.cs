@@ -6,7 +6,7 @@ using Firebase.Auth;
 using TMPro;
 using Firebase.Database;
 
-public class AuthenticationManage : MonoBehaviour
+public class Authentication : MonoBehaviour
 {
     [Header("Panel")]
     public GameObject loginPanel;
@@ -17,6 +17,8 @@ public class AuthenticationManage : MonoBehaviour
     public DependencyStatus dependencyStatus;
     public FirebaseAuth auth;
     public FirebaseUser user;
+    public DatabaseReference DBreference;
+
 
     // Login Variables
     [Space]
@@ -33,11 +35,11 @@ public class AuthenticationManage : MonoBehaviour
     public TMP_InputField confirmPasswordRegisterField;
     public ErrorPopup errorPopup;
 
-    private bool isLoggedIn = false;
-
 
     private void Start()
     {
+        //loginPanel.SetActive(false);
+        //RegisterPanel.SetActive(true);
     }
 
     private void Awake()
@@ -84,44 +86,12 @@ public class AuthenticationManage : MonoBehaviour
             if (signedIn)
             {
                 Debug.Log("Signed in " + user.UserId);
-                if (isLoggedIn)
-                {
-                    LogOut();
-                }
             }
         }
     }
 
-    void OnDestroy()
-    {
-        auth.StateChanged -= AuthStateChanged;
-        auth = null;
-    }
-
-    //Logout Method
-    public void LogOut()
-    {
-        if (auth != null && user != null) { 
-            auth.SignOut();
-            isLoggedIn = false;
-            Debug.Log("Logged out {0}" + user.UserId);
-
-            UnityEngine.SceneManagement.SceneManager.LoadScene("LoginScreen");
-
-        }
-    }
-    
-    //Login Method
     public void Login()
     {
-        if (isLoggedIn)
-        {
-            Debug.Log("Account has already logged in!");
-            // Hiển thị thông báo cho người dùng rằng tài khoản đã đăng nhập từ trước
-            // Ví dụ: errorPopup.ShowPopup("Account has already logged in!");
-            return;
-        }
-
         StartCoroutine(LoginAsync(emailLoginField.text, passwordLoginField.text));
     }
 
@@ -174,18 +144,23 @@ public class AuthenticationManage : MonoBehaviour
         {
             user = loginTask.Result.User;
 
-            if (isLoggedIn)
-            {
-                Debug.Log("Account has already logged in!");
-                LogOut();
-            } else
-            {
-                isLoggedIn = true;
-                LogOut();
-                Debug.LogFormat("{0}, You Are Successfully Logged In", user.DisplayName);
-            }
+            Debug.LogFormat("{0} You Are Successfully Logged In", user.DisplayName);
 
             UnityEngine.SceneManagement.SceneManager.LoadScene("PlayMode");
+        }
+    }
+
+    //Logout Method
+    public void LogOut()
+    {
+        if (auth != null && user != null)
+        {
+            auth.SignOut();
+            //isLoggedIn = false;
+            Debug.Log("Logged out {0}" + user.UserId);
+
+            UnityEngine.SceneManagement.SceneManager.LoadScene("LoginScreen");
+
         }
     }
 
@@ -196,24 +171,31 @@ public class AuthenticationManage : MonoBehaviour
 
     private IEnumerator RegisterAsync(string name, string email, string password, string confirmPassword)
     {
-        if (name == "")
-        {
-            Debug.LogError("User Name is empty");
-            errorPopup.ShowPopup("User Name is empty! ");
 
-        }
-        else if (email == "")
+        if (email == "")
         {
             Debug.LogError("Email field is empty");
             errorPopup.ShowPopup("Email field is empty! ");
+
+        }
+        else if (name == "")
+        {
+            Debug.LogError("User Name is empty");
+            errorPopup.ShowPopup("User Name is empty! ");
 
         }
         else if (passwordRegisterField.text != confirmPasswordRegisterField.text)
         {
             Debug.LogError("Password does not match");
             errorPopup.ShowPopup("Password does not match! ");
-
         }
+
+        else if (confirmPasswordRegisterField.text != confirmPasswordRegisterField.text)
+        {
+            Debug.LogError("Password does not match");
+            errorPopup.ShowPopup("Password does not match! ");
+        }
+
         else
         {
             var registerTask = auth.CreateUserWithEmailAndPasswordAsync(email, password);
@@ -288,7 +270,7 @@ public class AuthenticationManage : MonoBehaviour
                             break;
                         case AuthError.WrongPassword:
                             failedMessage += "Wrong Password";
-                            errorPopup.ShowPopup("Wrong Password! ");
+                            errorPopup.ShowPopup("Password must be longer than 6 characters! ");
                             break;
                         case AuthError.MissingEmail:
                             failedMessage += "Email is missing";
