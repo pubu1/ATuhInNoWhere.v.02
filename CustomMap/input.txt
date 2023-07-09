@@ -1,16 +1,18 @@
 3
 6 9
 Wall Wall Wall Wall Wall Wall Wall Wall Wall
-Wall Ground Ground Ground PlayerF:1 Ground Socket_Yellow Ground Wall
-Wall PlayerM:0 Ground Ground Ground Ice Ground Ground Wall
-Wall Ground Socket_Red Ground Ground DimensionIn:1 Bridge_H Ground Wall
+Wall Ground Ground Ground Ground Ground Socket_Yellow Ground Wall
+Wall PlayerM:0 Ground Bridge_V Bridge_H Ground Ground Ground Wall
+Wall Ground Socket_Red Bridge_H Bridge_V DimensionIn:1 Bridge_V Ground Wall
 Wall Socket_Yellow Ground Ground DimensionIn:2 Ground Socket_Red Ground Wall
 Wall Wall Wall Wall Wall Wall Wall Wall Wall
 3 6
 Wall Wall Wall Wall Wall Wall
 DimensionOut:Left Ground Ground Ground Ground DimensionOut:Right
 Wall Wall Wall Wall DimensionOut:Bottom Wall
-3 6
+5 6
 Wall Wall Wall Wall Wall Wall
-DimensionOut:Left Ground Ground Ground Ground Wall
+Wall Ground Ground Ground Ground Wall
+DimensionOut:Left Ground Ground PlayerF:1 Ground DimensionOut:Right
+Wall Ground Ground Ground Ground Wall
 Wall Wall Wall Wall Wall Wall

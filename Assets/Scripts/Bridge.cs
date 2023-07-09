@@ -41,6 +41,7 @@ public class Bridge : MonoBehaviour
             this.transform.Rotate(0f,0f,90f);
         }
     }
+
     public bool CheckNextStep(Player player)
     {
         bool isOnBridge = false;
@@ -51,13 +52,13 @@ public class Bridge : MonoBehaviour
 
         if (isOnBridge)
         {
-            if(HasWireOnBridge && !player.IsNotPickWire) return false;
+            if((HasWireOnBridge && !player.IsNotPickWire) || HasPlayerOnBridge) return false;
             player.DefaultZAxis = 2f;  
             this.HasPlayerOnBridge = true;        
         }
         else
         {    
-            if(HasWireUnderBridge && !player.IsNotPickWire) return false;   
+            if(HasWireUnderBridge && !player.IsNotPickWire || HasPlayerUnderBridge) return false;   
             player.DefaultZAxis = 5f;
             this.HasPlayerUnderBridge = true;  
         }
@@ -111,6 +112,8 @@ public class Bridge : MonoBehaviour
     public float GetZAxisWire(string previousMove)
     {
         float wireZAxis = 0f;
+
+        Debug.Log("Test show: ----- " + previousMove + HasWireOnBridge + HasPlayerUnderBridge);
 
         if (this.IsVertical()
         && (previousMove == "Left" || previousMove == "Right")

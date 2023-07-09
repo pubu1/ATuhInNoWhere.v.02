@@ -122,8 +122,10 @@ public class Step : MonoBehaviourPun
             // w.wireZAxis = gameManager.PlayGridList[mapIndex][xAxis, yAxis].GetComponent<Bridge>().GetZAxisWire(playerScript.PreviousMove);
             // w.GenerateWire(targetP);
 
+            wireSpawner.GetComponent<Wire>().wireZAxis = gameManager.PlayGridList[mapIndex][xAxis, yAxis].GetComponent<Bridge>().GetZAxisWire(targetP.PreviousMove);
             GameObject w = wireSpawner.GenerateWire(targetP);
-            w.GetComponent<Wire>().wireZAxis = gameManager.PlayGridList[mapIndex][xAxis, yAxis].GetComponent<Bridge>().GetZAxisWire(targetP.PreviousMove);
+            wireSpawner.GetComponent<Wire>().wireZAxis = 7f;  
+            w.name = "sssssssssssssssssssssssssssssss";       
         }
         else if (type == "Wire" && !targetP.IsNotPickWire || targetP.IsAtSocket)
         {
@@ -138,6 +140,19 @@ public class Step : MonoBehaviourPun
             Vector2 renderPosition = gameManager.PlayGridList[mapIndex][xAxis, yAxis].transform.position;
             GameObject w = wireSpawner.RenderWire(renderPosition, 0, wireRotation, targetP.HandleWireColor);
         }
+    }
+
+    [PunRPC]
+    private bool CallCheckBridgeNextStep(int currentMap, int xTarget, int yTarget, int photonTargetID)
+    {
+        Bridge bridge = gameManager.PlayGridList[currentMap][xTarget, yTarget].GetComponent<Bridge>();
+        Player targetP = playerScript;
+        if (photonTargetID != photonViewID)
+        {
+            if (photonTargetID == 1) targetP = gameManager.PlayerM.GetComponent<Player>();
+            else targetP = gameManager.PlayerF.GetComponent<Player>();
+        }
+        return bridge.CheckNextStep(targetP);
     }
 
     private void Update()
@@ -420,7 +435,6 @@ public class Step : MonoBehaviourPun
             }           
             currentMap = tempTargetMap;
         }
-
     }
 
     private bool CanStepToPosition(Vector2 currentPosition, Vector2 targetPosition, string tempNextKey)
@@ -561,6 +575,7 @@ public class Step : MonoBehaviourPun
         if (gameManager.PlayGridList[currentMap][xTarget, yTarget].tag == "Bridge")
         {
             Bridge bridge = gameManager.PlayGridList[currentMap][xTarget, yTarget].GetComponent<Bridge>();
+            view.RPC("CallCheckBridgeNextStep", RpcTarget.All, currentMap, xTarget, yTarget, photonViewID);
             totalCheck = bridge.CheckNextStep(playerScript);
             if (totalCheck)
             {
