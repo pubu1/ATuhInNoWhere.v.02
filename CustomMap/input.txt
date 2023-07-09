@@ -1,10 +1,10 @@
 3
 6 9
 Wall Wall Wall Wall Wall Wall Wall Wall Wall
-Wall Ground Ground Ground PlayerF:1 Ground Socket_Yellow Ground Wall
+Wall DoorButton:0 Ground Ground PlayerF:1 Ground Socket_Yellow H_Door:0:Reverse Wall
 Wall PlayerM:0 Ground Ground Ground Ice Ground Ground Wall
 Wall Ground Socket_Red Ground Ground DimensionIn:1 Bridge_H Ground Wall
-Wall Socket_Yellow Ground Ground DimensionIn:2 Ground Socket_Red Ground Wall
+Wall Socket_Yellow Ground V_Door:1 DimensionIn:2 Ground Socket_Red Ground Wall
 Wall Wall Wall Wall Wall Wall Wall Wall Wall
 3 6
 Wall Wall Wall Wall Wall Wall
@@ -14,3 +14,7 @@ Wall Wall Wall Wall DimensionOut:Bottom Wall
 Wall Wall Wall Wall Wall Wall
 DimensionOut:Left Ground Ground Ground Ground Wall
 Wall Wall Wall Wall Wall Wall
+---DoorButton---
+2
+0 0
+0 1
