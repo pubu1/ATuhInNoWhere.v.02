@@ -11,7 +11,7 @@ public class Step : MonoBehaviourPun
 {
     private static GameManager gameManager;
     private static Wire wireSpawner;
-
+    bool totalCheck = true;
     [SerializeField] private float moveSteps = 1.0f;
     [SerializeField] private float moveSpeed = 5.0f;
     private GameObject player;
@@ -142,19 +142,6 @@ public class Step : MonoBehaviourPun
         }
     }
 
-    [PunRPC]
-    private bool CallCheckBridgeNextStep(int currentMap, int xTarget, int yTarget, int photonTargetID)
-    {
-        Bridge bridge = gameManager.PlayGridList[currentMap][xTarget, yTarget].GetComponent<Bridge>();
-        Player targetP = playerScript;
-        if (photonTargetID != photonViewID)
-        {
-            if (photonTargetID == 1) targetP = gameManager.PlayerM.GetComponent<Player>();
-            else targetP = gameManager.PlayerF.GetComponent<Player>();
-        }
-        return bridge.CheckNextStep(targetP);
-    }
-
     private void Update()
     {
         if (view.IsMine && player != null)
@@ -179,6 +166,7 @@ public class Step : MonoBehaviourPun
                     //playerScript.PreviousMove = "Up";
                     view.RPC("SetPreviousMove", RpcTarget.All, photonViewID, "Up");
                 }
+                totalCheck = true;
             }
             else if (!isStepOnIce && Input.GetKeyDown(KeyCode.DownArrow) && enableMove && !isPauseGame)
             {
@@ -188,6 +176,7 @@ public class Step : MonoBehaviourPun
                     //playerScript.PreviousMove = "Down";
                     view.RPC("SetPreviousMove", RpcTarget.All, photonViewID, "Down");
                 }
+                totalCheck = true;
             }
             else if (!isStepOnIce && Input.GetKeyDown(KeyCode.LeftArrow) && enableMove && !isPauseGame)
             {
@@ -197,6 +186,7 @@ public class Step : MonoBehaviourPun
                     //playerScript.PreviousMove = "Left";
                     view.RPC("SetPreviousMove", RpcTarget.All, photonViewID, "Left");
                 }
+                totalCheck = true;
                 this.transform.localScale = new Vector3(-0.5f, 0.5f, 0.5f);
             }
             else if (!isStepOnIce && Input.GetKeyDown(KeyCode.RightArrow) && enableMove && !isPauseGame)
@@ -207,6 +197,7 @@ public class Step : MonoBehaviourPun
                     //playerScript.PreviousMove = "Right";
                     view.RPC("SetPreviousMove", RpcTarget.All, photonViewID, "Right");
                 }
+                totalCheck = true;
                 this.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
             }
             else if (isStepOnEscalator && enableMove)
@@ -437,9 +428,34 @@ public class Step : MonoBehaviourPun
         }
     }
 
+    [PunRPC]
+    void CallBridgeCheckNextStep(int mapIndex, int xAxis, int yAxis, int photonTargetID){
+        Player targetP = playerScript;
+        if (photonTargetID != photonViewID)
+        {
+            if (photonTargetID == 1) targetP = gameManager.PlayerM.GetComponent<Player>();
+            else targetP = gameManager.PlayerF.GetComponent<Player>();
+        }
+
+        Bridge bridge = gameManager.PlayGridList[mapIndex][xAxis, yAxis].GetComponent<Bridge>();
+        totalCheck = bridge.CheckNextStep(targetP);
+    }
+
+    [PunRPC]
+    void CallBridgeCheckCurrentStep(int mapIndex, int xAxis, int yAxis, int photonTargetID){
+        Player targetP = playerScript;
+        if (photonTargetID != photonViewID)
+        {
+            if (photonTargetID == 1) targetP = gameManager.PlayerM.GetComponent<Player>();
+            else targetP = gameManager.PlayerF.GetComponent<Player>();
+        }
+
+        Bridge bridge = gameManager.PlayGridList[mapIndex][xAxis, yAxis].GetComponent<Bridge>();
+        totalCheck = bridge.CheckCurrentStep(bridge, targetP, targetP.PreviousMove);
+    }
+
     private bool CanStepToPosition(Vector2 currentPosition, Vector2 targetPosition, string tempNextKey)
-    {
-        bool totalCheck = true;
+    {       
         currentMap = (int)currentPosition.x / 100;
         xCurrent = (int)(currentPosition.x % 100);
         yCurrent = (int)(currentPosition.y);
@@ -452,7 +468,7 @@ public class Step : MonoBehaviourPun
         if (gameManager.PlayGridList[currentMap][xCurrent, yCurrent].tag == "Bridge")
         {
             Bridge bridge = gameManager.PlayGridList[currentMap][xCurrent, yCurrent].GetComponent<Bridge>();
-            totalCheck = bridge.CheckCurrentStep(bridge, playerScript, playerScript.PreviousMove);
+            view.RPC("CallBridgeCheckCurrentStep", RpcTarget.All, currentMap, xCurrent, yCurrent, photonViewID);
             if (!totalCheck)
             {
                 return false;
@@ -570,13 +586,12 @@ public class Step : MonoBehaviourPun
                 return false;
             }
         }
-
+  
         //check target posotion
         if (gameManager.PlayGridList[currentMap][xTarget, yTarget].tag == "Bridge")
         {
             Bridge bridge = gameManager.PlayGridList[currentMap][xTarget, yTarget].GetComponent<Bridge>();
-            view.RPC("CallCheckBridgeNextStep", RpcTarget.All, currentMap, xTarget, yTarget, photonViewID);
-            totalCheck = bridge.CheckNextStep(playerScript);
+            view.RPC("CallBridgeCheckNextStep", RpcTarget.All, currentMap, xTarget, yTarget, photonViewID);
             if (totalCheck)
             {
                 view.RPC("UpdateLocation", RpcTarget.All, photonViewID);
