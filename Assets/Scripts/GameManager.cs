@@ -188,11 +188,15 @@ public class GameManager : MonoBehaviourPunCallbacks
             {
                 for (int y = 0; y < n; ++y)
                 {
+                    if (item.Contains("Null")) {
+                        grid[x, y] = null;
+                        continue;
+                    }
                     //Init ground
                     GameObject groundObject = Instantiate(ground, new Vector3(x + offset, y, groundZ), groundRotate);
                     string item = randomMap[x, y];
                     GameObject prefab;
-                    if (item.Contains("Null")) continue;
+                    
                     if (item.Contains("Socket"))
                     {
                         string hexCode = item.Split("_")[1];
@@ -344,6 +348,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         {
             foreach (GameObject item in MapGridList[i])
             {
+                if (item == null) continue;
                 //Connect Dimension In and Out
                 if (item.tag == "DimensionIn")
                 {
