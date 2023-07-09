@@ -188,13 +188,13 @@ public class GameManager : MonoBehaviourPunCallbacks
             {
                 for (int y = 0; y < n; ++y)
                 {
+                    string item = randomMap[x, y];
                     if (item.Contains("Null")) {
                         grid[x, y] = null;
                         continue;
                     }
                     //Init ground
                     GameObject groundObject = Instantiate(ground, new Vector3(x + offset, y, groundZ), groundRotate);
-                    string item = randomMap[x, y];
                     GameObject prefab;
                     
                     if (item.Contains("Socket"))
