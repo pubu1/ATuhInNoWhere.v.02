@@ -8,7 +8,7 @@ public class Door : MonoBehaviour
 
     public DoorButton Button { get; set; }
 
-    private string doorOpenDirection;
+    public string DoorOpenDirection { get; set; }
 
     public bool isReverseDoor {get; set;}
 
@@ -24,45 +24,72 @@ public class Door : MonoBehaviour
     // Start is called before the first frame update
     public void Start()
     {
-        doorOpenDirection = "Down";
-        isReverseDoor = false;
+        //DoorOpenDirection = "Down";
+    }
 
-        if(isReverseDoor)           
-            IsActive = true;
-        else{
-            IsActive = false;
-        }
-
+    public void Init()
+    {
         previousPosition = this.transform.position;
 
-        if(doorOpenDirection == "Up") targetPosition = new Vector2(previousPosition.x, previousPosition.y+1);
-        else if(doorOpenDirection == "Down") targetPosition = new Vector2(previousPosition.x, previousPosition.y-1);  
-        else if(doorOpenDirection == "Left") targetPosition = new Vector2(previousPosition.x-1, previousPosition.y);
-        else if(doorOpenDirection == "Right") targetPosition = new Vector2(previousPosition.x+1, previousPosition.y);
+        if (DoorOpenDirection == "Up") targetPosition = new Vector2(previousPosition.x, previousPosition.y + 1);
+        else if (DoorOpenDirection == "Down") targetPosition = new Vector2(previousPosition.x, previousPosition.y - 1);
+        else if (DoorOpenDirection == "Left") targetPosition = new Vector2(previousPosition.x - 1, previousPosition.y);
+        else if (DoorOpenDirection == "Right") targetPosition = new Vector2(previousPosition.x + 1, previousPosition.y);
+
+        if (isReverseDoor)
+        {
+            IsActive = true;
+            this.transform.position = targetPosition;
+
+            //swap
+            Vector2 tmp = previousPosition;
+            previousPosition = targetPosition;
+            targetPosition = tmp;
+        }
+        else
+        {
+            IsActive = false;
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(Button.IsActive){
+        if (Button.IsActive)
+        {
             openAxis = targetPosition;
-            if(isReverseDoor){
+            IsActive = !isReverseDoor;
+/*            if (isReverseDoor)
+            {
                 IsActive = false;
-            } else{
+            }
+            else
+            {
                 IsActive = true;
-            }     
-        } else {
+            }*/
+        }
+        else
+        {
             openAxis = previousPosition;
-            if(isReverseDoor){
+            IsActive = isReverseDoor;
+/*            if (isReverseDoor)
+            {
                 IsActive = true;
-            } else{
+            }
+            else
+            {
                 IsActive = false;
-            }   
+            }*/
         }
         DoorTransition();
     }
 
-    void DoorTransition(){
+    public void DebugPosition()
+    {
+        Debug.Log(this.transform.position + " : " + previousPosition + " - " + targetPosition);
+    }
+
+    public void DoorTransition(){
         if(!HasPipeAtDoorPosition){
             this.transform.position = Vector3.MoveTowards(transform.position, new Vector3(openAxis.x, openAxis.y, 9), moveSpeed * Time.deltaTime);            
         }       
