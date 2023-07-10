@@ -39,7 +39,7 @@ public class Door : MonoBehaviour
         if (isReverseDoor)
         {
             IsActive = true;
-            this.transform.position = targetPosition;
+            this.transform.position = new Vector3(targetPosition.x, targetPosition.y, 9);
 
             //swap
             Vector2 tmp = previousPosition;
