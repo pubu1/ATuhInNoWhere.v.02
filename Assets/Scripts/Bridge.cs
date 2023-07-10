@@ -66,30 +66,30 @@ public class Bridge : MonoBehaviour
         return true;
     }
 
-    public bool CheckCurrentStep(Bridge bridge, Player player, string previousMove)
+    public bool CheckCurrentStep(Player player, string previousMove)
     {
         bool isOnBridge = false;
 
-        if ((bridge.IsHorizontal() && (previousMove == "Left" || previousMove == "Right"))
-        || (bridge.IsVertical() && (previousMove == "Up" || previousMove == "Down")))
+        if ((this.IsHorizontal() && (previousMove == "Left" || previousMove == "Right"))
+        || (this.IsVertical() && (previousMove == "Up" || previousMove == "Down")))
             isOnBridge = true;
 
         if (isOnBridge)
         {
-            if ((bridge.IsHorizontal() && (player.TempNextKey == "Up" || player.TempNextKey == "Down"))
-            || (bridge.IsVertical() && (player.TempNextKey == "Left" || player.TempNextKey == "Right")))
+            if ((this.IsHorizontal() && (player.TempNextKey == "Up" || player.TempNextKey == "Down"))
+            || (this.IsVertical() && (player.TempNextKey == "Left" || player.TempNextKey == "Right")))
                 return false;
 
-            if (!player.IsNotPickWire) bridge.HasWireOnBridge = true;
+            if (!player.IsNotPickWire) this.HasWireOnBridge = true;
             this.HasPlayerOnBridge = false;
         }
         else
         {
-            if ((bridge.IsHorizontal() && (player.TempNextKey == "Left" || player.TempNextKey == "Right"))
-            || (bridge.IsVertical() && (player.TempNextKey == "Up" || player.TempNextKey == "Down")))
+            if ((this.IsHorizontal() && (player.TempNextKey == "Left" || player.TempNextKey == "Right"))
+            || (this.IsVertical() && (player.TempNextKey == "Up" || player.TempNextKey == "Down")))
                 return false;
 
-            if (!player.IsNotPickWire) bridge.HasWireUnderBridge = true;
+            if (!player.IsNotPickWire) this.HasWireUnderBridge = true;
             this.HasPlayerUnderBridge = false;
         }
         return true;
@@ -112,8 +112,6 @@ public class Bridge : MonoBehaviour
     public float GetZAxisWire(string previousMove)
     {
         float wireZAxis = 0f;
-
-        Debug.Log("Test show: ----- " + previousMove + HasWireOnBridge + HasPlayerUnderBridge);
 
         if (this.IsVertical()
         && (previousMove == "Left" || previousMove == "Right")
@@ -139,6 +137,7 @@ public class Bridge : MonoBehaviour
         {
             wireZAxis = 3f;
         }
+
         return wireZAxis;
     }
 }

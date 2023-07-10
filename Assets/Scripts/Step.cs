@@ -117,15 +117,9 @@ public class Step : MonoBehaviourPun
         }
         if (type == "Bridge" && !targetP.IsNotPickWire)
         {
-            // Wire w = new Wire();
-            // w.Start();
-            // w.wireZAxis = gameManager.PlayGridList[mapIndex][xAxis, yAxis].GetComponent<Bridge>().GetZAxisWire(playerScript.PreviousMove);
-            // w.GenerateWire(targetP);
-
             wireSpawner.GetComponent<Wire>().wireZAxis = gameManager.PlayGridList[mapIndex][xAxis, yAxis].GetComponent<Bridge>().GetZAxisWire(targetP.PreviousMove);
             GameObject w = wireSpawner.GenerateWire(targetP);
-            wireSpawner.GetComponent<Wire>().wireZAxis = 7f;  
-            w.name = "sssssssssssssssssssssssssssssss";       
+            wireSpawner.GetComponent<Wire>().wireZAxis = 7f;       
         }
         else if (type == "Wire" && !targetP.IsNotPickWire || targetP.IsAtSocket)
         {
@@ -451,7 +445,7 @@ public class Step : MonoBehaviourPun
         }
 
         Bridge bridge = gameManager.PlayGridList[mapIndex][xAxis, yAxis].GetComponent<Bridge>();
-        totalCheck = bridge.CheckCurrentStep(bridge, targetP, targetP.PreviousMove);
+        totalCheck = bridge.CheckCurrentStep(targetP, targetP.PreviousMove);
     }
 
     private bool CanStepToPosition(Vector2 currentPosition, Vector2 targetPosition, string tempNextKey)
@@ -598,12 +592,12 @@ public class Step : MonoBehaviourPun
                 if (gameManager.PlayGridList[currentMap][xCurrent, yCurrent].tag == "Bridge")
                 {
                     //GenerateWire(currentMap, xCurrent, yCurrent, "Bridge", null);
-                    view.RPC("GenerateWire", RpcTarget.All, currentMap, xTarget, yTarget, "Bridge", photonViewID);
+                    view.RPC("GenerateWire", RpcTarget.All, currentMap, xCurrent, yCurrent, "Bridge", photonViewID);
                 }
                 else
                 {
                     //GenerateWire(currentMap, xCurrent, yCurrent, "Wire", null);
-                    view.RPC("GenerateWire", RpcTarget.All, currentMap, xTarget, yTarget, "Wire", photonViewID);
+                    view.RPC("GenerateWire", RpcTarget.All, currentMap, xCurrent, yCurrent, "Wire", photonViewID);
                 }
 
                 this.transform.position = new Vector3(this.transform.position.x, this.transform.position.y, playerScript.DefaultZAxis);
@@ -627,12 +621,12 @@ public class Step : MonoBehaviourPun
                 if (gameManager.PlayGridList[currentMap][xCurrent, yCurrent].tag == "Bridge")
                 {
                     //GenerateWire(currentMap, xCurrent, yCurrent, "Bridge", null);
-                    view.RPC("GenerateWire", RpcTarget.All, currentMap, xTarget, yTarget, "Bridge", photonViewID);
+                    view.RPC("GenerateWire", RpcTarget.All, currentMap, xCurrent, yCurrent, "Bridge", photonViewID);
                 }
                 else
                 {
                     //GenerateWire(currentMap, xCurrent, yCurrent, "Wire", null);
-                    view.RPC("GenerateWire", RpcTarget.All, currentMap, xTarget, yTarget, "Wire", photonViewID);
+                    view.RPC("GenerateWire", RpcTarget.All, currentMap, xCurrent, yCurrent, "Wire", photonViewID);
                 }
                 //socket.ChangePlayerAttrEndPoint(playerScript);
                 view.RPC("CallChangePlayerAttrEndPoint", RpcTarget.All, currentMap, xTarget, yTarget, photonViewID);
