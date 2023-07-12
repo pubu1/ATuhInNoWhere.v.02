@@ -293,13 +293,13 @@ public class Step : MonoBehaviourPun
             if (photonTargetID == 1)
             {
                 targetP = gameManager.PlayerM.GetComponent<Player>();
-                targetP.CurrentPosition = new Vector2((float)Math.Round(targetP.CurrentPosition.x), (float)Math.Round(targetP.CurrentPosition.y));
+                targetP.CurrentPosition = new Vector2((float)Math.Round(gameManager.PlayerM.transform.position.x), (float)Math.Round(gameManager.PlayerM.transform.position.y));
                 targetP.TargetPosition = targetP.TempTargetPosition;
             }
             else
             {
                 targetP = gameManager.PlayerF.GetComponent<Player>();
-                targetP.CurrentPosition = new Vector2((float)Math.Round(targetP.CurrentPosition.x), (float)Math.Round(targetP.CurrentPosition.y));
+                targetP.CurrentPosition = new Vector2((float)Math.Round(gameManager.PlayerF.transform.position.x), (float)Math.Round(gameManager.PlayerF.transform.position.y));
                 targetP.TargetPosition = targetP.TempTargetPosition;
             }
         }
@@ -448,37 +448,6 @@ public class Step : MonoBehaviourPun
         totalCheck = bridge.CheckCurrentStep(targetP, targetP.PreviousMove);
     }
 
-    [PunRPC]
-    void CallDoorButtonCheckCurrentStep(int currentMap, int xCurrent, int yCurrent, int mapIndex, int xAxis, int yAxis, int photonTargetID)
-    {
-        Player targetP = playerScript;
-        if (photonTargetID != photonViewID)
-        {
-            if (photonTargetID == 1) targetP = gameManager.PlayerM.GetComponent<Player>();
-            else targetP = gameManager.PlayerF.GetComponent<Player>();
-        }
-
-        DoorButton button = gameManager.PlayGridList[currentMap][xCurrent, yCurrent].GetComponent<DoorButton>();
-        button.CheckCurrentStep(targetP, gameManager.PlayGridList[mapIndex][xAxis, yAxis], gameManager.WireMap);
-        //totalCheck = bridge.CheckCurrentStep(targetP, targetP.PreviousMove);
-    }
-
-    [PunRPC]
-    void CallDoorButtonCheckNextStep(int mapIndex, int xAxis, int yAxis, int photonTargetID)
-    {
-        Player targetP = playerScript;
-        if (photonTargetID != photonViewID)
-        {
-            if (photonTargetID == 1) targetP = gameManager.PlayerM.GetComponent<Player>();
-            else targetP = gameManager.PlayerF.GetComponent<Player>();
-        }
-
-        DoorButton button = gameManager.PlayGridList[mapIndex][xAxis, yAxis].GetComponent<DoorButton>();
-        button.IsActive = true;
-        totalCheck = button.CheckNextStep(targetP);
-        //totalCheck = bridge.CheckCurrentStep(targetP, targetP.PreviousMove);
-    }
-
     private bool CanStepToPosition(Vector2 currentPosition, Vector2 targetPosition, string tempNextKey)
     {       
         currentMap = (int)currentPosition.x / 100;
@@ -504,9 +473,8 @@ public class Step : MonoBehaviourPun
             int tempCurrentMap = (int)targetPosition.x / 100;
             int tempXTarget = (int)(targetPosition.x % 100);
             int tempYTarget = (int)(targetPosition.y);
-            //DoorButton button = gameManager.PlayGridList[currentMap][xCurrent, yCurrent].GetComponent<DoorButton>();
-            //button.CheckCurrentStep(playerScript, gameManager.PlayGridList[tempCurrentMap][tempXTarget, tempYTarget], gameManager.WireMap);
-            view.RPC("CallDoorButtonCheckCurrentStep", RpcTarget.All, currentMap, xCurrent, yCurrent, tempCurrentMap, tempXTarget, tempYTarget, photonViewID);
+            DoorButton button = gameManager.PlayGridList[currentMap][xCurrent, yCurrent].GetComponent<DoorButton>();
+            button.CheckCurrentStep(playerScript, gameManager.PlayGridList[tempCurrentMap][tempXTarget, tempYTarget], gameManager.WireMap);
         }
         else if (gameManager.PlayGridList[currentMap][xCurrent, yCurrent].tag == "Teleporter")
         {
@@ -680,11 +648,10 @@ public class Step : MonoBehaviourPun
         }
         else if (gameManager.PlayGridList[currentMap][xTarget, yTarget].tag == "DoorButton")
         {
-/*            DoorButton button = gameManager.PlayGridList[currentMap][xTarget, yTarget].GetComponent<DoorButton>();
+            DoorButton button = gameManager.PlayGridList[currentMap][xTarget, yTarget].GetComponent<DoorButton>();
             button.IsActive = true;
 
-            totalCheck = button.CheckNextStep(playerScript);*/
-            view.RPC("CallDoorButtonCheckNextStep", RpcTarget.All, currentMap, xTarget, yTarget, photonViewID);
+            totalCheck = button.CheckNextStep(playerScript);
             if (totalCheck)
             {
                 view.RPC("UpdateLocation", RpcTarget.All, photonViewID);
@@ -706,14 +673,6 @@ public class Step : MonoBehaviourPun
                 view.RPC("GenerateWire", RpcTarget.All, currentMap, xCurrent, yCurrent, "Wire", photonViewID);
             }
         }
-/*        else if (gameManager.PlayGridList[currentMap][xTarget, yTarget].tag == "DoorButton")
-        {
-            DoorButton button = gameManager.PlayGridList[currentMap][xTarget, yTarget].GetComponent<DoorButton>();
-            button.IsActive = true;
-            view.RPC("UpdateLocation", RpcTarget.All, photonViewID);
-            //GenerateWire(currentMap, xCurrent, yCurrent, "Wire", null);
-            view.RPC("GenerateWire", RpcTarget.All, currentMap, xCurrent, yCurrent, "Wire", photonViewID);
-        }*/
         else if (gameManager.PlayGridList[currentMap][xTarget, yTarget].tag == "Door")
         {
             Door door = gameManager.PlayGridList[currentMap][xTarget, yTarget].GetComponent<Door>();
