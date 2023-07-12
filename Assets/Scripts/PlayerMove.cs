@@ -1,3 +1,5 @@
+using Photon.Pun;
+using Photon.Realtime;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -123,6 +125,11 @@ public class PlayerMove : MonoBehaviour
         InputManager.fileName = sceneName + ".txt";
         if (sceneName == "Loading" || sceneName == "Map")
         {
+            if (sceneName == "Map")
+            {
+                PhotonNetwork.OfflineMode = true;
+                PhotonNetwork.CreateRoom("single", new RoomOptions(), TypedLobby.Default);
+            }
             SceneManager.LoadScene(sceneName);
         }
         else

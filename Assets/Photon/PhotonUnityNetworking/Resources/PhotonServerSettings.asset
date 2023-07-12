@@ -54,6 +54,13 @@ MonoBehaviour:
   - SetPreviousMove
   - SetTempTargetMove
   - UpdateLocation
+  - DimensionInUpdateLocation
+  - DimensionOutUpdateLocation
+  - CallCheckBridgeNextStep
+  - CallBridgeCheckCurrentStep
+  - CallBridgeCheckNextStep
+  - CallDoorButtonCheckCurrentStep
+  - CallDoorButtonCheckNextStep
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
