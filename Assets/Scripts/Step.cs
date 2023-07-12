@@ -293,13 +293,13 @@ public class Step : MonoBehaviourPun
             if (photonTargetID == 1)
             {
                 targetP = gameManager.PlayerM.GetComponent<Player>();
-                targetP.CurrentPosition = new Vector2((float)Math.Round(gameManager.PlayerM.CurrentPosition.x), (float)Math.Round(gameManager.PlayerM.CurrentPosition.y));
+                targetP.CurrentPosition = new Vector2((float)Math.Round(targetP.CurrentPosition.x), (float)Math.Round(targetP.CurrentPosition.y));
                 targetP.TargetPosition = targetP.TempTargetPosition;
             }
             else
             {
                 targetP = gameManager.PlayerF.GetComponent<Player>();
-                targetP.CurrentPosition = new Vector2((float)Math.Round(gameManager.PlayerF.CurrentPosition.x), (float)Math.Round(gameManager.PlayerF.CurrentPosition.y));
+                targetP.CurrentPosition = new Vector2((float)Math.Round(targetP.CurrentPosition.x), (float)Math.Round(targetP.CurrentPosition.y));
                 targetP.TargetPosition = targetP.TempTargetPosition;
             }
         }
