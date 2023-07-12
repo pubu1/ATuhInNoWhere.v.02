@@ -504,12 +504,12 @@ public class Step : MonoBehaviourPun
                     if (gameManager.PlayGridList[currentMap][xCurrent, yCurrent].tag == "Bridge")
                     {
                         //GenerateWire(currentMap, xCurrent, yCurrent, "Bridge", null);
-                        view.RPC("GenerateWire", RpcTarget.All, currentMap, xTarget, yTarget, "Bridge", photonViewID);
+                        view.RPC("GenerateWire", RpcTarget.All, currentMap, xCurrent, yCurrent, "Bridge", photonViewID);
                     }
                     else
                     {
                         //GenerateWire(currentMap, xCurrent, yCurrent, "Wire", null);
-                        view.RPC("GenerateWire", RpcTarget.All, currentMap, xTarget, yTarget, "Wire", photonViewID);
+                        view.RPC("GenerateWire", RpcTarget.All, currentMap, xCurrent, yCurrent, "Wire", photonViewID);
                     }
 
                     if (gameManager.PlayGridList[tempCurrentMap][xTarget, yTarget].tag == "Socket")
