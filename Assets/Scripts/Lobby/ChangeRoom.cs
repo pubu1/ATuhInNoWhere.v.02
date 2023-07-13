@@ -226,6 +226,7 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
 
     public void OnBacModeScene()
     {
+        PhotonNetwork.Disconnect();
         SceneManager.LoadScene("PlayMode");
     }
 

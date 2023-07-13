@@ -4,7 +4,8 @@ using UnityEngine.UI;
 using Firebase;
 using Firebase.Auth;
 using TMPro;
-using Firebase.Database;
+using UnityEngine.SceneManagement;
+//using Firebase.Database;
 
 public class FirebaseAuthenticaton : MonoBehaviour
 {
@@ -17,7 +18,7 @@ public class FirebaseAuthenticaton : MonoBehaviour
     public DependencyStatus dependencyStatus;
     public FirebaseAuth auth;
     public FirebaseUser user;
-    public DatabaseReference DBreference;
+    //public DatabaseReference DBreference;
 
 
     // Login Variables
@@ -38,8 +39,7 @@ public class FirebaseAuthenticaton : MonoBehaviour
 
     private void Start()
     {
-        //loginPanel.SetActive(false);
-        //RegisterPanel.SetActive(true);
+        ClearFields();
     }
 
     private void Awake()
@@ -61,8 +61,12 @@ public class FirebaseAuthenticaton : MonoBehaviour
     }
 
     //Clear the login feilds
-    public void ClearLoginFeilds()
+    public void ClearFields()
     {
+        nameRegisterField.text = "";
+        emailRegisterField.text = "";
+        passwordRegisterField.text = "";
+        confirmPasswordRegisterField.text = "";
         emailLoginField.text = "";
         passwordLoginField.text = "";
     }
@@ -74,7 +78,7 @@ public class FirebaseAuthenticaton : MonoBehaviour
 
         //auth.StateChanged += AuthStateChanged;
         //AuthStateChanged(this, null);
-        DBreference = FirebaseDatabase.DefaultInstance.RootReference;
+        //DBreference = FirebaseDatabase.DefaultInstance.RootReference;
     }
 
     // Track state changes of the auth object.
@@ -86,6 +90,7 @@ public class FirebaseAuthenticaton : MonoBehaviour
 
             if (!signedIn && user != null)
             {
+                auth.SignOut();
                 Debug.Log("Signed out " + user.UserId);
             }
 
@@ -157,21 +162,6 @@ public class FirebaseAuthenticaton : MonoBehaviour
             
             //UnityEngine.SceneManagement.SceneManager.LoadScene("PlayMode");
         }
-    }
-
-    //Logout Method
-    public void LogOut()
-    {
-       
-            auth.SignOut();
-            //isLoggedIn = false;
-            Debug.Log("Logged out {0}" + user.UserId);
-            loginPanel.SetActive(true);
-            ClearLoginFeilds();
-            
-            //UnityEngine.SceneManagement.SceneManager.LoadScene("LoginScreen");
-
-        
     }
 
     public void Register()
@@ -311,4 +301,5 @@ public class FirebaseAuthenticaton : MonoBehaviour
             }
         }
     }
+    
 }
