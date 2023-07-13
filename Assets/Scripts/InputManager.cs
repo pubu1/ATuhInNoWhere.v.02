@@ -53,7 +53,7 @@ public class InputManager
                 for (int j = 0; j < columns; j++)
                 {
                     grid[i, j] = values[j];
-                    btnCnt += values[j].Contains("Button") ? 1 : 0;
+                    btnCnt += values[j].Contains("Door") ? 1 : 0;
                 }
             }
 

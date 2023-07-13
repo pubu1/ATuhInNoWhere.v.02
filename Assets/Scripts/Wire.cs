@@ -28,7 +28,6 @@ public class Wire : MonoBehaviour
     public GameObject GenerateWire(Player player)
     {
         GameObject wire = null;
-        Debug.Log("Temp key: " + player.TempNextKey);
         if (player.TempNextKey == "Right")
         {
             if (player.IsAtSocket && !player.IsNotPickWire)

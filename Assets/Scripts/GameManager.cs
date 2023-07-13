@@ -24,6 +24,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     // private GameObject GuideUI;
     [SerializeField] GameObject playerPrefabM;
     [SerializeField] GameObject playerPrefabF;
+    [SerializeField] private Text roomName;
 
     [PunRPC]
     public GameObject PlayerM { get; set; }
@@ -40,7 +41,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     private InputManager inputManager;
     private GameObject player;
 
-
+    
     public List<GameObject[,]> MapGridList { get; set; }
     public List<GameObject[,]> PlayGridList { get; set; }
 
@@ -57,6 +58,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     private bool IsCameraTargetPlayer { get; set; }
 
     private PhotonView view;
+    private bool singleMode;
     public void Start()
     {
         view = this.gameObject.GetComponent<PhotonView>();
@@ -66,17 +68,29 @@ public class GameManager : MonoBehaviourPunCallbacks
         IsCameraTargetPlayer = false;
         inputList = inputManager.LoadGridFromFile();
         prefabList = FindAllPrefabs();
+        singleMode = PhotonNetwork.OfflineMode;
         //Remember to check Single Player
         // if (PhotonNetwork.IsConnected || !PhotonNetwork.IsConnected)
         // {
         //     InitializeMap();
         //     ConnectMap();
         // }
+        Debug.Log("Welcome to the Game!");
+        if (singleMode)
+        {
+            Debug.Log("Single mode!");
+            view.RPC("InitializeMapRPC", RpcTarget.All);
+        }
+        else
+        {
+            Debug.Log("Multiplayer mode!");
+            roomName.text = PhotonNetwork.CurrentRoom.Name;
+        }
     }
 
     public override void OnPlayerEnteredRoom(Photon.Realtime.Player newPlayer)
     {
-        if (PhotonNetwork.CurrentRoom.PlayerCount == 2)
+        if (PhotonNetwork.CurrentRoom.PlayerCount == 2) //set = 1 to debug one player
         {
             //InitializeMap();
             view.RPC("InitializeMapRPC", RpcTarget.All);
@@ -86,6 +100,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     [PunRPC]
     public void InitializeMapRPC()
     {
+        Debug.Log("Initializing....!");
         InitializeMap();
         ConnectMap();
 
@@ -186,11 +201,15 @@ public class GameManager : MonoBehaviourPunCallbacks
             {
                 for (int y = 0; y < n; ++y)
                 {
+                    string item = randomMap[x, y];
+                    if (item.Contains("Null")) {
+                        grid[x, y] = null;
+                        continue;
+                    }
                     //Init ground
                     GameObject groundObject = Instantiate(ground, new Vector3(x + offset, y, groundZ), groundRotate);
-                    string item = randomMap[x, y];
                     GameObject prefab;
-
+                    
                     if (item.Contains("Socket"))
                     {
                         string hexCode = item.Split("_")[1];
@@ -238,7 +257,7 @@ public class GameManager : MonoBehaviourPunCallbacks
                     }
                     else if (item.Contains("Bridge"))
                     {
-                        string direction = item.Split('_')[1];
+                        string direction = item.Split('_')[0];
                         item = "Bridge";
 
                         GameObject instantiatedPrefab = InstantiatePrefab(item, x + offset, y);
@@ -279,9 +298,21 @@ public class GameManager : MonoBehaviourPunCallbacks
                     }
                     else if (item.Contains("Door"))
                     {
+                        string direction = item.Split('_')[0];
                         int doorID = int.Parse(item.Split(':')[1]);
-                        GameObject instantiatedPrefab = InstantiatePrefab(item.Split(':')[0], x + offset, y);
+                        GameObject instantiatedPrefab = InstantiatePrefab("Door", x + offset, y);
                         instantiatedPrefab.GetComponent<Door>().ID = doorID;
+                        instantiatedPrefab.GetComponent<Door>().DoorOpenDirection = item.Split(':')[2];
+
+                        if (direction == "H") //only need to rotate if Horizontal
+                        {
+                            //rotate 90 deg
+                            instantiatedPrefab.transform.Rotate(0f, 0f, 90f);
+                        }
+
+                        instantiatedPrefab.GetComponent<Door>().isReverseDoor = item.Contains("Reverse");
+
+                        instantiatedPrefab.GetComponent<Door>().Init();
                         grid[x, y] = instantiatedPrefab;
                     }
                     // else if (item.Contains("EscButton"))
@@ -339,6 +370,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         {
             foreach (GameObject item in MapGridList[i])
             {
+                if (item == null) continue;
                 //Connect Dimension In and Out
                 if (item.tag == "DimensionIn")
                 {
@@ -377,6 +409,11 @@ public class GameManager : MonoBehaviourPunCallbacks
                 else if (item.tag == "Door")
                 {
                     int doorID = item.GetComponent<Door>().ID;
+                    if (item.GetComponent<Door>().isReverseDoor)
+                    {
+                        //item.GetComponent<Door>().DoorTransition();
+                        item.GetComponent<Door>().DebugPosition();
+                    }
                     foreach (int btnID in inputManager.ListDoor[doorID])
                     {
                         item.GetComponent<Door>().Button = doorButtonList[btnID].GetComponent<DoorButton>();
