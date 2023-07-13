@@ -20,6 +20,16 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
     [SerializeField]
     private GameObject joinRoomScreen; // canvas screen to click the room number and enter the room
 
+    [Header("Create Room Panel")]
+    [SerializeField]
+    private GameObject openPanel;
+    [SerializeField]
+    private TMP_Text roomNameTxt;
+    [SerializeField]
+    private TMP_Text roomMasterTxt;
+    [SerializeField]
+    private TMP_Text MapChosenTxt;
+
     [Header("Room")]
     [SerializeField]
     private TMP_InputField roomNameJoin; // input-field of text of the room to join
@@ -105,37 +115,6 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
         }
 
         return null;
-    }
-
-    // Random a room number (dont let player to create a room name), it is a room with xxxx (0<x<5)
-    public string roomRandom()
-    {
-        string roomNumber = "";
-        Random random = new Random();
-        for (int i = 0; i < 4; i++)
-        {
-            int digit = random.Next(1, 5);
-            roomNumber += digit.ToString();
-        }
-
-        return roomNumber;
-    }
-
-    // Create a room with maximum 2 player
-    public void CreateRoom()
-    {
-        if (PhotonNetwork.IsConnectedAndReady)
-        {
-            roomOptions.MaxPlayers = 2;
-            roomOptions.IsOpen = true;
-            string roomNum = roomRandom(); // after random a room code
-            Debug.Log("Creating room: " + roomNum);
-            PhotonNetwork.CreateRoom(roomNum, roomOptions, TypedLobby.Default); // enter the room
-        } else
-        {
-            errorChoosePanelTxt.text = "There are some errors with the server!";
-        }
-        
     }
 
     // enter the lobby_dual after create a room successfully
@@ -313,6 +292,60 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
     {
         RectTransform rectTransform = button.GetComponent<RectTransform>();
         rectTransform.localScale = scale;
+    }
+
+    /* For create panel */
+    // Create a room with maximum 2 player
+    public void CreateRoom()
+    {
+        if (PhotonNetwork.IsConnectedAndReady)
+        {
+            roomOptions.MaxPlayers = 2;
+            roomOptions.IsOpen = true;
+            string roomNum = roomNameTxt.text; // after random a room code
+            Debug.Log("Creating room: " + roomNum);
+            InputManager.fileName = MapChosenTxt.text + ".txt";
+            PhotonNetwork.CreateRoom(roomNum, roomOptions, TypedLobby.Default); // enter the room
+        }
+        else
+        {
+            errorChoosePanelTxt.text = "There are some errors with the server!";
+        }
+
+    }
+
+    // Open Create Room Panel
+    public void OnClickOpenCreatePanel()
+    { 
+        openPanel.SetActive(true); 
+        roomNameTxt.text = "Room Name: " + roomRandom(); 
+        roomMasterTxt.text = "Room Master: ";
+        MapChosenTxt.text = "Map: ";
+    }
+
+    public void OnClickMapChosen(TMP_Text map)
+    {
+        MapChosenTxt.text = map.text;
+    }
+
+    // Close Create Room Panel
+    public void OnClickBackCreatePanel()
+    {
+        openPanel.SetActive(false);
+    }
+
+    // Random a room number (dont let player to create a room name), it is a room with xxxx (0<x<5)
+    public string roomRandom()
+    {
+        string roomNumber = "";
+        Random random = new Random();
+        for (int i = 0; i < 4; i++)
+        {
+            int digit = random.Next(1, 5);
+            roomNumber += digit.ToString();
+        }
+
+        return roomNumber;
     }
 
 }
