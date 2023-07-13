@@ -378,6 +378,7 @@ public class GameManager : MonoBehaviourPunCallbacks
                     foreach (GameObject insideItem in MapGridList[dimension])
                     {
                         int ok = 0;
+                        if (insideItem == null) continue;
                         if (insideItem.tag == "DimensionOut")
                         {
                             string dir = insideItem.GetComponent<DimensionOut>().OutDirection;
