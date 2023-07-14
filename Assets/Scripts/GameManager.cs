@@ -1,13 +1,9 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Photon.Pun;
-using Unity.VisualScripting;
-using UnityEditor;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
-using UnityEngine.UIElements;
 
 public class GameManager : MonoBehaviourPunCallbacks
 {
@@ -24,7 +20,8 @@ public class GameManager : MonoBehaviourPunCallbacks
     // private GameObject GuideUI;
     [SerializeField] GameObject playerPrefabM;
     [SerializeField] GameObject playerPrefabF;
-    [SerializeField] private Text roomName;
+    [SerializeField] private TMP_Text roomName;
+    [SerializeField] private GameObject canvaWaiting;
 
     [PunRPC]
     public GameObject PlayerM { get; set; }
@@ -92,8 +89,12 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         if (PhotonNetwork.CurrentRoom.PlayerCount == 2) //set = 1 to debug one player
         {
+            canvaWaiting.SetActive(false);
             //InitializeMap();
             view.RPC("InitializeMapRPC", RpcTarget.All);
+        } else
+        {
+            canvaWaiting.SetActive(true);
         }
     }
 

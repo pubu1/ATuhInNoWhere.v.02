@@ -124,6 +124,7 @@ public class FirebaseAuthenticaton : MonoBehaviour
 
             if (!signedIn && user != null)
             {
+                StartCoroutine(UpdateStatus(false));
                 auth.SignOut();
                 Debug.Log("Signed out " + user.UserId);
             }

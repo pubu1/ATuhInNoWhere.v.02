@@ -11,13 +11,6 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     [Header("Room Name")]
     [SerializeField] private TMP_Text roomNameText;
 
-    // Firebase variable
-    [Space]
-    [Header("Firebase")]
-    public DependencyStatus dependencyStatus;
-    public FirebaseAuth auth;
-    public FirebaseUser user;
-
     private void Start()
     {
         // Display the room name and default map name
