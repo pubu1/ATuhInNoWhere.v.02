@@ -1,15 +1,22 @@
 using Photon.Pun;
-using Photon.Realtime;
 using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
+using Firebase.Auth;
+using Firebase.Database;
+using Firebase;
 using System.Collections.Generic;
-using System.IO;
 
 public class LobbyManager : MonoBehaviourPunCallbacks
 {
     [Header("Room Name")]
     [SerializeField] private TMP_Text roomNameText;
+
+    // Firebase variable
+    [Space]
+    [Header("Firebase")]
+    public DependencyStatus dependencyStatus;
+    public FirebaseAuth auth;
+    public FirebaseUser user;
 
     private void Start()
     {
@@ -23,4 +30,6 @@ public class LobbyManager : MonoBehaviourPunCallbacks
         // Transfer back to the room
         PhotonNetwork.LoadLevel("Game");
     }
+
+
 }
