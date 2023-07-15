@@ -1,15 +1,15 @@
 using TMPro;
-using System.Text;
 using Random = System.Random;
 using Photon.Pun;
 using Photon.Realtime;
 using ExitGames.Client.Photon;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
-
+using UnityEngine.SceneManagement;
+using Firebase;
+using Firebase.Auth;
 
 public class ChangeRoom : MonoBehaviourPunCallbacks
 {
@@ -19,6 +19,16 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
 
     [SerializeField]
     private GameObject joinRoomScreen; // canvas screen to click the room number and enter the room
+
+    [Header("Create Room Panel")]
+    [SerializeField]
+    private GameObject openPanel;
+    [SerializeField]
+    private TMP_Text roomNameTxt;
+    [SerializeField]
+    private TMP_Text roomMasterTxt;
+    [SerializeField]
+    private TMP_Text MapChosenTxt;
 
     [Header("Room")]
     [SerializeField]
@@ -66,18 +76,18 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
         playerName.text = "";
 
         //lock the cursor 
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        /*Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;*/
 
         errorChoosePanelTxt.text = null;
+        roomNameJoin.onValueChanged.AddListener(ValidateInput);
     }
 
     private void Update()
     {
         if (currSelectButton != null)
         {
-            RectTransform rectTransform = currSelectButton.GetComponent<RectTransform>();
-            rectTransform.localScale = defaultScale;
+            ScaleButton(currSelectButton, defaultScale);
         }
 
         // Update currently selected button
@@ -86,8 +96,7 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
         // Scale the currently selected button
         if (currSelectButton != null)
         {
-            RectTransform rectTransform = currSelectButton.GetComponent<RectTransform>();
-            rectTransform.localScale = selectedScale;
+            ScaleButton(currSelectButton, selectedScale);
         }
     }
 
@@ -108,35 +117,10 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
         return null;
     }
 
-    // Random a room number (dont let player to create a room name), it is a room with xxxx (0<x<5)
-    public string roomRandom()
+    // enter the lobby_dual after create a room successfully
+    public override void OnJoinedRoom()
     {
-        string roomNumber = "";
-        Random random = new Random();
-        for (int i = 0; i < 4; i++)
-        {
-            int digit = random.Next(1, 5);
-            roomNumber += digit.ToString();
-        }
-
-        return roomNumber;
-    }
-
-    // Create a room with maximum 2 player
-    public void CreateRoom()
-    {
-        if (PhotonNetwork.IsConnectedAndReady)
-        {
-            roomOptions.MaxPlayers = 2;
-            roomOptions.IsOpen = true;
-            string roomNum = roomRandom(); // after random a room code
-            Debug.Log("Creating room: " + roomNum);
-            PhotonNetwork.CreateRoom(roomNum, roomOptions, TypedLobby.Default); // enter the room
-        } else
-        {
-            errorChoosePanelTxt.text = "There are some errors with the server!";
-        }
-        
+        PhotonNetwork.LoadLevel("Game");
     }
 
     // Click join to open the canvas enter the room code
@@ -144,18 +128,11 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
     {
         // set size of btn to default
         currSelectButton = GetCurrentlySelectedButton();
-        RectTransform rectTransform = currSelectButton.GetComponent<RectTransform>();
-        rectTransform.localScale = defaultScale;
+        ScaleButton(currSelectButton, defaultScale);
 
         optionSelectScreen.SetActive(false);
         joinRoomScreen.SetActive(true);
         eventSystem.SetSelectedGameObject(joinPanelButton);
-    }
-
-    // enter the lobby_dual after create a room successfully
-    public override void OnJoinedRoom()
-    {
-        PhotonNetwork.LoadLevel("Game");
     }
 
     // after enter the text in canvas joinRoom, click enter to enter the room
@@ -179,6 +156,34 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
             DisplayErrorText("Not connected to the server!");
         }
 
+    }
+
+    private bool IsValidCharacter(char character)
+    {
+        return character >= '1' && character <= '4';
+    }
+
+    private void ValidateInput(string input)
+    {
+        if (!string.IsNullOrEmpty(input))
+        {
+            if (input.Length > 4)
+            {
+                DisplayErrorText("Please enter a valid room with 4 digits.");
+                roomNameJoin.text = "";
+                return;
+            }
+
+            foreach (char character in input)
+            {
+                if (!IsValidCharacter(character))
+                {
+                    DisplayErrorText("Invalid room number! Please enter a number from 1 to 4.");
+                    roomNameJoin.text = "";
+                    return;
+                }
+            }
+        }
     }
 
     // Call if enter a room fail
@@ -217,6 +222,12 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
             // Remove the last character from the text
             roomNameJoin.text = currentText.Substring(0, 0);
         }
+    }
+
+    public void OnBacModeScene()
+    {
+        PhotonNetwork.Disconnect();
+        SceneManager.LoadScene("PlayMode");
     }
 
     // return the chooseOptionPanel
@@ -275,6 +286,67 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
         StopAllCoroutines();
         errorText.enabled = true; // Ensure the error text is permanently visible
         isFlickering = false;
+    }
+
+    // scale the button
+    private void ScaleButton(Button button, Vector2 scale)
+    {
+        RectTransform rectTransform = button.GetComponent<RectTransform>();
+        rectTransform.localScale = scale;
+    }
+
+    /* For create panel */
+    // Create a room with maximum 2 player
+    public void CreateRoom()
+    {
+        if (PhotonNetwork.IsConnectedAndReady)
+        {
+            roomOptions.MaxPlayers = 2;
+            roomOptions.IsOpen = true;
+            string roomNum = roomNameTxt.text; // after random a room code
+            Debug.Log("Creating room: " + roomNum);
+            InputManager.fileName = MapChosenTxt.text + ".txt";
+            PhotonNetwork.CreateRoom(roomNum, roomOptions, TypedLobby.Default); // enter the room
+        }
+        else
+        {
+            errorChoosePanelTxt.text = "There are some errors with the server!";
+        }
+
+    }
+
+    // Open Create Room Panel
+    public void OnClickOpenCreatePanel()
+    { 
+        openPanel.SetActive(true); 
+        roomNameTxt.text = "Room Name: " + roomRandom(); 
+        roomMasterTxt.text = "Room Master: ";
+        MapChosenTxt.text = "Map: ";
+    }
+
+    public void OnClickMapChosen(TMP_Text map)
+    {
+        MapChosenTxt.text = map.text;
+    }
+
+    // Close Create Room Panel
+    public void OnClickBackCreatePanel()
+    {
+        openPanel.SetActive(false);
+    }
+
+    // Random a room number (dont let player to create a room name), it is a room with xxxx (0<x<5)
+    public string roomRandom()
+    {
+        string roomNumber = "";
+        Random random = new Random();
+        for (int i = 0; i < 4; i++)
+        {
+            int digit = random.Next(1, 5);
+            roomNumber += digit.ToString();
+        }
+
+        return roomNumber;
     }
 
 }
