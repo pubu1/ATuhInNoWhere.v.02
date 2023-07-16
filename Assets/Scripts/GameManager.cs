@@ -63,7 +63,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         inputManager = new InputManager();
         doorButtonList = new Dictionary<int, GameObject>();
         Score = 0;
-        IsCameraTargetPlayer = false;
+        IsCameraTargetPlayer = true;
         inputList = inputManager.LoadGridFromFile();
         prefabList = FindAllPrefabs();
         singleMode = PhotonNetwork.OfflineMode;
@@ -87,7 +87,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         {
             Debug.Log("Not Connected");
             roomName.text = "There's nothing here";
-        }
+        }    
     }
 
     public override void OnPlayerEnteredRoom(Photon.Realtime.Player newPlayer)
@@ -118,10 +118,12 @@ public class GameManager : MonoBehaviourPunCallbacks
 
             // Synchronize the player object across the network
             PhotonView.Get(this).RPC("SetPlayerM", RpcTarget.OthersBuffered, playerID, x, y);
+            TempTargetCamera(PlayerM);
         }
         else
         {
             PlayerM = GameObject.FindGameObjectsWithTag("Player").FirstOrDefault(go => go.name.Contains("PlayerM"));
+            TempTargetCamera(PlayerM);
         }
     }
 
@@ -135,8 +137,10 @@ public class GameManager : MonoBehaviourPunCallbacks
 
             // Synchronize the player object across the network
             PhotonView.Get(this).RPC("SetPlayerF", RpcTarget.OthersBuffered, playerID, x, y);
+            TempTargetCamera(PlayerF);
         } else {
             PlayerF = GameObject.FindGameObjectsWithTag("Player").FirstOrDefault(go => go.name.Contains("PlayerF"));
+            TempTargetCamera(PlayerF);
         }
     }
 
@@ -240,6 +244,7 @@ public class GameManager : MonoBehaviourPunCallbacks
                             //SetPlayerM(id, x + offset, y);
                             view.RPC("SetPlayerM", RpcTarget.All, id, x + offset, y);
                             PlayerM.GetComponent<Player>().ID = id;
+                            
                         }
                     }
                     else if (item.Contains("PlayerF"))
@@ -435,6 +440,25 @@ public class GameManager : MonoBehaviourPunCallbacks
         }
     }
 
+    private void TempTargetCamera(GameObject player){
+        /*Temp target camera to player*/
+        //Get the Canvas
+            GameObject canvasObject = GameObject.Find("Canvas");
+            Canvas canvasComponent = canvasObject.GetComponent<Canvas>();
+
+            //Get Player Camera and World Camera
+            Camera playerCamera = player.transform.Find("Camera").gameObject.GetComponent<Camera>();
+            Camera worldCamera = GameObject.Find("Main Camera").GetComponent<Camera>();
+
+            worldCamera.enabled = false;
+            playerCamera.enabled = true;
+
+            canvasComponent.renderMode = RenderMode.ScreenSpaceCamera;
+            // Set the world camera of the canvas to the new camera
+            canvasComponent.worldCamera = playerCamera;
+            /*-------------------*/
+    }
+
     public List<string> GetPath() { return path; }
     public GameObject GetObjectFromGrid(int x, int y)
     {
@@ -456,6 +480,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         {
             foreach (GameObject item in MapGridList[i])
             {
+                if(item == null) continue;
                 if (item.tag == "Player") return item;
             }
         }
