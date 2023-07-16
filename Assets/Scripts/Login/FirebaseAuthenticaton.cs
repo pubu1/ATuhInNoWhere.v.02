@@ -446,22 +446,4 @@ public class FirebaseAuthenticaton : MonoBehaviour
             //Deaths are now updated
         }
     }
-
-    private void OnApplicationQuit()
-    {
-        // Update isActive status to false when the application is quitting
-        if (user != null)
-        {
-            StartCoroutine(UpdateStatus(false));
-        }
-    }
-
-    private void OnDestroy()
-    {
-        // Update isActive status to false when the script is destroyed
-        if (user != null)
-        {
-            StartCoroutine(UpdateStatus(false));
-        }
-    }
 }

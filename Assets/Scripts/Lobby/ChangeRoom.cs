@@ -2,7 +2,6 @@ using TMPro;
 using Random = System.Random;
 using Photon.Pun;
 using Photon.Realtime;
-using ExitGames.Client.Photon;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,6 +12,11 @@ using Firebase.Auth;
 
 public class ChangeRoom : MonoBehaviourPunCallbacks
 {
+    [Header("Firebase")]
+    public DependencyStatus dependencyStatus;
+    public FirebaseAuth auth;
+    public FirebaseUser user;
+
     [Header("Screens")]
     [SerializeField]
     private GameObject optionSelectScreen; // screen to select create or join a room
@@ -189,7 +193,7 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
     // Call if enter a room fail
     public override void OnJoinRoomFailed(short returnCode, string message)
     {
-        if (returnCode == Photon.Realtime.ErrorCode.GameDoesNotExist)
+        if (returnCode == ErrorCode.GameDoesNotExist)
         {
             DisplayErrorText("The room does not exist!");
         }
@@ -319,8 +323,20 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
     public void OnClickOpenCreatePanel()
     { 
         openPanel.SetActive(true); 
-        roomNameTxt.text = "Room Name: " + roomRandom(); 
-        roomMasterTxt.text = "Room Master: ";
+        roomNameTxt.text = "Room Name: " + roomRandom();
+        if (auth.CurrentUser != user)
+        {
+            bool signedIn = user != auth.CurrentUser && auth.CurrentUser != null;
+
+            user = auth.CurrentUser;
+
+            if (signedIn)
+            {
+                Debug.Log("Signed in " + user.UserId);
+                roomMasterTxt.text = "Room Master: " + user.DisplayName;
+            }
+        }
+        
         MapChosenTxt.text = "Map: ";
     }
 
