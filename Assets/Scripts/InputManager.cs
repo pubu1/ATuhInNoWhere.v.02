@@ -18,7 +18,7 @@ public class InputManager
 
     public List<string[,]> LoadGridFromFile()
     {
-        fileName = "input.txt";
+        //fileName = "input.txt";
         listMap = new List<string[,]>();
         string folderPath = Path.Combine(Application.dataPath, "..", "CustomMap");
         string filePath = Path.Combine(folderPath, fileName);
