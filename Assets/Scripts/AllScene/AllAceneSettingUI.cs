@@ -15,6 +15,7 @@ public class AllAceneSettingUI : MonoBehaviourPunCallbacks
     public FirebaseAuth auth;
     public FirebaseUser user;
     public DatabaseReference accountsRef;
+    FirebaseAuthenticaton firebaseAuth;
 
     [Header("Panel")]
     [SerializeField]
@@ -26,16 +27,18 @@ public class AllAceneSettingUI : MonoBehaviourPunCallbacks
 
     public void Start()
     {
-        FirebaseAuthenticaton firebaseAuth = FirebaseAuthenticaton.GetInstance();
+        firebaseAuth = FirebaseAuthenticaton.GetInstance();
         if (firebaseAuth != null)
         {
             auth = firebaseAuth.auth;
+            user = firebaseAuth.user;
         }
         nickname.text = PhotonNetwork.NickName;
     }
 
     void AuthStateChanged(object sender, System.EventArgs eventArgs)
     {
+        auth.StateChanged += AuthStateChanged;
         if (auth.CurrentUser != user)
         {
             bool signedIn = user != auth.CurrentUser && auth.CurrentUser != null;
@@ -72,10 +75,10 @@ public class AllAceneSettingUI : MonoBehaviourPunCallbacks
 
     public void OnClickBackToPrevious()
     {
-        if (PhotonNetwork.IsConnected && SceneManager.GetActiveScene().name == "Games")
+        if (PhotonNetwork.IsConnected && SceneManager.GetActiveScene().name == "Game")
         {
             SceneManager.LoadScene("Lobby");
-        } else if (PhotonNetwork.OfflineMode && SceneManager.GetActiveScene().name == "Games") {
+        } else if (PhotonNetwork.OfflineMode && SceneManager.GetActiveScene().name == "Game") {
             SceneManager.LoadScene("Map");
         } else if (SceneManager.GetActiveScene().name == "Map" || SceneManager.GetActiveScene().name == "Lobby") 
         {
@@ -120,5 +123,16 @@ public class AllAceneSettingUI : MonoBehaviourPunCallbacks
         {
             //Deaths are now updated
         }
+    }
+
+    public void OnApplicationQuit()
+    {
+        if (auth != null && user != null)
+        {
+            auth.SignOut();
+            StartCoroutine(UpdateStatus(false));
+            Debug.Log("Signed out " + user.UserId);
+        }
+        Debug.Log("No one log in");
     }
 }

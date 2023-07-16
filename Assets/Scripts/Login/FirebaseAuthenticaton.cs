@@ -49,6 +49,8 @@ public class FirebaseAuthenticaton : MonoBehaviourPunCallbacks
         ClearFields();
         accounts = new List<Account>();
         accounts.Clear();
+
+        InitializeFirebase();
     }
 
     private void Awake()
@@ -60,7 +62,6 @@ public class FirebaseAuthenticaton : MonoBehaviourPunCallbacks
         }
 
         Instance = this;
-        InitializeFirebase();
         DontDestroyOnLoad(gameObject);
     }
 
@@ -89,6 +90,7 @@ public class FirebaseAuthenticaton : MonoBehaviourPunCallbacks
 
     private void GetListAccount(DatabaseReference db)
     {
+        accounts.Clear();
         // Read the data for each account
         db.Child("Accounts").GetValueAsync().ContinueWith(readTask =>
         {
@@ -474,5 +476,16 @@ public class FirebaseAuthenticaton : MonoBehaviourPunCallbacks
     {
         StartCoroutine(UpdateStatus(false));
         Application.Quit();
+    }
+
+    public void OnApplicationQuit()
+    {
+        if (auth != null && user != null)
+        {
+            auth.SignOut();
+            StartCoroutine(UpdateStatus(false));
+            Debug.Log("Signed out " + user.UserId);
+        }
+        Debug.Log("Quit");
     }
 }
