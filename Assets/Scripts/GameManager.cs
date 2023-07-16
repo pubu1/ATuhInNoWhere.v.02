@@ -511,10 +511,10 @@ public class GameManager : MonoBehaviourPunCallbacks
         //     openGuideUI = !openGuideUI;
         //     GuideUI.SetActive(openGuideUI);
         // }
-        if (Score == SocketAmount / 2)
+        if (Score == SocketAmount / 2 && SocketAmount != 0)
         {
             //GameOverUI.SetActive(true);
-            //SceneManager.LoadScene("Map");
+            SceneManager.LoadScene("Map");
         }
     }
     [PunRPC]
