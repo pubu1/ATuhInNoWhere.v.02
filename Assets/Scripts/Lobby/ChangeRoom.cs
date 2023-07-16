@@ -160,6 +160,7 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
             }
             else 
             {
+                InputManager.fileName = "Map1.txt";
                 PhotonNetwork.JoinRoom(roomEnter);
             }   
         }
@@ -318,7 +319,7 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
             roomOptions.IsOpen = true;
             string roomNum = roomNameTxt.text; // after random a room code
             Debug.Log("Creating room: " + roomNum);
-            //InputManager.fileName = MapChosenTxt.text + ".txt";
+            InputManager.fileName = MapChosenTxt.text + ".txt";
             PhotonNetwork.CreateRoom(roomNum, roomOptions, TypedLobby.Default); // enter the room
 
             // Display the wait canvas

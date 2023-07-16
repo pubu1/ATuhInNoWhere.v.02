@@ -5174,6 +5174,14 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1883486903}
+    - target: {fileID: 3948165508040907120, guid: a897a8ff27aab1940be4d0cf01f4b1d1, type: 3}
+      propertyPath: m_text
+      value: Map1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3948165508040907120, guid: a897a8ff27aab1940be4d0cf01f4b1d1, type: 3}
+      propertyPath: m_fontSize
+      value: 44.1
+      objectReference: {fileID: 0}
     - target: {fileID: 6375301463219614333, guid: a897a8ff27aab1940be4d0cf01f4b1d1, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
