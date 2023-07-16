@@ -1,13 +1,15 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.UI;
 using Firebase;
 using Firebase.Auth;
 using TMPro;
+using Firebase.Database;
+using System.Collections.Generic;
+using System;
 using UnityEngine.SceneManagement;
-//using Firebase.Database;
+using Photon.Pun;
 
-public class FirebaseAuthenticaton : MonoBehaviour
+public class FirebaseAuthenticaton : MonoBehaviourPunCallbacks
 {
     [Header("Panel")]
     public GameObject loginPanel;
@@ -15,11 +17,12 @@ public class FirebaseAuthenticaton : MonoBehaviour
 
     // Firebase variable
     [Header("Firebase")]
+    public static FirebaseAuthenticaton Instance;
     public DependencyStatus dependencyStatus;
     public FirebaseAuth auth;
     public FirebaseUser user;
-    //public DatabaseReference DBreference;
-
+    public DatabaseReference accountsRef;
+    public List<Account> accounts;
 
     // Login Variables
     [Space]
@@ -36,29 +39,89 @@ public class FirebaseAuthenticaton : MonoBehaviour
     public TMP_InputField confirmPasswordRegisterField;
     public ErrorPopup errorPopup;
 
+    public static FirebaseAuthenticaton GetInstance()
+    {
+        return Instance;
+    }
 
     private void Start()
     {
         ClearFields();
+        accounts = new List<Account>();
+        accounts.Clear();
     }
 
     private void Awake()
     {
-        // Check that all of the necessary dependencies for firebase are present on the system
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+        InitializeFirebase();
+        DontDestroyOnLoad(gameObject);
+    }
+
+    void InitializeFirebase()
+    {
         FirebaseApp.CheckAndFixDependenciesAsync().ContinueWith(task =>
         {
-            dependencyStatus = task.Result;
-
-            if (dependencyStatus == DependencyStatus.Available)
+            if (task.Result == DependencyStatus.Available)
             {
-                InitializeFirebase();
+                Debug.Log("Firebase dependencies are available.");
+                // Initialize the Firebase app
+                FirebaseApp app = FirebaseApp.DefaultInstance;
+
+                // Initialize the FirebaseAuth instance
+                auth = FirebaseAuth.DefaultInstance;
+                // Get the reference to the "Accounts" node
+                accountsRef = FirebaseDatabase.DefaultInstance.RootReference;
+                GetListAccount(accountsRef);
             }
             else
             {
-                Debug.LogError("Could not resolve all firebase dependencies: " + dependencyStatus);
+                Debug.LogError("Could not resolve all Firebase dependencies: " + task.Result);
             }
         });
     }
+
+    private void GetListAccount(DatabaseReference db)
+    {
+        // Read the data for each account
+        db.Child("Accounts").GetValueAsync().ContinueWith(readTask =>
+        {
+            if (readTask.IsFaulted)
+            {
+                Debug.LogError("Failed to read accounts data: " + readTask.Exception);
+            }
+            else if (readTask.IsCompleted)
+            {
+                DataSnapshot snapshot = readTask.Result;
+
+                if (snapshot != null && snapshot.HasChildren)
+                {
+                    foreach (var accountSnapshot in snapshot.Children)
+                    {
+                        string email = accountSnapshot.Child("email").Value.ToString();
+                        string nickname = accountSnapshot.Child("nickname").Value.ToString();
+                        string password = accountSnapshot.Child("password").Value.ToString();
+                        bool isActive = Convert.ToBoolean(accountSnapshot.Child("isActive").GetValue(false));
+
+                        accounts.Add(new Account { acc_email = email, acc_nickname = nickname, acc_password = password, acc_isActive = isActive });
+
+                        Debug.Log(email + " " + nickname + " " + password + " " + isActive);
+                    }
+                }
+                else
+                {
+                    Debug.Log("No accounts data found.");
+                }
+            }
+        });
+    }
+
 
     //Clear the login feilds
     public void ClearFields()
@@ -71,16 +134,6 @@ public class FirebaseAuthenticaton : MonoBehaviour
         passwordLoginField.text = "";
     }
 
-    void InitializeFirebase()
-    {
-        //Set the default instance object
-        auth = FirebaseAuth.DefaultInstance;
-
-        //auth.StateChanged += AuthStateChanged;
-        //AuthStateChanged(this, null);
-        //DBreference = FirebaseDatabase.DefaultInstance.RootReference;
-    }
-
     // Track state changes of the auth object.
     void AuthStateChanged(object sender, System.EventArgs eventArgs)
     {
@@ -90,6 +143,7 @@ public class FirebaseAuthenticaton : MonoBehaviour
 
             if (!signedIn && user != null)
             {
+                StartCoroutine(UpdateStatus(false));
                 auth.SignOut();
                 Debug.Log("Signed out " + user.UserId);
             }
@@ -111,6 +165,11 @@ public class FirebaseAuthenticaton : MonoBehaviour
 
     private IEnumerator LoginAsync(string email, string password)
     {
+        if (CheckLogIn(email))
+        {
+            errorPopup.ShowPopup("This account is already logged in!");
+            yield break; // Exit the coroutine
+        }
         var loginTask = auth.SignInWithEmailAndPasswordAsync(email, password);
 
         yield return new WaitUntil(() => loginTask.IsCompleted);
@@ -122,9 +181,8 @@ public class FirebaseAuthenticaton : MonoBehaviour
             FirebaseException firebaseException = loginTask.Exception.GetBaseException() as FirebaseException;
             AuthError authError = (AuthError)firebaseException.ErrorCode;
 
-
             string failedMessage = "Login Failed! Because ";
-
+            
             switch (authError)
             {
                 case AuthError.InvalidEmail:
@@ -151,15 +209,20 @@ public class FirebaseAuthenticaton : MonoBehaviour
                     errorPopup.ShowPopup("Something was wrong... ");
                     break;
             }
-            Debug.Log(failedMessage);
+            //Debug.Log(failedMessage);
         }
         else
         {
             // User is logged in now
             user = loginTask.Result.User;
+            StartCoroutine(UpdateStatus(true));
 
             Debug.LogFormat("{0} You Are Successfully Logged In", user.DisplayName);
+            PhotonNetwork.NickName = user.DisplayName;
             
+            Debug.Log(PhotonNetwork.NickName);
+            ClearFields();
+
             SceneManager.LoadScene("PlayMode");
         }
     }
@@ -175,28 +238,36 @@ public class FirebaseAuthenticaton : MonoBehaviour
 
         if (email == "")
         {
-            Debug.LogError("Email field is empty");
+            //Debug.LogError("Email field is empty");
             errorPopup.ShowPopup("Email field is empty! ");
 
+            yield break;
         }
         else if (name == "")
         {
-            Debug.LogError("User Name is empty");
-            errorPopup.ShowPopup("User Name is empty! ");
-
+            //Debug.LogError("User Name is empty");
+            errorPopup.ShowPopup("The nickname is empty! ");
+            yield break;
+        }
+        else if (!CheckNicknameAvailability(name))
+        {
+            Debug.LogError("Nickname is already taken");
+            errorPopup.ShowPopup("Nickname is already taken! ");
+            yield break; // Exit the registration coroutine
         }
         else if (passwordRegisterField.text != confirmPasswordRegisterField.text)
         {
-            Debug.LogError("Password does not match");
+            //Debug.LogError("Password does not match");
             errorPopup.ShowPopup("Password does not match! ");
+            yield break;
         }
 
         else if (confirmPasswordRegisterField.text != confirmPasswordRegisterField.text)
         {
-            Debug.LogError("Password does not match");
+            //Debug.LogError("Password does not match");
             errorPopup.ShowPopup("Password does not match! ");
+            yield break;
         }
-
         else
         {
             var registerTask = auth.CreateUserWithEmailAndPasswordAsync(email, password);
@@ -238,7 +309,7 @@ public class FirebaseAuthenticaton : MonoBehaviour
                         break;
                 }
 
-                Debug.Log(failedMessage);
+                //Debug.Log(failedMessage);
             }
             else
             {
@@ -290,16 +361,118 @@ public class FirebaseAuthenticaton : MonoBehaviour
                             break;
                     }
 
-                    Debug.Log(failedMessage);
+                    //Debug.Log(failedMessage);
                 }
                 else
                 {
                     Debug.Log("Registration Sucessful Welcome " + user.DisplayName);
+                    Account newAccount = new Account
+                    {
+                        acc_email = email,
+                        acc_nickname = name,
+                        acc_password = password,
+                        acc_isActive = false
+                    };
+
+                    UpdateInfoAccount(newAccount);
+                    accounts.Add(newAccount);
+                    ClearFields();
                     RegisterPanel.SetActive(false);
                     loginPanel.SetActive(true);
                 }
             }
         }
     }
-    
+
+    private bool CheckNicknameAvailability(string nickname)
+    {
+        foreach (var account in accounts)
+        {
+            if (account.acc_nickname == nickname)
+            {
+                //Debug.Log("cannot use this " + nickname);
+                // Nickname is already taken
+                return false;
+            }
+        }
+        //Debug.Log("can use this " + nickname);
+        // Nickname is available
+        return true;
+    }
+
+    private bool CheckLogIn(string email)
+    {
+        Account account = FindAccount(email);
+        if (account != null && account.acc_isActive )
+        {
+            Debug.Log("can login");
+            // Account is already logged in
+            return true;
+        }
+        Debug.Log("cannot login");
+        // Account is not logged in
+        return false;
+    }
+
+    private Account FindAccount(string email)
+    {
+        foreach (Account account in accounts)
+        {
+            if (account.acc_email == email)
+            {
+                return account;
+            }
+        }
+
+        return null; // Account not found
+    }
+
+    private void UpdateInfoAccount(Account acc)
+    {
+        string Node = "Accounts";
+        StartCoroutine(UpdateData(Node, "email", acc.acc_email));
+        StartCoroutine(UpdateData(Node, "password", acc.acc_password));
+        StartCoroutine(UpdateData(Node, "nickname", acc.acc_nickname));
+        StartCoroutine(UpdateStatus(acc.acc_isActive));
+    }
+
+    private IEnumerator UpdateData(string Node, string dataName, string data)
+    {
+        //Set the currently logged in user deaths
+        var DBTask = accountsRef.Child(Node).Child(user.UserId).Child(dataName).SetValueAsync(data);
+
+        yield return new WaitUntil(predicate: () => DBTask.IsCompleted);
+
+        if (DBTask.Exception != null)
+        {
+            Debug.LogWarning(message: $"Failed to register task with {DBTask.Exception}");
+        }
+        else
+        {
+            //Deaths are now updated
+        }
+    }
+
+    private IEnumerator UpdateStatus(bool data)
+    {
+        //Set the currently logged in user deaths
+        var DBTask = accountsRef.Child("Accounts").Child(user.UserId).Child("isActive").SetValueAsync(data);
+
+        yield return new WaitUntil(predicate: () => DBTask.IsCompleted);
+
+        if (DBTask.Exception != null)
+        {
+            Debug.LogWarning(message: $"Failed to register task with {DBTask.Exception}");
+        }
+        else
+        {
+            //Deaths are now updated
+        }
+    }
+
+    public void LogOut()
+    {
+        StartCoroutine(UpdateStatus(false));
+        Application.Quit();
+    }
 }

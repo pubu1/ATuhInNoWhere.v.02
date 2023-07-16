@@ -1,10 +1,10 @@
 using Photon.Pun;
-using Photon.Realtime;
 using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
+using Firebase.Auth;
+using Firebase.Database;
+using Firebase;
 using System.Collections.Generic;
-using System.IO;
 
 public class LobbyManager : MonoBehaviourPunCallbacks
 {
@@ -23,4 +23,6 @@ public class LobbyManager : MonoBehaviourPunCallbacks
         // Transfer back to the room
         PhotonNetwork.LoadLevel("Game");
     }
+
+
 }
