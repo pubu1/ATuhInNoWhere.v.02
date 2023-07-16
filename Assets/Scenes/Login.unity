@@ -5679,7 +5679,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1260070108}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1344c3c82d62a2a41a3576d8abb8e3ea, type: 3}
   m_Name: 
@@ -5853,6 +5853,9 @@ GameObject:
   - component: {fileID: 1309454257}
   - component: {fileID: 1309454256}
   - component: {fileID: 1309454255}
+  - component: {fileID: 1309454260}
+  - component: {fileID: 1309454259}
+  - component: {fileID: 1309454258}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -5926,6 +5929,50 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!45 &1309454258
+Skybox:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1309454254}
+  m_Enabled: 1
+  m_CustomSkybox: {fileID: 0}
+--- !u!114 &1309454259
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1309454254}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dca6002b33ac5bc48b39588e222296fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Skyboxes:
+  - {fileID: 2100000, guid: 096e3aaa8174f8d4eb4de9b4684ec2ad, type: 2}
+  - {fileID: 2100000, guid: e3859410315d60d4ab75705a0e2683fe, type: 2}
+  - {fileID: 2100000, guid: 1d91ac24ed115634b8d15fa313843cc5, type: 2}
+  - {fileID: 2100000, guid: 4ac826150ef405d4f99ce1f800a53f76, type: 2}
+  - {fileID: 2100000, guid: 1d91ac24ed115634b8d15fa313843cc5, type: 2}
+  Camera: {fileID: 1309454256}
+--- !u!114 &1309454260
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1309454254}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a3e5f51e31f79c4fb340e92ffc286e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speedNormal: 2
+  speedFast: 5
+  rotationSpeed: 1
+  movementDirection: {x: 1, y: 0, z: 1}
 --- !u!1 &1311086863
 GameObject:
   m_ObjectHideFlags: 0

@@ -7,8 +7,9 @@ using Firebase.Database;
 using System.Collections.Generic;
 using System;
 using UnityEngine.SceneManagement;
+using Photon.Pun;
 
-public class FirebaseAuthenticaton : MonoBehaviour
+public class FirebaseAuthenticaton : MonoBehaviourPunCallbacks
 {
     [Header("Panel")]
     public GameObject loginPanel;
@@ -16,6 +17,7 @@ public class FirebaseAuthenticaton : MonoBehaviour
 
     // Firebase variable
     [Header("Firebase")]
+    public static FirebaseAuthenticaton Instance;
     public DependencyStatus dependencyStatus;
     public FirebaseAuth auth;
     public FirebaseUser user;
@@ -37,12 +39,29 @@ public class FirebaseAuthenticaton : MonoBehaviour
     public TMP_InputField confirmPasswordRegisterField;
     public ErrorPopup errorPopup;
 
+    public static FirebaseAuthenticaton GetInstance()
+    {
+        return Instance;
+    }
 
     private void Start()
     {
         ClearFields();
-        InitializeFirebase();
         accounts = new List<Account>();
+        accounts.Clear();
+    }
+
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+        InitializeFirebase();
+        DontDestroyOnLoad(gameObject);
     }
 
     void InitializeFirebase()
@@ -199,7 +218,11 @@ public class FirebaseAuthenticaton : MonoBehaviour
             StartCoroutine(UpdateStatus(true));
 
             Debug.LogFormat("{0} You Are Successfully Logged In", user.DisplayName);
+            PhotonNetwork.NickName = user.DisplayName;
+            
+            Debug.Log(PhotonNetwork.NickName);
             ClearFields();
+
             SceneManager.LoadScene("PlayMode");
         }
     }
@@ -445,5 +468,11 @@ public class FirebaseAuthenticaton : MonoBehaviour
         {
             //Deaths are now updated
         }
+    }
+
+    public void LogOut()
+    {
+        StartCoroutine(UpdateStatus(false));
+        Application.Quit();
     }
 }

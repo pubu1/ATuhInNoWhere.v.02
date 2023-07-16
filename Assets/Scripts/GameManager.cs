@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Photon.Pun;
@@ -18,10 +19,10 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     // [SerializeField]
     // private GameObject GuideUI;
+    [Space]
     [SerializeField] GameObject playerPrefabM;
     [SerializeField] GameObject playerPrefabF;
     [SerializeField] private TMP_Text roomName;
-    [SerializeField] private GameObject canvaWaiting;
 
     [PunRPC]
     public GameObject PlayerM { get; set; }
@@ -78,10 +79,14 @@ public class GameManager : MonoBehaviourPunCallbacks
             Debug.Log("Single mode!");
             view.RPC("InitializeMapRPC", RpcTarget.All);
         }
-        else
+        else if (PhotonNetwork.IsConnectedAndReady)
         {
             Debug.Log("Multiplayer mode!");
             roomName.text = PhotonNetwork.CurrentRoom.Name;
+        } else
+        {
+            Debug.Log("Not Connected");
+            roomName.text = "There's nothing here";
         }
     }
 
@@ -89,12 +94,8 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         if (PhotonNetwork.CurrentRoom.PlayerCount == 2) //set = 1 to debug one player
         {
-            canvaWaiting.SetActive(false);
             //InitializeMap();
             view.RPC("InitializeMapRPC", RpcTarget.All);
-        } else
-        {
-            canvaWaiting.SetActive(true);
         }
     }
 

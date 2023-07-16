@@ -7,7 +7,7 @@ using System.Collections;
 using Firebase.Database;
 using TMPro;
 
-public class AllAceneSettingUI : MonoBehaviour
+public class AllAceneSettingUI : MonoBehaviourPunCallbacks
 {
     // Firebase variable
     [Header("Firebase")]
@@ -23,6 +23,16 @@ public class AllAceneSettingUI : MonoBehaviour
     [Header("User Name")]
     [SerializeField]
     private TMP_Text nickname;
+
+    public void Start()
+    {
+        FirebaseAuthenticaton firebaseAuth = FirebaseAuthenticaton.GetInstance();
+        if (firebaseAuth != null)
+        {
+            auth = firebaseAuth.auth;
+        }
+        nickname.text = PhotonNetwork.NickName;
+    }
 
     void AuthStateChanged(object sender, System.EventArgs eventArgs)
     {
@@ -42,11 +52,10 @@ public class AllAceneSettingUI : MonoBehaviour
             if (signedIn)
             {
                 Debug.Log("Signed in " + user.UserId);
-                nickname.text = user.DisplayName;
+                nickname.text = PhotonNetwork.NickName;
             } else
             {
                 nickname.text = "there's problem";
-
             }
         }
     }
@@ -66,12 +75,15 @@ public class AllAceneSettingUI : MonoBehaviour
         if (PhotonNetwork.IsConnected && SceneManager.GetActiveScene().name == "Games")
         {
             SceneManager.LoadScene("Lobby");
-        } else if (PhotonNetwork.OfflineMode && (SceneManager.GetActiveScene().name != "Map" || SceneManager.GetActiveScene().name != "Games")) {
+        } else if (PhotonNetwork.OfflineMode && SceneManager.GetActiveScene().name == "Games") {
             SceneManager.LoadScene("Map");
+        } else if (SceneManager.GetActiveScene().name == "Map" || SceneManager.GetActiveScene().name == "Lobby") 
+        {
+            SceneManager.LoadScene("PlayMode");
         } else
         {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex - 1);
-        }   
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
     }
 
     public void OnClickBackToPlayMode()
@@ -89,6 +101,7 @@ public class AllAceneSettingUI : MonoBehaviour
             StartCoroutine(UpdateStatus(false));
             Debug.Log("Signed out " + user.UserId);
         }
+        PhotonNetwork.Disconnect();
         SceneManager.LoadScene("Login");
     }
 

@@ -1,4 +1,4 @@
-using Photon.Pun;
+/*using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -8,10 +8,8 @@ using UnityEngine.UI;
 
 public class LoadingScreen : MonoBehaviour
 {
-    [SerializeField] private Slider progressBar;
     [SerializeField] private TMP_Text loading;
     [SerializeField] private TMP_Text numberPlayer;
-    [SerializeField] private GameObject canvaWaiting;
 
     public float duration = 2f;
 
@@ -25,14 +23,12 @@ public class LoadingScreen : MonoBehaviour
         gameManager = FindObjectOfType<GameManager>(); // Assign the GameManager reference
 
         StartCoroutine(LoadText());
-        StartCoroutine(WaitForPlayers());
     }
 
     private IEnumerator WaitForPlayers()
     {
         while (PhotonNetwork.CurrentRoom.PlayerCount < 2) // Modify the player count condition as needed
         {
-            canvaWaiting.SetActive(true); // Enable the waiting canvas
             numberPlayer.text = PhotonNetwork.CurrentRoom.Players.Count.ToString() + "/2";
             yield return null;
         }
@@ -70,29 +66,6 @@ public class LoadingScreen : MonoBehaviour
         }
     }
 
-    private IEnumerator LoadText()
-    {
-
-        int dotCount = 0;
-        string loadingTextBase = "Waiting";
-        string dots = "";
-
-        while (true)
-        {
-            if (dotCount < 3)
-            {
-                dots += ".";
-                dotCount++;
-            }
-            else
-            {
-                dots = "";
-                dotCount = 0;
-            }
-
-            loading.text = loadingTextBase + dots;
-
-            yield return new WaitForSeconds(0.5f);
-        }
-    }
+    
 }
+*/

@@ -4,14 +4,20 @@ using Photon.Pun;
 using Photon.Realtime;
 using System.Collections;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using Firebase;
 using Firebase.Auth;
+using Button = UnityEngine.UI.Button;
 
 public class ChangeRoom : MonoBehaviourPunCallbacks
 {
+    [Header("Waiting canvas")]
+    [SerializeField] private TMP_Text loading;
+    [SerializeField] private TMP_Text numberPlayer;
+    [SerializeField] private TMP_Text percentText;
+    [SerializeField] private GameObject waitCanvas;
+
     [Header("Firebase")]
     public DependencyStatus dependencyStatus;
     public FirebaseAuth auth;
@@ -85,6 +91,13 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
 
         errorChoosePanelTxt.text = null;
         roomNameJoin.onValueChanged.AddListener(ValidateInput);
+
+        //waitCanvas.SetActive(false);
+    }
+
+    public override void OnConnectedToMaster()
+    {
+        PhotonNetwork.JoinLobby();
     }
 
     private void Update()
@@ -121,12 +134,7 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
         return null;
     }
 
-    // enter the lobby_dual after create a room successfully
-    public override void OnJoinedRoom()
-    {
-        PhotonNetwork.LoadLevel("Game");
-    }
-
+    
     // Click join to open the canvas enter the room code
     public void OnClickJoinRoom()
     {
@@ -230,6 +238,7 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
 
     public void OnBacModeScene()
     {
+        PhotonNetwork.LeaveLobby();
         PhotonNetwork.Disconnect();
         SceneManager.LoadScene("PlayMode");
     }
@@ -309,35 +318,25 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
             roomOptions.IsOpen = true;
             string roomNum = roomNameTxt.text; // after random a room code
             Debug.Log("Creating room: " + roomNum);
-            InputManager.fileName = MapChosenTxt.text + ".txt";
+            //InputManager.fileName = MapChosenTxt.text + ".txt";
             PhotonNetwork.CreateRoom(roomNum, roomOptions, TypedLobby.Default); // enter the room
+
+            // Display the wait canvas
+            //waitCanvas.SetActive(true);
         }
         else
         {
             errorChoosePanelTxt.text = "There are some errors with the server!";
         }
-
     }
 
     // Open Create Room Panel
     public void OnClickOpenCreatePanel()
     { 
         openPanel.SetActive(true); 
-        roomNameTxt.text = "Room Name: " + roomRandom();
-        if (auth.CurrentUser != user)
-        {
-            bool signedIn = user != auth.CurrentUser && auth.CurrentUser != null;
-
-            user = auth.CurrentUser;
-
-            if (signedIn)
-            {
-                Debug.Log("Signed in " + user.UserId);
-                roomMasterTxt.text = "Room Master: " + user.DisplayName;
-            }
-        }
-        
-        MapChosenTxt.text = "Map: ";
+        roomNameTxt.text = roomRandom();
+        roomMasterTxt.text = PhotonNetwork.NickName;
+        MapChosenTxt.text = "None is choosing!";
     }
 
     public void OnClickMapChosen(TMP_Text map)
@@ -364,5 +363,96 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
 
         return roomNumber;
     }
+
+    // waiting for another destiny
+    /*public override void OnPlayerEnteredRoom(Photon.Realtime.Player newPlayer)
+    {
+        numberPlayer.text = PhotonNetwork.CurrentRoom.Players.Count.ToString() + "/2";
+        StartCoroutine(LoadText());
+        if (PhotonNetwork.CurrentRoom.PlayerCount == 2)
+        {
+            // Start loading the game scene
+            StartCoroutine(LoadGameSceneAsync("Game"));
+        } else
+        {
+            percentText.text = "Loading 0%";
+        }
+    }
+
+    public override void OnPlayerLeftRoom(Photon.Realtime.Player newPlayer)
+    {
+        numberPlayer.text = PhotonNetwork.CurrentRoom.Players.Count.ToString() + "/2";
+    }*/
+
+    // check the time for loading
+    private IEnumerator LoadGameSceneAsync(string sceneName)
+    {
+        AsyncOperation operation = SceneManager.LoadSceneAsync(sceneName);
+
+        while (!operation.isDone)
+        {
+            float progress = Mathf.Clamp01(operation.progress / 0.9f); // Normalize progress to 0-1 range
+
+            if (PhotonNetwork.CurrentRoom.PlayerCount == 2)
+            {
+                // Complete the loading when the other player enters
+                progress = 1f;
+            }
+            else
+            {
+                // Limit the progress to 90% if the other player has not entered
+                progress = Mathf.Clamp01(progress * 0.9f);
+            }
+
+            // Convert progress to percentage
+            int percentage = Mathf.RoundToInt(progress * 100f);
+            percentText.text = + percentage + "%";
+
+            yield return null;
+        }
+    }
+
+    private IEnumerator LoadText()
+    {
+
+        int dotCount = 0;
+        string loadingTextBase = "Waiting";
+        string dots = "";
+
+        while (true)
+        {
+            if (dotCount < 3)
+            {
+                dots += ".";
+                dotCount++;
+            }
+            else
+            {
+                dots = "";
+                dotCount = 0;
+            }
+
+            loading.text = loadingTextBase + dots;
+
+            yield return new WaitForSeconds(0.5f);
+        }
+    }
+
+    // enter the lobby_dual after create a room successfully
+    public override void OnJoinedRoom()
+    {
+        PhotonNetwork.LoadLevel("Game");
+    }
+
+    public void OnClickLeftRoom()
+    {
+        PhotonNetwork.LeaveRoom();
+    }
+
+    public override void OnLeftRoom()
+    {
+        waitCanvas.SetActive(false);
+    }
+
 
 }
