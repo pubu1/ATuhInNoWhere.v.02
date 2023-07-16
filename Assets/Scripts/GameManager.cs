@@ -454,6 +454,12 @@ public class GameManager : MonoBehaviourPunCallbacks
             // Set the world camera of the canvas to the new camera
             canvasComponent.worldCamera = playerCamera;
             /*-------------------*/
+
+            Canvas canvasObjectPanel = GameObject.Find("RoomName").GetComponent<Canvas>();
+            canvasObjectPanel.worldCamera = playerCamera;
+
+            Canvas canvasObjectEsc = GameObject.Find("allSceneSettingUI").GetComponent<Canvas>();
+            canvasObjectEsc.worldCamera = playerCamera;
     }
 
     public List<string> GetPath() { return path; }
