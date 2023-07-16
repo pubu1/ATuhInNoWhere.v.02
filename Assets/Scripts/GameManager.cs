@@ -117,13 +117,11 @@ public class GameManager : MonoBehaviourPunCallbacks
             PlayerM.GetComponent<Player>().ID = playerID;
 
             // Synchronize the player object across the network
-            PhotonView.Get(this).RPC("SetPlayerM", RpcTarget.OthersBuffered, playerID, x, y);
-            TempTargetCamera(PlayerM);
+            PhotonView.Get(this).RPC("SetPlayerM", RpcTarget.OthersBuffered, playerID, x, y);         
         }
         else
         {
             PlayerM = GameObject.FindGameObjectsWithTag("Player").FirstOrDefault(go => go.name.Contains("PlayerM"));
-            TempTargetCamera(PlayerM);
         }
     }
 
@@ -137,10 +135,8 @@ public class GameManager : MonoBehaviourPunCallbacks
 
             // Synchronize the player object across the network
             PhotonView.Get(this).RPC("SetPlayerF", RpcTarget.OthersBuffered, playerID, x, y);
-            TempTargetCamera(PlayerF);
         } else {
             PlayerF = GameObject.FindGameObjectsWithTag("Player").FirstOrDefault(go => go.name.Contains("PlayerF"));
-            TempTargetCamera(PlayerF);
         }
     }
 
@@ -242,9 +238,9 @@ public class GameManager : MonoBehaviourPunCallbacks
 
                             //PlayerM = InstantiatePlayerM(id, x + offset, y);
                             //SetPlayerM(id, x + offset, y);
-                            view.RPC("SetPlayerM", RpcTarget.All, id, x + offset, y);
+                            view.RPC("SetPlayerM", RpcTarget.All, id, x + offset, y);                          
                             PlayerM.GetComponent<Player>().ID = id;
-                            
+                            TempTargetCamera(PlayerM);
                         }
                     }
                     else if (item.Contains("PlayerF"))
@@ -260,6 +256,7 @@ public class GameManager : MonoBehaviourPunCallbacks
                             //SetPlayerF(id, x + offset, y);
                             view.RPC("SetPlayerF", RpcTarget.All, id, x + offset, y);
                             PlayerF.GetComponent<Player>().ID = id;
+                            TempTargetCamera(PlayerF);
                         }
                     }
                     else if (item.Contains("Bridge"))
