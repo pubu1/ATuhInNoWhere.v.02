@@ -1,3 +1,4 @@
+using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -17,46 +18,41 @@ public class Wire : MonoBehaviour
     {
         wireZAxis = 7f;
         wireSprites = new Sprite[3];       
-        wireSprites[0] = Resources.Load<Sprite>("straight");
-        wireSprites[1] = Resources.Load<Sprite>("curve");
-        wireSprites[2] = Resources.Load<Sprite>("cap");   
-        GameManager gameManager = new GameManager();   
+        wireSprites[0] = Resources.Load<Sprite>("Sprites/Wire/straight");
+        wireSprites[1] = Resources.Load<Sprite>("Sprites/Wire/curve");
+        wireSprites[2] = Resources.Load<Sprite>("Sprites/Wire/cap");
+        GameManager gameManager = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameManager>();
         wireInstance = gameManager.GetPrefabByName("Wire");
     }
 
-    public void GenerateWire(Player player, string previousMove)
+    public GameObject GenerateWire(Player player)
     {
-        /*chuyen vi tri trong array thanh wire*/
-
-        /*===Code here===*/
-        /*obstaclePosition[player.CurrentPosition] = "Pipe";
-        if(bridgeType.ContainsKey(player.CurrentPosition)) 
-            obstaclePosition[player.CurrentPosition] = "Bridge";*/
+        GameObject wire = null;
         if (player.TempNextKey == "Right")
         {
             if (player.IsAtSocket && !player.IsNotPickWire)
             {
-                RenderWire(player.CurrentPosition, 2, 0, player.HandleWireColor);
+                wire = RenderWire(player.CurrentPosition, 2, 0, player.HandleWireColor);
                 player.IsAtSocket = false;
             }
             else if (player.IsAtSocket && player.IsNotPickWire)
             {
-                RenderWire(player.TargetPosition, 2, 2, player.HandleWireColor);
+                wire = RenderWire(player.TargetPosition, 2, 2, player.HandleWireColor);
                 player.IsAtSocket = false;
             }
             else
             {
-                if (previousMove == "Right")
+                if (player.PreviousMove == "Right")
                 {
-                    RenderWire(player.CurrentPosition, 0, 0, player.HandleWireColor);
+                    wire = RenderWire(player.CurrentPosition, 0, 0, player.HandleWireColor);
                 }
-                else if (previousMove == "Down")
+                else if (player.PreviousMove == "Down")
                 {
-                    RenderWire(player.CurrentPosition, 1, 0, player.HandleWireColor);
+                    wire = RenderWire(player.CurrentPosition, 1, 0, player.HandleWireColor);
                 }
-                else if (previousMove == "Up")
+                else if (player.PreviousMove == "Up")
                 {
-                    RenderWire(player.CurrentPosition, 1, 3, player.HandleWireColor);
+                    wire = RenderWire(player.CurrentPosition, 1, 3, player.HandleWireColor);
                 }
             }
         }
@@ -65,27 +61,27 @@ public class Wire : MonoBehaviour
             Debug.Log(player.TargetPosition);
             if (player.IsAtSocket && !player.IsNotPickWire)
             {
-                RenderWire(player.CurrentPosition, 2, 2, player.HandleWireColor);
+                wire = RenderWire(player.CurrentPosition, 2, 2, player.HandleWireColor);
                 player.IsAtSocket = false;
             }
             else if (player.IsAtSocket && player.IsNotPickWire)
             {
-                RenderWire(player.TargetPosition, 2, 0, player.HandleWireColor);
+                wire = RenderWire(player.TargetPosition, 2, 0, player.HandleWireColor);
                 player.IsAtSocket = false;
             }
             else
             {
-                if (previousMove == "Left")
+                if (player.PreviousMove == "Left")
                 {
-                    RenderWire(player.CurrentPosition, 0, 0, player.HandleWireColor);
+                    wire = RenderWire(player.CurrentPosition, 0, 0, player.HandleWireColor);
                 }
-                else if (previousMove == "Down")
+                else if (player.PreviousMove == "Down")
                 {
-                    RenderWire(player.CurrentPosition, 1, 1, player.HandleWireColor);
+                    wire = RenderWire(player.CurrentPosition, 1, 1, player.HandleWireColor);
                 }
-                else if (previousMove == "Up")
+                else if (player.PreviousMove == "Up")
                 {
-                    RenderWire(player.CurrentPosition, 1, 2, player.HandleWireColor);
+                    wire = RenderWire(player.CurrentPosition, 1, 2, player.HandleWireColor);
                 }
             }
         }
@@ -93,27 +89,27 @@ public class Wire : MonoBehaviour
         {
             if (player.IsAtSocket && !player.IsNotPickWire)
             {
-                RenderWire(player.CurrentPosition, 2, 1, player.HandleWireColor);
+                wire = RenderWire(player.CurrentPosition, 2, 1, player.HandleWireColor);
                 player.IsAtSocket = false;
             }
             else if (player.IsAtSocket && player.IsNotPickWire)
             {
-                RenderWire(player.TargetPosition, 2, 3, player.HandleWireColor);
+                wire = RenderWire(player.TargetPosition, 2, 3, player.HandleWireColor);
                 player.IsAtSocket = false;
             }
             else
             {
-                if (previousMove == "Up")
+                if (player.PreviousMove == "Up")
                 {
-                    RenderWire(player.CurrentPosition, 0, 1, player.HandleWireColor);
+                    wire = RenderWire(player.CurrentPosition, 0, 1, player.HandleWireColor);
                 }
-                else if (previousMove == "Left")
+                else if (player.PreviousMove == "Left")
                 {
-                    RenderWire(player.CurrentPosition, 1, 0, player.HandleWireColor);
+                    wire = RenderWire(player.CurrentPosition, 1, 0, player.HandleWireColor);
                 }
-                else if (previousMove == "Right")
+                else if (player.PreviousMove == "Right")
                 {
-                    RenderWire(player.CurrentPosition, 1, 1, player.HandleWireColor);
+                    wire = RenderWire(player.CurrentPosition, 1, 1, player.HandleWireColor);
                 }
             }
         }
@@ -121,36 +117,39 @@ public class Wire : MonoBehaviour
         {
             if (player.IsAtSocket && !player.IsNotPickWire)
             {
-                RenderWire(player.CurrentPosition, 2, 3, player.HandleWireColor);
+                wire = RenderWire(player.CurrentPosition, 2, 3, player.HandleWireColor);
                 player.IsAtSocket = false;
             }
             else if (player.IsAtSocket && player.IsNotPickWire)
             {
-                RenderWire(player.TargetPosition, 2, 1, player.HandleWireColor);
+                wire = RenderWire(player.TargetPosition, 2, 1, player.HandleWireColor);
                 player.IsAtSocket = false;
             }
             else
             {
-                if (previousMove == "Down")
+                if (player.PreviousMove == "Down")
                 {
-                    RenderWire(player.CurrentPosition, 0, 1, player.HandleWireColor);
+                    wire = RenderWire(player.CurrentPosition, 0, 1, player.HandleWireColor);
                 }
-                else if (previousMove == "Left")
+                else if (player.PreviousMove == "Left")
                 {
-                    RenderWire(player.CurrentPosition, 1, 3, player.HandleWireColor);
+                    wire = RenderWire(player.CurrentPosition, 1, 3, player.HandleWireColor);
                 }
-                else if (previousMove == "Right")
+                else if (player.PreviousMove == "Right")
                 {
-                    RenderWire(player.CurrentPosition, 1, 2, player.HandleWireColor);
+                    wire = RenderWire(player.CurrentPosition, 1, 2, player.HandleWireColor);
                 }
             }
         }
+        if (wire == null) Debug.Log("Can not render wire!");
+        return wire;
     }
 
-    public void RenderWire(Vector2 renderPosition, int pipeTypeIndex, int wireRotationIndex, string handleWireColor)
+    public GameObject RenderWire(Vector2 renderPosition, int pipeTypeIndex, int wireRotationIndex, string handleWireColor)
     {
         // Optionally, you can specify a position and rotation for the instance
-        wireClone = Instantiate(wireInstance, renderPosition, Quaternion.identity);
+        //wireClone = Instantiate(wireInstance, renderPosition, Quaternion.identity);
+        wireClone = PhotonNetwork.Instantiate(wireInstance.name, renderPosition, Quaternion.identity);
         wireClone.name = "Wire" + handleWireColor;
 
         SpriteRenderer spriteRenderer = wireClone.GetComponent<SpriteRenderer>();
@@ -164,9 +163,7 @@ public class Wire : MonoBehaviour
         transform.Rotate(0f, 0f, wireRotation[wireRotationIndex]);
 
         transform.position = new Vector3(renderPosition.x, renderPosition.y, wireZAxis);
-    }
 
-    public GameObject GetWire(){
         return wireClone;
     }
 }

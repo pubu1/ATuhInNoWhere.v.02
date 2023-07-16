@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
 
 public class Socket : MonoBehaviour
 {
@@ -28,6 +29,7 @@ public class Socket : MonoBehaviour
         else
             return false;
     }
+
     public void ChangePlayerAttrStartPoint(Player player)
     {
         player.IsNotPickWire = false;
@@ -37,13 +39,16 @@ public class Socket : MonoBehaviour
         Debug.Log("Is start point --- " + player.HandleWireColor);
 
         // Accessing the child object by name
-        Transform childTransform = player.transform.Find("ATuh").transform.Find("Body");
+        Transform childTransform = player.transform.Find("WholePlayerObject").transform.Find("Body");
         if (childTransform != null)
         {
             GameObject body = childTransform.gameObject;
             body.GetComponent<ChangeColor>().ChangeSpriteColor(body, player.HandleWireColor);
         }
     }
+
+
+
 
     public void ChangePlayerAttrEndPoint(Player player)
     {
@@ -53,7 +58,7 @@ public class Socket : MonoBehaviour
         Debug.Log("Is end point --- " + player.HandleWireColor);
 
         // Accessing the child object by name
-        Transform childTransform = player.transform.Find("ATuh").transform.Find("Body");
+        Transform childTransform = player.transform.Find("WholePlayerObject").transform.Find("Body");
         if (childTransform != null)
         {
             GameObject body = childTransform.gameObject;

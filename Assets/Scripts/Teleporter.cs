@@ -57,7 +57,7 @@ public class Teleporter : MonoBehaviour
         return entrancePosition;
     }
 
-    public bool CheckNextStepOutside(Player player, Dictionary<Vector2,Wire> wireMap){
+    public bool CheckNextStepOutside(Player player, Dictionary<Vector2,bool> wireMap){
         bool totalCheck = true;
         if(wireMap.ContainsKey(this.GetNextPositionOutside(player)) && !player.IsNotPickWire){
             totalCheck = false;
@@ -66,7 +66,7 @@ public class Teleporter : MonoBehaviour
 
         return totalCheck;
     }
-    public bool CheckNextStepInside(Player player, GameObject nextStepObject, Dictionary<Vector2,Wire> wireMap){
+    public bool CheckNextStepInside(Player player, GameObject nextStepObject, Dictionary<Vector2,bool> wireMap){
         bool totalCheck = true;
         if(wireMap.ContainsKey(nextStepObject.transform.position) && !player.IsNotPickWire){
             totalCheck = false;

@@ -7,16 +7,6 @@ public class DimensionOut : MonoBehaviour
     public DimensionIn BaseDimension { get; set; }
     public string OutDirection { get; set; }
 
-    // public Vector2 getBaseDimension()
-    // {
-    //     return BaseDimension.transform.position;
-    // }
-
-    // public Vector2 getBaseDimensionEntrance()
-    // {
-    //     return BaseDimension.transform.position;
-    // }
-
     public Vector3 GetNextPosition(Player player)
     {
         Vector3 exitPosition = new Vector3();
@@ -40,7 +30,7 @@ public class DimensionOut : MonoBehaviour
         return exitPosition;
     }
 
-    public bool CheckNextStep(Player player, GameObject nextStepObject, Dictionary<Vector2,Wire> wireMap){
+    public bool CheckNextStep(Player player, GameObject nextStepObject, Dictionary<Vector2,bool> wireMap){
         bool totalCheck = true;
         if(wireMap.ContainsKey(GetNextPosition(player)) && !player.IsNotPickWire){
             totalCheck = false;
@@ -48,6 +38,9 @@ public class DimensionOut : MonoBehaviour
         else if(nextStepObject.tag == "Socket" && !player.IsNotPickWire 
         && nextStepObject.GetComponent<Socket>().Color != player.HandleWireColor
         && nextStepObject.GetComponent<Socket>().IsConnect == false){
+            totalCheck = false;
+        }
+        else if(nextStepObject.tag == "Bridge" && !nextStepObject.GetComponent<Bridge>().CheckNextStep(player)){
             totalCheck = false;
         }
         else if(nextStepObject.tag == "Wall"){
