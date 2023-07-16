@@ -160,6 +160,7 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
             }
             else 
             {
+                InputManager.fileName = "Map1.txt";
                 PhotonNetwork.JoinRoom(roomEnter);
             }   
         }

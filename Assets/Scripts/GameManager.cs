@@ -514,7 +514,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         if (Score == SocketAmount / 2)
         {
             //GameOverUI.SetActive(true);
-            SceneManager.LoadScene("Map");
+            //SceneManager.LoadScene("Map");
         }
     }
     [PunRPC]
