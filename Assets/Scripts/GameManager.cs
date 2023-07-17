@@ -541,6 +541,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         // }
         if (Score == SocketAmount / 2 && SocketAmount != 0)
         {
+            Debug.Log("Win game " + singleMode);
             //GameOverUI.SetActive(true);
             if(singleMode){
                 SceneManager.LoadScene("Map");

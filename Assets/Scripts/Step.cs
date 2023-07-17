@@ -502,6 +502,11 @@ public class Step : MonoBehaviourPun
         if(door.HasPlayerAtDoorPosition) door.HasPlayerAtDoorPosition = false;
     }
 
+    [PunRPC]
+    private void CallPlusScore(){
+        gameManager.Score++;
+    }
+
     private bool CanStepToPosition(Vector2 currentPosition, Vector2 targetPosition, string tempNextKey)
     {    
         totalCheck = true;   
@@ -577,7 +582,7 @@ public class Step : MonoBehaviourPun
                             view.RPC("CallChangePlayerAttrEndPoint", RpcTarget.All, currentMap, xTarget, yTarget, photonViewID);
                             //GenerateWire(tempCurrentMap, xCurrent, yCurrent, "Wire", null);
                             view.RPC("GenerateWire", RpcTarget.All, tempCurrentMap, xTarget, yTarget, "Wire", photonViewID);
-                            gameManager.Score++;
+                            view.RPC("CallPlusScore", RpcTarget.All);
                         }
                         else if (socket.CheckSocketStartPoint(playerScript))
                         {
@@ -691,7 +696,7 @@ public class Step : MonoBehaviourPun
                 view.RPC("CallChangePlayerAttrEndPoint", RpcTarget.All, currentMap, xTarget, yTarget, photonViewID);
                 //GenerateWire(currentMap, xTarget, yTarget, "Wire", null);
                 view.RPC("GenerateWire", RpcTarget.All, currentMap, xTarget, yTarget, "Wire", photonViewID);
-                gameManager.Score++;
+                view.RPC("CallPlusScore", RpcTarget.All);
             }
             else if (socket.CheckSocketStartPoint(playerScript))
             {
@@ -801,7 +806,7 @@ public class Step : MonoBehaviourPun
                             view.RPC("CallChangePlayerAttrEndPoint", RpcTarget.All, currentMap, xTarget, yTarget, photonViewID);
                             //GenerateWire(tempCurrentMap, xCurrent, yCurrent, "Wire", null);
                             view.RPC("GenerateWire", RpcTarget.All, tempCurrentMap, xCurrent, yCurrent, "Wire", photonViewID);
-                            gameManager.Score++;
+                            view.RPC("CallPlusScore", RpcTarget.All);
                         }
                         else if (socket.CheckSocketStartPoint(playerScript))
                         {

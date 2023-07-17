@@ -63,6 +63,7 @@ MonoBehaviour:
   - CallDoorButtonCheckNextStep
   - CallDoorCheckNextStep
   - CallChangeDoorAttr
+  - CallWinGameTwoPlayer
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
