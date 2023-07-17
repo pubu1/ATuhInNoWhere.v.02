@@ -23,6 +23,7 @@ public class FirebaseAuthenticaton : MonoBehaviourPunCallbacks
     public FirebaseUser user;
     public DatabaseReference accountsRef;
     public List<Account> accounts;
+    public string acc_userID = null;
 
     // Login Variables
     [Space]
@@ -46,6 +47,7 @@ public class FirebaseAuthenticaton : MonoBehaviourPunCallbacks
 
     private void Start()
     {
+        FirebaseDatabase.DefaultInstance.SetPersistenceEnabled(false);
         ClearFields();
         accounts = new List<Account>();
         accounts.Clear();
@@ -57,7 +59,7 @@ public class FirebaseAuthenticaton : MonoBehaviourPunCallbacks
     {
         if (Instance != null && Instance != this)
         {
-            Destroy(gameObject);
+            //Destroy(gameObject);
             return;
         }
 
@@ -65,7 +67,7 @@ public class FirebaseAuthenticaton : MonoBehaviourPunCallbacks
         DontDestroyOnLoad(gameObject);
     }
 
-    void InitializeFirebase()
+    public void InitializeFirebase()
     {
         FirebaseApp.CheckAndFixDependenciesAsync().ContinueWith(task =>
         {
@@ -137,7 +139,7 @@ public class FirebaseAuthenticaton : MonoBehaviourPunCallbacks
     }
 
     // Track state changes of the auth object.
-    void AuthStateChanged(object sender, System.EventArgs eventArgs)
+    /*void AuthStateChanged(object sender, System.EventArgs eventArgs)
     {
         if (auth.CurrentUser != user)
         {
@@ -145,7 +147,7 @@ public class FirebaseAuthenticaton : MonoBehaviourPunCallbacks
 
             if (!signedIn && user != null)
             {
-                StartCoroutine(UpdateStatus(false));
+                StartCoroutine(UpdateStatus(user.UserId, false));
                 auth.SignOut();
                 Debug.Log("Signed out " + user.UserId);
             }
@@ -157,7 +159,7 @@ public class FirebaseAuthenticaton : MonoBehaviourPunCallbacks
                 Debug.Log("Signed in " + user.UserId);
             }
         }
-    }
+    }*/
 
     public void Login()
     {
@@ -217,14 +219,15 @@ public class FirebaseAuthenticaton : MonoBehaviourPunCallbacks
         {
             // User is logged in now
             user = loginTask.Result.User;
-            StartCoroutine(UpdateStatus(true));
-
-            Debug.LogFormat("{0} You Are Successfully Logged In", user.DisplayName);
+            UpdateUserID(user.UserId);
+            StartCoroutine(UpdateStatus(acc_userID, true));
             PhotonNetwork.NickName = user.DisplayName;
-            
-            Debug.Log(PhotonNetwork.NickName);
-            ClearFields();
 
+            Debug.LogFormat("{0} with {1} You Are Successfully Logged In", user.DisplayName, acc_userID);
+            //Debug.Log(PhotonNetwork.NickName);
+            //Debug.Log(acc_userID);
+
+            ClearFields();
             SceneManager.LoadScene("PlayMode");
         }
     }
@@ -253,7 +256,7 @@ public class FirebaseAuthenticaton : MonoBehaviourPunCallbacks
         }
         else if (!CheckNicknameAvailability(name))
         {
-            Debug.LogError("Nickname is already taken");
+            //Debug.LogError("Nickname is already taken");
             errorPopup.ShowPopup("Nickname is already taken! ");
             yield break; // Exit the registration coroutine
         }
@@ -368,6 +371,7 @@ public class FirebaseAuthenticaton : MonoBehaviourPunCallbacks
                 else
                 {
                     Debug.Log("Registration Sucessful Welcome " + user.DisplayName);
+                    Debug.Log("Registration Sucessful Welcome " + user.UserId);
                     Account newAccount = new Account
                     {
                         acc_email = email,
@@ -407,11 +411,11 @@ public class FirebaseAuthenticaton : MonoBehaviourPunCallbacks
         Account account = FindAccount(email);
         if (account != null && account.acc_isActive )
         {
-            Debug.Log("can login");
+            //Debug.Log("cannot login");
             // Account is already logged in
             return true;
         }
-        Debug.Log("cannot login");
+        //Debug.Log("can login");
         // Account is not logged in
         return false;
     }
@@ -435,10 +439,15 @@ public class FirebaseAuthenticaton : MonoBehaviourPunCallbacks
         StartCoroutine(UpdateData(Node, "email", acc.acc_email));
         StartCoroutine(UpdateData(Node, "password", acc.acc_password));
         StartCoroutine(UpdateData(Node, "nickname", acc.acc_nickname));
-        StartCoroutine(UpdateStatus(acc.acc_isActive));
+        StartCoroutine(UpdateStatus(user.UserId, acc.acc_isActive));
     }
 
-    private IEnumerator UpdateData(string Node, string dataName, string data)
+    private void UpdateUserID(string userID)
+    {
+        acc_userID = userID;
+    }
+
+    public IEnumerator UpdateData(string Node, string dataName, string data)
     {
         //Set the currently logged in user deaths
         var DBTask = accountsRef.Child(Node).Child(user.UserId).Child(dataName).SetValueAsync(data);
@@ -455,10 +464,10 @@ public class FirebaseAuthenticaton : MonoBehaviourPunCallbacks
         }
     }
 
-    private IEnumerator UpdateStatus(bool data)
+    public IEnumerator UpdateStatus(string userId, bool data)
     {
         //Set the currently logged in user deaths
-        var DBTask = accountsRef.Child("Accounts").Child(user.UserId).Child("isActive").SetValueAsync(data);
+        var DBTask = accountsRef.Child("Accounts").Child(userId).Child("isActive").SetValueAsync(data);
 
         yield return new WaitUntil(predicate: () => DBTask.IsCompleted);
 
@@ -468,24 +477,13 @@ public class FirebaseAuthenticaton : MonoBehaviourPunCallbacks
         }
         else
         {
-            //Deaths are now updated
+            Debug.Log("User status updated successfully.");
         }
     }
 
     public void LogOut()
     {
-        StartCoroutine(UpdateStatus(false));
         Application.Quit();
     }
 
-    public void OnApplicationQuit()
-    {
-        if (auth != null && user != null)
-        {
-            auth.SignOut();
-            StartCoroutine(UpdateStatus(false));
-            Debug.Log("Signed out " + user.UserId);
-        }
-        Debug.Log("Quit");
-    }
 }
