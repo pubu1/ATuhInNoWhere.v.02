@@ -78,6 +78,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         {
             Debug.Log("Single mode!");
             view.RPC("InitializeMapRPC", RpcTarget.All);
+            roomName.text = PhotonNetwork.CurrentRoom.Name;
         }
         else if (PhotonNetwork.IsConnectedAndReady)
         {
@@ -87,7 +88,12 @@ public class GameManager : MonoBehaviourPunCallbacks
         {
             Debug.Log("Not Connected");
             roomName.text = "There's nothing here";
-        }    
+        } 
+
+        // if (!singleMode && PhotonNetwork.CurrentRoom.PlayerCount == 2) //set = 1 to debug one player
+        // {
+        //     view.RPC("InitializeMapRPC", RpcTarget.All);
+        // }
     }
 
     public override void OnPlayerEnteredRoom(Photon.Realtime.Player newPlayer)
@@ -505,10 +511,8 @@ public class GameManager : MonoBehaviourPunCallbacks
         //GameOverUI.SetActive(false);
         if (Input.GetKeyDown(KeyCode.R))
         {
-
             PhotonView view = this.gameObject.GetComponent<PhotonView>();
             view.RPC("ResetTheGame", RpcTarget.All);
-            //ResetTheGame();
         }
         if (Input.GetKeyDown(KeyCode.C))
         {
@@ -554,15 +558,21 @@ public class GameManager : MonoBehaviourPunCallbacks
             //GameOverUI.SetActive(true);
             if(singleMode){
                 SceneManager.LoadScene("Map");
-            } else {
-                view.RPC("CallScene", RpcTarget.All, "Lobby");
-            }       
+            } else {            
+                view.RPC("CallScene", RpcTarget.All, "Loading");    
+                PhotonNetwork.LeaveRoom();          
+            }
         }
     }
 
     [PunRPC]
     private void CallScene(string sceneName){
         SceneManager.LoadScene(sceneName);
+    }
+
+    [PunRPC]
+    private void CallLeaveRoom(){
+        PhotonNetwork.LeaveRoom();
     }
 
     [PunRPC]
@@ -573,7 +583,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     [PunRPC]
     private void ResetTheGame()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        SceneManager.LoadScene("Game");
     }
 
     public GameObject[,] GetGrid()

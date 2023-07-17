@@ -77,6 +77,9 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
 
     private void Start()
     {
+        if(!PhotonNetwork.IsConnected) 
+            PhotonNetwork.ConnectUsingSettings();
+
         StopFlickering(); // refresh the flickering
 
         PhotonNetwork.JoinLobby(); // auto join lobby as the scene load
