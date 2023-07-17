@@ -18,7 +18,7 @@ Wall Wall Wall Wall Wall Wall Wall
 7 7
 Wall Wall Wall DimensionOut:Top Wall Wall Wall
 Wall Socket_Red Ground Ground Ground Ground Wall
-Wall Socket_Organe Ground Ground Ground Ground Wall
+Wall Socket_Orange Ground Ground Ground Ground Wall
 Wall Ground Ground DimensionIn:3 Ground Ground Wall
 Wall Ground Ground Ground Ground Socket_Orange Wall
 Wall Socket_Blue Ground Ground Ground Socket_Red Wall
