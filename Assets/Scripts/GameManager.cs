@@ -99,11 +99,12 @@ public class GameManager : MonoBehaviourPunCallbacks
         }
     }
 
-    public override void OnPlayerLeftRoom(Photon.Realtime.Player newPlayer)
-    {
+    public override void OnPlayerLeftRoom(Photon.Realtime.Player leftPlayer)
+    {    
         if (!singleMode && PhotonNetwork.CurrentRoom.PlayerCount == 1)
-        {
-            view.RPC("CallScene", RpcTarget.All, "PlayMode");
+        {    
+            PhotonNetwork.Disconnect();                 
+            view.RPC("CallScene", RpcTarget.All, "Loading");     
         }
     }
 
