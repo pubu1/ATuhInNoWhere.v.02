@@ -489,6 +489,19 @@ public class Step : MonoBehaviourPun
         totalCheck = door.CheckNextStep(targetP);
     }
 
+    [PunRPC]
+    private void CallChangeDoorAttr(int mapIndex, int xAxis, int yAxis, int photonTargetID){
+        Player targetP = playerScript;
+        if (photonTargetID != photonViewID)
+        {
+            if (photonTargetID == 1) targetP = gameManager.PlayerM.GetComponent<Player>();
+            else targetP = gameManager.PlayerF.GetComponent<Player>();
+        }
+
+        Door door = gameManager.PlayGridList[mapIndex][xAxis, yAxis].GetComponent<Door>();
+        if(door.HasPlayerAtDoorPosition) door.HasPlayerAtDoorPosition = false;
+    }
+
     private bool CanStepToPosition(Vector2 currentPosition, Vector2 targetPosition, string tempNextKey)
     {    
         totalCheck = true;   
@@ -720,6 +733,10 @@ public class Step : MonoBehaviourPun
                 view.RPC("GenerateWire", RpcTarget.All, currentMap, xCurrent, yCurrent, "Wire", photonViewID);
             }
         }
+        else if (gameManager.WireMap.ContainsKey(targetPosition) && !playerScript.IsNotPickWire)
+        {
+            if (!playerScript.IsNotPickWire) totalCheck = false;
+        }
 /*        else if (gameManager.PlayGridList[currentMap][xTarget, yTarget].tag == "DoorButton")
         {
             DoorButton button = gameManager.PlayGridList[currentMap][xTarget, yTarget].GetComponent<DoorButton>();
@@ -809,10 +826,6 @@ public class Step : MonoBehaviourPun
                 }
             }
         }
-        else if (gameManager.WireMap.ContainsKey(targetPosition) && !playerScript.IsNotPickWire)
-        {
-            if (!playerScript.IsNotPickWire) totalCheck = false;
-        }
         else
         {
             if (totalCheck)
@@ -827,6 +840,11 @@ public class Step : MonoBehaviourPun
                 {
                     //GenerateWire(currentMap, xCurrent, yCurrent, "Wire", null);
                     view.RPC("GenerateWire", RpcTarget.All, currentMap, xCurrent, yCurrent, "Wire", photonViewID);
+                }
+                if (gameManager.PlayGridList[currentMap][xCurrent, yCurrent].tag == "Door")
+                {
+                    //GenerateWire(currentMap, xCurrent, yCurrent, "Bridge", null);
+                    view.RPC("CallChangeDoorAttr", RpcTarget.All, currentMap, xCurrent, yCurrent, photonViewID);
                 }
             }
         }

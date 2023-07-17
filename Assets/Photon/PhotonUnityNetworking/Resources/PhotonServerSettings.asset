@@ -61,6 +61,8 @@ MonoBehaviour:
   - CallBridgeCheckNextStep
   - CallDoorButtonCheckCurrentStep
   - CallDoorButtonCheckNextStep
+  - CallDoorCheckNextStep
+  - CallChangeDoorAttr
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

@@ -15,6 +15,7 @@ public class Door : MonoBehaviour
     public bool IsActive{get; set;}  
 
     public bool HasPipeAtDoorPosition{get; set;}
+    public bool HasPlayerAtDoorPosition{get; set;}
 
     private float moveSpeed = 5f;
     private Vector2 previousPosition; 
@@ -24,7 +25,7 @@ public class Door : MonoBehaviour
     // Start is called before the first frame update
     public void Start()
     {
-        
+        HasPlayerAtDoorPosition = false;
     }
 
     public void Init()
@@ -57,31 +58,21 @@ public class Door : MonoBehaviour
     {
         if (Button.IsActive)
         {
-            openAxis = targetPosition;
-            IsActive = !isReverseDoor;
-/*            if (isReverseDoor)
-            {
-                IsActive = false;
-            }
-            else
-            {
-                IsActive = true;
-            }*/
+            if(!HasPlayerAtDoorPosition){
+                openAxis = targetPosition;
+                IsActive = !isReverseDoor;
+            }         
         }
         else
         {
-            openAxis = previousPosition;
-            IsActive = isReverseDoor;
-/*            if (isReverseDoor)
-            {
-                IsActive = true;
-            }
-            else
-            {
-                IsActive = false;
-            }*/
+            if(!HasPlayerAtDoorPosition){
+                openAxis = previousPosition;
+                IsActive = isReverseDoor;
+            }  
         }
         DoorTransition();
+
+        
     }
 
     public void DebugPosition()
@@ -90,7 +81,7 @@ public class Door : MonoBehaviour
     }
 
     public void DoorTransition(){
-        if(!HasPipeAtDoorPosition){
+        if(!HasPipeAtDoorPosition && !HasPlayerAtDoorPosition){
             this.transform.position = Vector3.MoveTowards(transform.position, new Vector3(openAxis.x, openAxis.y, 9), moveSpeed * Time.deltaTime);            
         }       
     }
@@ -108,9 +99,14 @@ public class Door : MonoBehaviour
 
         if(this.IsActive){
             totalCheck = true;
-            if (!player.IsNotPickWire) this.HasPipeAtDoorPosition = true;
+            if (!player.IsNotPickWire) this.HasPipeAtDoorPosition = true;           
+
         } else{
             totalCheck = false;
+        }
+
+        if(totalCheck){
+            HasPlayerAtDoorPosition = true;
         }
 
         return totalCheck;
