@@ -35,6 +35,7 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
     private GameObject openPanel;
     [SerializeField]
     private TMP_Text roomNameTxt;
+    private string afterRandom = null;
     [SerializeField]
     private TMP_Text roomMasterTxt;
     [SerializeField]
@@ -151,6 +152,7 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
     public void EnterRoomNum()
     {
         string roomEnter = roomNameJoin.text;
+        char map = roomEnter[roomEnter.Length - 1];
 
         if (PhotonNetwork.IsConnectedAndReady)
         {
@@ -160,7 +162,7 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
             }
             else 
             {
-                InputManager.fileName = "Map1.txt";
+                InputManager.fileName = "mul-"+ map + ".txt";
                 PhotonNetwork.JoinRoom(roomEnter);
             }   
         }
@@ -173,7 +175,7 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
 
     private bool IsValidCharacter(char character)
     {
-        return character >= '1' && character <= '4';
+        return character >= '1' && character <= '5';
     }
 
     private void ValidateInput(string input)
@@ -191,7 +193,7 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
             {
                 if (!IsValidCharacter(character))
                 {
-                    DisplayErrorText("Invalid room number! Please enter a number from 1 to 4.");
+                    DisplayErrorText("Invalid room number! Please enter a number from 1 to 5.");
                     roomNameJoin.text = "";
                     return;
                 }
@@ -318,8 +320,8 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
             roomOptions.MaxPlayers = 2;
             roomOptions.IsOpen = true;
             string roomNum = roomNameTxt.text; // after random a room code
-            Debug.Log("Creating room: " + roomNum);
-            InputManager.fileName = MapChosenTxt.text + ".txt";
+            //Debug.Log("Creating room: " + roomNum);
+            InputManager.fileName = "mul-" + MapChosenTxt.text + ".txt";
             PhotonNetwork.CreateRoom(roomNum, roomOptions, TypedLobby.Default); // enter the room
 
             // Display the wait canvas
@@ -334,14 +336,16 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
     // Open Create Room Panel
     public void OnClickOpenCreatePanel()
     { 
-        openPanel.SetActive(true); 
-        roomNameTxt.text = roomRandom();
+        openPanel.SetActive(true);
+        afterRandom = roomRandom();
+        roomNameTxt.text = afterRandom;
         roomMasterTxt.text = PhotonNetwork.NickName;
         MapChosenTxt.text = "None is choosing!";
     }
 
     public void OnClickMapChosen(TMP_Text map)
     {
+        roomNameTxt.text = afterRandom + map.text; // the last digit is for choosing map
         MapChosenTxt.text = map.text;
     }
 
@@ -356,9 +360,9 @@ public class ChangeRoom : MonoBehaviourPunCallbacks
     {
         string roomNumber = "";
         Random random = new Random();
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < 3; i++)
         {
-            int digit = random.Next(1, 5);
+            int digit = random.Next(1, 6);
             roomNumber += digit.ToString();
         }
 

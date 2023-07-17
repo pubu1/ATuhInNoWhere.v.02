@@ -11,11 +11,15 @@ public class AllAceneSettingUI : MonoBehaviourPunCallbacks
 {
     // Firebase variable
     [Header("Firebase")]
-    public DependencyStatus dependencyStatus;
-    public FirebaseAuth auth;
-    public FirebaseUser user;
-    public DatabaseReference accountsRef;
+    [SerializeField]
+    private DependencyStatus dependencyStatus;
+    [SerializeField]
+    private FirebaseAuth auth;
+    [SerializeField]
+    private FirebaseUser user;
+    [SerializeField]
     FirebaseAuthenticaton firebaseAuth;
+    private string acc_userID;
 
     [Header("Panel")]
     [SerializeField]
@@ -28,39 +32,15 @@ public class AllAceneSettingUI : MonoBehaviourPunCallbacks
     public void Start()
     {
         firebaseAuth = FirebaseAuthenticaton.GetInstance();
+        firebaseAuth.InitializeFirebase();
         if (firebaseAuth != null)
         {
             auth = firebaseAuth.auth;
             user = firebaseAuth.user;
+            acc_userID = firebaseAuth.acc_userID;
+            nickname.text = PhotonNetwork.NickName;
         }
-        nickname.text = PhotonNetwork.NickName;
-    }
-
-    void AuthStateChanged(object sender, System.EventArgs eventArgs)
-    {
-        auth.StateChanged += AuthStateChanged;
-        if (auth.CurrentUser != user)
-        {
-            bool signedIn = user != auth.CurrentUser && auth.CurrentUser != null;
-
-            if (!signedIn && user != null)
-            {
-                auth.SignOut();
-                StartCoroutine(UpdateStatus(false));
-                Debug.Log("Signed out " + user.UserId);
-            }
-
-            user = auth.CurrentUser;
-
-            if (signedIn)
-            {
-                Debug.Log("Signed in " + user.UserId);
-                nickname.text = PhotonNetwork.NickName;
-            } else
-            {
-                nickname.text = "there's problem";
-            }
-        }
+        Debug.Log("I'm in here "+acc_userID);
     }
 
     public void OnClickOpen()
@@ -77,11 +57,13 @@ public class AllAceneSettingUI : MonoBehaviourPunCallbacks
     {
         if (PhotonNetwork.IsConnected && SceneManager.GetActiveScene().name == "Game")
         {
+            PhotonNetwork.LeaveRoom();
             SceneManager.LoadScene("Lobby");
         } else if (PhotonNetwork.OfflineMode && SceneManager.GetActiveScene().name == "Game") {
             SceneManager.LoadScene("Map");
         } else if (SceneManager.GetActiveScene().name == "Map" || SceneManager.GetActiveScene().name == "Lobby") 
         {
+            PhotonNetwork.Disconnect();
             SceneManager.LoadScene("PlayMode");
         } else
         {
@@ -98,41 +80,26 @@ public class AllAceneSettingUI : MonoBehaviourPunCallbacks
     //Logout Method
     public void LogOut()
     {
-        if (auth != null && user != null)
+        if (acc_userID != null)
         {
             auth.SignOut();
-            StartCoroutine(UpdateStatus(false));
-            Debug.Log("Signed out " + user.UserId);
+            StartCoroutine(firebaseAuth.UpdateStatus(acc_userID, false));
+            Debug.Log("Signed out " + acc_userID);
         }
         PhotonNetwork.Disconnect();
         SceneManager.LoadScene("Login");
     }
 
-    private IEnumerator UpdateStatus(bool data)
-    {
-        //Set the currently logged in user deaths
-        var DBTask = accountsRef.Child("Accounts").Child(user.UserId).Child("isActive").SetValueAsync(data);
-
-        yield return new WaitUntil(predicate: () => DBTask.IsCompleted);
-
-        if (DBTask.Exception != null)
-        {
-            Debug.LogWarning(message: $"Failed to register task with {DBTask.Exception}");
-        }
-        else
-        {
-            //Deaths are now updated
-        }
-    }
-
     public void OnApplicationQuit()
     {
-        if (auth != null && user != null)
+        if (acc_userID!=null)
         {
             auth.SignOut();
-            StartCoroutine(UpdateStatus(false));
-            Debug.Log("Signed out " + user.UserId);
+            StartCoroutine(firebaseAuth.UpdateStatus(acc_userID, false));
+            Debug.Log("Signed out " + acc_userID);
+        } else
+        {
+            Debug.Log("No one log in");
         }
-        Debug.Log("No one log in");
     }
 }
