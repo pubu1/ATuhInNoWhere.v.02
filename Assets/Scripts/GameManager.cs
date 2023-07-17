@@ -99,6 +99,14 @@ public class GameManager : MonoBehaviourPunCallbacks
         }
     }
 
+    public override void OnPlayerLeftRoom(Photon.Realtime.Player newPlayer)
+    {
+        if (!singleMode && PhotonNetwork.CurrentRoom.PlayerCount == 1)
+        {
+            view.RPC("CallScene", RpcTarget.All, "PlayMode");
+        }
+    }
+
     [PunRPC]
     public void InitializeMapRPC()
     {
@@ -546,9 +554,14 @@ public class GameManager : MonoBehaviourPunCallbacks
             if(singleMode){
                 SceneManager.LoadScene("Map");
             } else {
-                view.RPC("CallWinGameTwoPlayer", RpcTarget.All);
+                view.RPC("CallScene", RpcTarget.All, "Lobby");
             }       
         }
+    }
+
+    [PunRPC]
+    private void CallScene(string sceneName){
+        SceneManager.LoadScene(sceneName);
     }
 
     [PunRPC]
