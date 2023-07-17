@@ -542,9 +542,19 @@ public class GameManager : MonoBehaviourPunCallbacks
         if (Score == SocketAmount / 2 && SocketAmount != 0)
         {
             //GameOverUI.SetActive(true);
-            SceneManager.LoadScene("Map");
+            if(singleMode){
+                SceneManager.LoadScene("Map");
+            } else {
+                view.RPC("CallWinGameTwoPlayer", RpcTarget.All);
+            }       
         }
     }
+
+    [PunRPC]
+    private void CallWinGameTwoPlayer(){
+        SceneManager.LoadScene("Lobby");
+    }
+
     [PunRPC]
     private void ResetTheGame()
     {

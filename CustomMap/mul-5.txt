@@ -1,0 +1,7 @@
+1
+5 5
+Wall Wall Wall Wall Wall
+Wall Ground Ground Ground Wall
+Wall PlayerM:0 PlayerF:1 Ground Wall
+Wall Socket_Red Socket_Red Ground Wall
+Wall Wall Wall Wall Wall

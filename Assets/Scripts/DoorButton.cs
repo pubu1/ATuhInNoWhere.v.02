@@ -48,6 +48,9 @@ public class DoorButton : MonoBehaviour
         else if(nextStepObject.tag == "Wall"){
             totalCheck = false;
         }
+        else if(nextStepObject.tag == "Door" && !nextStepObject.GetComponent<Door>().IsActive){
+            totalCheck = false;
+        }
 
         if(!totalCheck) 
             this.IsActive = true;
