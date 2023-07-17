@@ -24,7 +24,7 @@ public class Door : MonoBehaviour
     // Start is called before the first frame update
     public void Start()
     {
-        //DoorOpenDirection = "Down";
+        
     }
 
     public void Init()

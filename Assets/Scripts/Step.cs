@@ -475,6 +475,20 @@ public class Step : MonoBehaviourPun
         //totalCheck = bridge.CheckCurrentStep(targetP, targetP.PreviousMove);
     }
 
+    [PunRPC]
+    void CallDoorCheckNextStep(int mapIndex, int xAxis, int yAxis, int photonTargetID)
+    {
+        Player targetP = playerScript;
+        if (photonTargetID != photonViewID)
+        {
+            if (photonTargetID == 1) targetP = gameManager.PlayerM.GetComponent<Player>();
+            else targetP = gameManager.PlayerF.GetComponent<Player>();
+        }
+
+        Door door = gameManager.PlayGridList[mapIndex][xAxis, yAxis].GetComponent<Door>();
+        totalCheck = door.CheckNextStep(targetP);
+    }
+
     private bool CanStepToPosition(Vector2 currentPosition, Vector2 targetPosition, string tempNextKey)
     {    
         totalCheck = true;   
@@ -605,7 +619,6 @@ public class Step : MonoBehaviourPun
             if (totalCheck)
             {           
                 view.RPC("DimensionOutUpdateLocation", RpcTarget.All, tempTargetPosition.x, tempTargetPosition.y, dIn.transform.position.x, dIn.transform.position.y, photonViewID);
-
                 view.RPC("GenerateWire", RpcTarget.All, objCurrentMap, objX, objY, "Dimension", photonViewID);
                 view.RPC("SetPreviousMove", RpcTarget.All, photonViewID, tempNextKey);    
             }
@@ -717,8 +730,7 @@ public class Step : MonoBehaviourPun
         }*/
         else if (gameManager.PlayGridList[currentMap][xTarget, yTarget].tag == "Door")
         {
-            Door door = gameManager.PlayGridList[currentMap][xTarget, yTarget].GetComponent<Door>();
-            totalCheck = door.CheckNextStep(playerScript);
+            view.RPC("CallDoorCheckNextStep", RpcTarget.All, currentMap, xTarget, yTarget, photonViewID);
 
             if (totalCheck)
             {
