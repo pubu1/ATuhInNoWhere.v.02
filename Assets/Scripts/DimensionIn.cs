@@ -84,13 +84,13 @@ public class DimensionIn : MonoBehaviour
         } else if (HasTop() && HasRight() && !HasBottom() && HasLeft()){
             spriteRenderer.sprite = dimensionInSprites[3];
             transform.Rotate(0f, 0f, dimensionInRotation[0]);
-        } else if (HasTop() && HasRight() && HasBottom() && !HasLeft()){
+        } else if (HasTop() && !HasRight() && HasBottom() && HasLeft()){
             spriteRenderer.sprite = dimensionInSprites[3];
             transform.Rotate(0f, 0f, dimensionInRotation[1]);
         } else if (!HasTop() && HasRight() && HasBottom() && HasLeft()){
             spriteRenderer.sprite = dimensionInSprites[3];
             transform.Rotate(0f, 0f, dimensionInRotation[2]);
-        } else if (HasTop() && !HasRight() && HasBottom() && HasLeft()){
+        } else if (HasTop() && HasRight() && HasBottom() && !HasLeft()){
             spriteRenderer.sprite = dimensionInSprites[3];
             transform.Rotate(0f, 0f, dimensionInRotation[3]);
         } else if (HasTop() && HasRight() && HasBottom() && HasLeft()){

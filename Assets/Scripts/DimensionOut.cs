@@ -7,6 +7,8 @@ public class DimensionOut : MonoBehaviour
     public DimensionIn BaseDimension { get; set; }
     public string OutDirection { get; set; }
 
+    private static float[] dimensionOutRotation = { 0f, 90.0f, 180.0f, 270.0f };
+
     public Vector3 GetNextPosition(Player player)
     {
         Vector3 exitPosition = new Vector3();
@@ -48,5 +50,17 @@ public class DimensionOut : MonoBehaviour
         }
 
         return totalCheck;
+    }
+
+    public void RenderSprite(string direction){
+        if(direction == "Left"){
+            transform.Rotate(0f, 0f, dimensionOutRotation[0]);
+        } else if(direction == "Bottom"){
+            transform.Rotate(0f, 0f, dimensionOutRotation[1]);
+        } else if(direction == "Right"){
+            transform.Rotate(0f, 0f, dimensionOutRotation[2]);
+        } else if(direction == "Top"){
+            transform.Rotate(0f, 0f, dimensionOutRotation[3]);
+        }
     }
 }

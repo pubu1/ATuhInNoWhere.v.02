@@ -302,6 +302,7 @@ public class GameManager : MonoBehaviourPunCallbacks
                         else
                         {
                             instantiatedPrefab.GetComponent<DimensionOut>().OutDirection = dimension[1];
+                            instantiatedPrefab.GetComponent<DimensionOut>().RenderSprite(dimension[1]);
                         }
                         grid[x, y] = instantiatedPrefab;
                     }
