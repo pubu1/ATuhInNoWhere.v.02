@@ -840,12 +840,7 @@ public class Step : MonoBehaviourPun
                 {
                     //GenerateWire(currentMap, xCurrent, yCurrent, "Wire", null);
                     view.RPC("GenerateWire", RpcTarget.All, currentMap, xCurrent, yCurrent, "Wire", photonViewID);
-                }
-                if (gameManager.PlayGridList[currentMap][xCurrent, yCurrent].tag == "Door")
-                {
-                    //GenerateWire(currentMap, xCurrent, yCurrent, "Bridge", null);
-                    view.RPC("CallChangeDoorAttr", RpcTarget.All, currentMap, xCurrent, yCurrent, photonViewID);
-                }
+                }               
             }
         }
 
@@ -855,6 +850,12 @@ public class Step : MonoBehaviourPun
             {
                 Bridge bridge = gameManager.PlayGridList[currentMap][xCurrent, yCurrent].GetComponent<Bridge>();
                 bridge.CheckOpacity(playerScript, playerScript.PreviousMove);
+            }
+        } else{
+            if (gameManager.PlayGridList[currentMap][xCurrent, yCurrent].tag == "Door")
+            {
+                //GenerateWire(currentMap, xCurrent, yCurrent, "Bridge", null);
+                view.RPC("CallChangeDoorAttr", RpcTarget.All, currentMap, xCurrent, yCurrent, photonViewID);
             }
         }
         return totalCheck;
