@@ -11,7 +11,7 @@ Wall Wall Wall Wall Wall Wall Wall
 Wall Wall Wall Wall Wall Wall Wall
 Wall Socket_Yellow Ground Ground Ground Ground Wall
 Wall Ground Ground Ground Ground Ground Wall
-DimensionOut:Left Ground Ground Ground Ground Ground DimensionOut:Right
+DimensionOut:Left Ground Ground DimensionIn:2 Ground Ground DimensionOut:Right
 Wall Ground Ground Ground Ground Ground Wall
 Wall Ground Ground Ground Ground Socket_Yellow Wall
 Wall Wall Wall Wall Wall Wall Wall
