@@ -3076,9 +3076,12 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 626257785}
+  - component: {fileID: 626257786}
   - component: {fileID: 626257784}
   - component: {fileID: 626257783}
+  - component: {fileID: 626257785}
+  - component: {fileID: 626257788}
+  - component: {fileID: 626257787}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -3137,8 +3140,24 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!4 &626257785
-Transform:
+--- !u!114 &626257785
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 626257782}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a3e5f51e31f79c4fb340e92ffc286e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speedNormal: 2
+  speedFast: 5
+  rotationSpeed: 1
+  movementDirection: {x: 1, y: 0, z: 1}
+--- !u!224 &626257786
+RectTransform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -3152,6 +3171,39 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &626257787
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 626257782}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dca6002b33ac5bc48b39588e222296fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Skyboxes:
+  - {fileID: 2100000, guid: 4ac826150ef405d4f99ce1f800a53f76, type: 2}
+  - {fileID: 2100000, guid: 1d91ac24ed115634b8d15fa313843cc5, type: 2}
+  - {fileID: 2100000, guid: e3859410315d60d4ab75705a0e2683fe, type: 2}
+  - {fileID: 2100000, guid: 2fa5f9ca87270c64187f265721dcddbc, type: 2}
+  - {fileID: 2100000, guid: 31230b5cca03bba4ea4b11df6f9e2158, type: 2}
+  Camera: {fileID: 626257784}
+--- !u!45 &626257788
+Skybox:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 626257782}
+  m_Enabled: 1
+  m_CustomSkybox: {fileID: 0}
 --- !u!1 &660493679
 GameObject:
   m_ObjectHideFlags: 0
@@ -6625,7 +6677,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1390877574
 RectTransform:
   m_ObjectHideFlags: 0
@@ -9833,7 +9885,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2002563902
 RectTransform:
   m_ObjectHideFlags: 0

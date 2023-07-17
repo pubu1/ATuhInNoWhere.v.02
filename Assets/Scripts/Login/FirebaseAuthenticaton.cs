@@ -115,7 +115,7 @@ public class FirebaseAuthenticaton : MonoBehaviourPunCallbacks
 
                         accounts.Add(new Account { acc_email = email, acc_nickname = nickname, acc_password = password, acc_isActive = isActive });
 
-                        Debug.Log(email + " " + nickname + " " + password + " " + isActive);
+                        //Debug.Log(email + " " + nickname + " " + password + " " + isActive);
                     }
                 }
                 else

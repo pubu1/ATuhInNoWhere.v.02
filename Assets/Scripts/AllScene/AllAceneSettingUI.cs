@@ -32,13 +32,17 @@ public class AllAceneSettingUI : MonoBehaviourPunCallbacks
     public void Start()
     {
         firebaseAuth = FirebaseAuthenticaton.GetInstance();
-        firebaseAuth.InitializeFirebase();
         if (firebaseAuth != null)
         {
+            firebaseAuth.InitializeFirebase();
             auth = firebaseAuth.auth;
             user = firebaseAuth.user;
             acc_userID = firebaseAuth.acc_userID;
             nickname.text = PhotonNetwork.NickName;
+        } else
+        {
+            nickname.text = "Anomyous";
+            PhotonNetwork.NickName = "Anomyous";
         }
         Debug.Log("I'm in here "+acc_userID);
     }
@@ -83,7 +87,7 @@ public class AllAceneSettingUI : MonoBehaviourPunCallbacks
     //Logout Method
     public void LogOut()
     {
-        if (acc_userID != null)
+        if (acc_userID != null && firebaseAuth != null)
         {
             auth.SignOut();
             StartCoroutine(firebaseAuth.UpdateStatus(acc_userID, false));
@@ -95,7 +99,7 @@ public class AllAceneSettingUI : MonoBehaviourPunCallbacks
 
     public void OnApplicationQuit()
     {
-        if (acc_userID!=null)
+        if (acc_userID!=null && firebaseAuth !=null)
         {
             auth.SignOut();
             StartCoroutine(firebaseAuth.UpdateStatus(acc_userID, false));
