@@ -55,17 +55,20 @@ public class AllAceneSettingUI : MonoBehaviourPunCallbacks
 
     public void OnClickBackToPrevious()
     {
-        if (PhotonNetwork.IsConnected && SceneManager.GetActiveScene().name == "Game")
+        if (PhotonNetwork.OfflineMode && SceneManager.GetActiveScene().name == "Game") {
+            SceneManager.LoadScene("Map");
+        }
+        else if (PhotonNetwork.IsConnected && SceneManager.GetActiveScene().name == "Game")
         {
             PhotonNetwork.LeaveRoom();
             SceneManager.LoadScene("Lobby");
-        } else if (PhotonNetwork.OfflineMode && SceneManager.GetActiveScene().name == "Game") {
-            SceneManager.LoadScene("Map");
-        } else if (SceneManager.GetActiveScene().name == "Map" || SceneManager.GetActiveScene().name == "Lobby") 
+        } 
+        else if (SceneManager.GetActiveScene().name == "Map" || SceneManager.GetActiveScene().name == "Lobby") 
         {
             PhotonNetwork.Disconnect();
             SceneManager.LoadScene("PlayMode");
-        } else
+        } 
+        else
         {
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }

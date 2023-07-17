@@ -2,7 +2,7 @@
 10 14
 Null Null Null Null Null Null Null Wall Wall Wall Wall Wall Wall Null
 Null Null Null Wall Wall Wall Wall Ground Ice Ground Ground Ice Ground Wall
-Null Null Wall Ground Ice Ground Ice Ice Wall Ice Wall Ground Ice Wall
+Null Null Wall Ground Ice V_Door_Reverse:1:Up Ice Ice Wall Ice Wall Ground Ice Wall
 Null Null Wall Ground Ice Ground Ice H_Bridge Ice Ice Ground Ice Ice Wall
 Wall Wall Ground Ice Ice Ice Ice Ice Wall Ice Ice Ground Wall Wall
 Wall PlayerM:0 Ground Ground Ice Ground Wall Ice Ice DimensionIn:1 Ground Ground Ice Wall
@@ -17,5 +17,6 @@ Wall Socket_Green Wall
 Wall Ground Wall
 Wall DimensionOut:Bottom Wall
 ---DoorButton---
-1
+2
 0 0
+0 1

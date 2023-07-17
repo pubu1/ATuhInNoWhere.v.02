@@ -25,7 +25,7 @@ public class DimensionIn : MonoBehaviour
 
     public Vector3 GetNextPosition(Player player)
     {
-        Vector3 entrancePosition = new Vector3();
+        Vector3 entrancePosition = this.transform.position;
         if (player.TempNextKey == "Right" && HasLeft())
         {          
             entrancePosition = new Vector3(exitLeft.transform.position.x+1, exitLeft.transform.position.y, player.transform.position.z);
@@ -47,7 +47,7 @@ public class DimensionIn : MonoBehaviour
     }
 
     public void RenderSprite(){
-        Debug.Log(exitTop + " " + exitRight + " " + exitBottom + " " + exitLeft);
+        Debug.Log(HasTop() + " " + HasRight() + " " + HasBottom() + " " + HasLeft());
         SpriteRenderer spriteRenderer = this.gameObject.GetComponent<SpriteRenderer>();
         Transform transform = this.gameObject.GetComponent<Transform>();    
 
@@ -135,6 +135,7 @@ public class DimensionIn : MonoBehaviour
 
     public bool CheckNextStep(Player player, GameObject nextStepObject, Dictionary<Vector2,bool> wireMap){
         bool totalCheck = true;
+
         if(wireMap.ContainsKey(this.GetNextPosition(player)) && !player.IsNotPickWire){
             totalCheck = false;
         }

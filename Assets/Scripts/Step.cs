@@ -160,7 +160,6 @@ public class Step : MonoBehaviourPun
                     //playerScript.PreviousMove = "Up";
                     view.RPC("SetPreviousMove", RpcTarget.All, photonViewID, "Up");
                 }
-                totalCheck = true;
             }
             else if (!isStepOnIce && Input.GetKeyDown(KeyCode.DownArrow) && enableMove && !isPauseGame)
             {
@@ -170,7 +169,6 @@ public class Step : MonoBehaviourPun
                     //playerScript.PreviousMove = "Down";
                     view.RPC("SetPreviousMove", RpcTarget.All, photonViewID, "Down");
                 }
-                totalCheck = true;
             }
             else if (!isStepOnIce && Input.GetKeyDown(KeyCode.LeftArrow) && enableMove && !isPauseGame)
             {
@@ -180,7 +178,6 @@ public class Step : MonoBehaviourPun
                     //playerScript.PreviousMove = "Left";
                     view.RPC("SetPreviousMove", RpcTarget.All, photonViewID, "Left");
                 }
-                totalCheck = true;
                 this.transform.localScale = new Vector3(-0.5f, 0.5f, 0.5f);
             }
             else if (!isStepOnIce && Input.GetKeyDown(KeyCode.RightArrow) && enableMove && !isPauseGame)
@@ -191,7 +188,6 @@ public class Step : MonoBehaviourPun
                     //playerScript.PreviousMove = "Right";
                     view.RPC("SetPreviousMove", RpcTarget.All, photonViewID, "Right");
                 }
-                totalCheck = true;
                 this.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
             }
             else if (isStepOnEscalator && enableMove)
@@ -480,7 +476,8 @@ public class Step : MonoBehaviourPun
     }
 
     private bool CanStepToPosition(Vector2 currentPosition, Vector2 targetPosition, string tempNextKey)
-    {       
+    {    
+        totalCheck = true;   
         currentMap = (int)currentPosition.x / 100;
         xCurrent = (int)(currentPosition.x % 100);
         yCurrent = (int)(currentPosition.y);
@@ -572,6 +569,10 @@ public class Step : MonoBehaviourPun
             GameObject dOut = dIn.GetDimensionOut(playerScript);
 
             Vector3 tempTargetPosition = dIn.GetNextPosition(playerScript);
+
+            if(tempTargetPosition == gameManager.PlayGridList[currentMap][xTarget, yTarget].transform.position) 
+                return false;
+
             int tempTargetMap = (int)tempTargetPosition.x / 100;
             int tempXTarget = (int)(tempTargetPosition.x % 100);
             int tempYTarget = (int)(tempTargetPosition.y);
